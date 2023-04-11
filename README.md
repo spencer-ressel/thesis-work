@@ -1,2 +1,2 @@
 # Code
-This is a back-up of all of the code that I use
+This is a repository where I store all of the code that I use
