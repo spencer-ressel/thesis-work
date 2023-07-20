@@ -1269,3 +1269,22 @@ def modified_colormap(colormap, central_color, central_width, blend_strength):
     modified_colormap = mcolors.LinearSegmentedColormap.from_list(colormap+'_modified', newcolors)
     
     return modified_colormap
+
+def tick_labeller(ticks, direction):
+    label = []
+    for i in range(len(ticks)):
+        if direction=='lon':
+            if ticks[i] == 0 or np.abs(ticks[i]) >= 180: 
+                label.append(f"{np.abs(ticks[i])}")
+            elif ticks[i] < 0:
+                label.append(f"{np.abs(ticks[i])}°W")
+            elif ticks[i] > 0:
+                label.append(f"{np.abs(ticks[i])}°E")
+        elif direction=='lat':
+            if ticks[i] == 0:
+                label.append(f"{np.abs(ticks[i])}")
+            elif ticks[i] < 0:
+                label.append(f"{np.abs(ticks[i])}°S")
+            elif ticks[i] > 0:
+                label.append(f"{np.abs(ticks[i])}°N")
+    return label
