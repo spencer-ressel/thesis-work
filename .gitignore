@@ -1,2 +1,6 @@
 .ipynb_checkpoints
+*.nc
+*.mp4
+*.png
+.nfs*
 __pycache__/
