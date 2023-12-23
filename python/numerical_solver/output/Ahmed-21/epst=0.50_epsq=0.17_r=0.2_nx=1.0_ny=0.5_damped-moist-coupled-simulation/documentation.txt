@@ -21,17 +21,17 @@ meridional moisture gradient parameter      4.5e-09 K kg m^-4
 Other Parameters ==================================================
 length scale                               1470.566 km 
 time scale                                    8.249 hr 
-CFL condition in x                            0.261 
-CFL condition in y                            0.261 
+CFL condition in x                            0.167 
+CFL condition in y                            0.334 
 
 Simulation Parameters ==================================================
 simulation length                           120.000 days 
 time step length                              0.146 hr 
 number of time steps                      19660.000 
 zonal domain length                       40030.219 km 
-zonal step size                             100.000 km 
-number of zonal steps                       401.000 
+zonal step size                             156.368 km 
+number of zonal steps                       256.000 
 meridional domain length                  10000.000 km 
-meridional step size                        100.000 km 
-number of meridional steps                  101.000 
+meridional step size                         78.125 km 
+number of meridional steps                  128.000 
 ========================================================================
