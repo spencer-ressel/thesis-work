@@ -51,7 +51,8 @@ def mask_land(signal, max_latitude, Fs_lon):
     if os.getcwd()[0] == "C":      
         dir_in = "C:/Users/resse/Desktop/Data/topo/"
     else:
-        dir_in = '/home/disk/eos7/sressel/data/topo/'
+        # dir_in = '/home/disk/eos7/sressel/data/topo/'
+        dir_in = '/home/disk/eos7/sressel/research/data/NCEP/'
     
     # Determine which land data to use based on the spacing of the input 
     # data

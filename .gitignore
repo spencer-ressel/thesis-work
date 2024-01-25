@@ -1,4 +1,7 @@
 .ipynb_checkpoints
 *.nc
+*.png
+*.mp4
 .nfs*
+*.mat
 __pycache__/

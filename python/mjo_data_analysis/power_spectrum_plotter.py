@@ -26,9 +26,10 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.cm import get_cmap
 import matplotlib.colors as colors
-from compute_power_spectrum import compute_power_spectrum
+# from compute_power_spectrum import compute_power_spectrum
+from power_spectrum_calculator import compute_power_spectrum
 import csv
-import cmaps
+import colormaps as cmaps
 
 #%% Main
 #### Settings and Parameters
@@ -79,7 +80,8 @@ plot_days = np.array([3,6,20]) # mark 3, 6, 20 day in WK1999
 earth_radius = 6371*1000 # Earth radius (m)
 
 # Create a directory for the output figures
-dir_out = "C:/Users/resse/OneDrive/UW/Research/Figures/"
+# dir_out = "C:/Users/resse/OneDrive/UW/Research/Figures/"
+dir_out = "/home/disk/eos7/sressel/research/thesis-work/python/mjo_data_analysis/output/"
 fig_dir = dir_out + 'Power Spectra/' + dataset + '/'
 
 if not os.path.exists(fig_dir):    

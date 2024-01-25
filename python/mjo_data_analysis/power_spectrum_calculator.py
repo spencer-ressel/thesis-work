@@ -21,7 +21,9 @@ Dependencies: mjo_mean_state_diagnostics.py
 """
 #%% Imports
 import os
-from one_two_one_filter import one_two_one_filter
+import sys
+# from one_two_one_filter import one_two_one_filter
+sys.path.insert(0, '/home/disk/eos7/sressel/research/thesis-work/python/auxiliary_functions/')
 import mask_land as ml
 import numpy as np
 import numpy.matlib
@@ -29,6 +31,10 @@ import math
 from netCDF4 import Dataset, num2date
 import scipy.signal as signal
 from process_signal import process_signal
+
+
+# import ipynb.fs.full.mjo_mean_state_diagnostics as mjo
+from ipynb.fs.full.one_two_one_filter import one_two_one_filter
 
 #%% Main
 def compute_power_spectrum(
@@ -44,12 +50,12 @@ def compute_power_spectrum(
     if os.getcwd()[0] == "C":
         dir_in = "C:/Users/resse/Desktop/Data/"
     else:
-        dir_in = "/home/disk/eos7/sressel/data/"
+        dir_in = "/home/disk/eos7/sressel/research/data/"
     if dataset == "NOAA":
         nan_value = 9.969209968386869e36
         nan_big_small = np.array([1])
 
-        data = Dataset(dir_in + "noaa_olr/olr.day.mean.nc", "r", format="NETCDF4")
+        data = Dataset(dir_in + "NOAA/olr.day.mean.nc", "r", format="NETCDF4")
 
         # OLR has lat from 90~-90, must be reversed
         olr = np.flip(data["olr"][:], 1)
