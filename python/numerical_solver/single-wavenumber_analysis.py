@@ -59,38 +59,24 @@ print(f"{'':{'='}^{50}}")
 
 # # Auxiliary functions
 
-# In[422]:
-
-
 def day_to_index(day):
     return np.abs(downsampled_timepoints/SECONDS_PER_DAY - day).argmin()
 
 
-# # Assign experiment IDs
-
-# In[571]:
-
-
-experiments_table = {
-    'Base Case' : f"epst=0.50_epsq=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_quadratic-mean-moisture_non-diffusive-damped-moist-coupled-simulation",
-    'Gaussian Mean Moisture' : f"epst=0.50_epsq=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation",
-    'Variable Moisture Sensitivity' : f"epst=0.50_epsq-step-y=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation",
-    'No Temperature Sensitivity' : f"epst=0.00_epsq-step-y=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation",
-    'Asymmetric Base Case' : f"epst=0.50_epsq=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_asymmetric-quadratic-mean-moisture_non-diffusive-damped-moist-coupled-simulation",
-    'Asymmetric Gaussian Mean Moisture' :  f"epst=0.50_epsq=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_asymmetric-gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation",
-    'Asymmetric Variable Moisture Sensitivity' :  f"epst=0.50_epsq-step-y=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_asymmetric-gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation",
-    'Asymmetric No Temperature Sensitivity' :  f"epst=0.00_epsq-step-y=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_asymmetric-gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation",
-    'k-scaled Initial Condition' : f"epst=0.50_epsq=0.17_r=0.2_nx=1.0_ny=1.00_k-scaled-initial-condition_wavenumber-filtered_gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation",
-    'Quadratic-No Temperature Sensitivity' : f"epst=0.00_epsq=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_quadratic-mean-moisture_non-diffusive-damped-moist-coupled-simulation",
-}
+# Assign experiment IDs
+with open(f"./experiments_table.json", 'r') as json_file:
+    experiments_table = json.load(json_file)
 
 experiment_colors = {
-    'Base Case' : bmh_colors('blue'),
+    'Ahmed-21' : bmh_colors('blue'),
     'Gaussian Mean Moisture' : bmh_colors('red'),
     'Variable Moisture Sensitivity' : bmh_colors('purple'),
     'No Temperature Sensitivity' : bmh_colors('green'),
     'k-scaled Initial Condition' : bmh_colors('orange'),
-    'Quadratic-No Temperature Sensitivity' : bmh_colors(6)
+    'Quadratic-No Temperature Sensitivity' : bmh_colors(6),
+    'Variable Convective Sensitivities' : bmh_colors(8),
+    'Equal Convective Sensitivities' : bmh_colors(9),
+    'Reduced Temperature Sensitivity' : bmh_colors(9)
 }
 
 
@@ -101,3257 +87,1970 @@ experiment_colors = {
 
 save_timestamp = False
 
+# experiment_to_load = 'Variable Mq - Normal Sensitivity - Double Zonal Advection - Rayleigh Friction'\
+# experiment_to_load = "No Meridional Wind - Zonally Variable Zonal Advection 0 to 1 - No Temperature Sensitivity"
+experiment_to_load = "Base Gaussian - Zonally Variable Zonal Advection -1 to 1"
+# moisture_stratification_structure = '-gaussian-y'
+
+k = int(sys.argv[1])
+specified_output_file_directory = f"output/Ahmed-21/{experiments_table[experiment_to_load]}"
 # specified_output_file_directory = (
-#     f"output/Ahmed-21/"
-#     # + f"epst=0.50_epsq=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_quadratic-mean-moisture_non-diffusive-damped-moist-coupled-simulation"
-#     # + f"epst=0.50_epsq=0.17_r=0.2_nx=1.0_ny=1.00_symmetry-test_wavenumber-filtered_quadratic-mean-moisture_non-diffusive-damped-moist-coupled-simulation"
-#     + f"epst=0.50_epsq=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation" 
-#     # + f"epst=0.50_epsq-step-y=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation" 
-#     # + f"epst=0.00_epsq-step-y=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation" 
-#     # + f"epst=0.50_epsq=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_asymmetric-gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation" 
-#     # + f"epst=0.50_epsq-step-y=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_asymmetric-gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation" 
-#     # + f"epst=0.00_epsq-step-y=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_asymmetric-gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation" 
+#     f"output/Ahmed-21/" 
+#     + f"epst=0.00_epsq-gaussian-y=0.04_r=0.2_nx={sys.argv[2]}_ny=1.00_variable-Mq_wavenumber-filtered_gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation"
 # )
+specified_initial_condition_name = f"k={k}.0_m=1_Kelvin-wave"
+# specified_initial_condition_name = f"k={k}.0_m=3_Rossby-wave"
+initial_condition_type = specified_initial_condition_name.split('_')[-1]
 
-# specified_output_file_directory = (
-#     f"output/WTG/"
-#     + f"epst=0.50_epsq=0.17_r=0.2_nx=1.0_ny=1.00_wavenumber-filtered_gaussian-mean-moisture_non-diffusive-damped-moist-coupled-simulation" 
+# print(f"{f'{experiment_to_load} case':^50}")
+print(f"{f'k = {k} {initial_condition_type} initial condition':^50}")
+print(f"{'':{'='}^{50}}")
+
+
+print(f"Loading experiment grid & field variables...")
+downsampled_data = xr.load_dataset(
+    f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/"
+    + f"{specified_initial_condition_name}" 
+    + f"_downsampled-model-data_compiled.nc"
+)
+
+output_zonal_velocity = downsampled_data['u'].to_numpy()
+output_meridional_velocity = downsampled_data['v'].to_numpy()
+output_column_temperature = downsampled_data['T'].to_numpy()
+output_column_moisture = downsampled_data['q'].to_numpy()
+
+output_zonal_gridpoints = downsampled_data.x.to_numpy()
+output_meridional_gridpoints = downsampled_data.y.to_numpy()
+downsampled_timepoints = downsampled_data.time.to_numpy()
+
+print(f"Experiment grid & field variables loaded")
+print(f"{'':{'='}^{50}}")
+
+print("Loading experiment parameters...")
+#### Load experiment variables
+with open(
+    f"{specified_output_file_directory}/experiment_variables.json", 'r') as json_file:
+    loaded_experiment_variables = json.load(json_file)
+
+simulation_moisture = loaded_experiment_variables['simulation_moisture']
+moisture_advection = loaded_experiment_variables['moisture_advection']
+simulation_damping = loaded_experiment_variables['simulation_damping']
+moisture_coupling = loaded_experiment_variables['moisture_coupling']
+simulation_diffusion = loaded_experiment_variables['simulation_diffusion']
+fringe_region = loaded_experiment_variables['fringe_region']
+moisture_sensitivity_structure = loaded_experiment_variables['moisture_sensitivity_structure']
+temperature_sensitivity_structure = loaded_experiment_variables['temperature_sensitivity_structure']
+sensitivity_limit = loaded_experiment_variables['sensitivity_limit']
+sensitivity_width = loaded_experiment_variables['sensitivity_width']
+mean_moisture_profile = loaded_experiment_variables['mean_moisture_profile']
+gaussian_length_scale = loaded_experiment_variables['moisture_length_scale']
+GRAVITY = loaded_experiment_variables['GRAVITY']
+EQUIVALENT_DEPTH = loaded_experiment_variables['EQUIVALENT_DEPTH']
+CORIOLIS_PARAMETER = loaded_experiment_variables['CORIOLIS_PARAMETER']
+EARTH_RADIUS = loaded_experiment_variables['EARTH_RADIUS']
+AIR_DENSITY = loaded_experiment_variables['AIR_DENSITY']
+WATER_DENSITY = loaded_experiment_variables['WATER_DENSITY']
+LATENT_HEAT = loaded_experiment_variables['LATENT_HEAT']
+SPECIFIC_HEAT = loaded_experiment_variables['SPECIFIC_HEAT']
+DIFFUSIVITY = loaded_experiment_variables['DIFFUSIVITY']
+METERS_PER_DEGREE = loaded_experiment_variables['METERS_PER_DEGREE']
+SECONDS_PER_DAY = loaded_experiment_variables['SECONDS_PER_DAY']
+COLUMN_AVERAGE_MASS = loaded_experiment_variables['COLUMN_AVERAGE_MASS']
+GROSS_DRY_STABILITY = loaded_experiment_variables['GROSS_DRY_STABILITY']
+MOISTURE_SENSITIVITY = loaded_experiment_variables['MOISTURE_SENSITIVITY']
+TEMPERATURE_SENSITIVITY = loaded_experiment_variables['TEMPERATURE_SENSITIVITY']
+if (experiment_to_load == 'Variable r') or (experiment_to_load == 'Narrow Mean State - Variable r'):
+    CLOUD_RADIATIVE_PARAMETER = 0.21*np.exp(-242614*k/EARTH_RADIUS)
+    print(f"Variable r = {CLOUD_RADIATIVE_PARAMETER:0.2f}")
+else:
+    CLOUD_RADIATIVE_PARAMETER = loaded_experiment_variables['CLOUD_RADIATIVE_PARAMETER']
+RAYLEIGH_FRICTION_COEFFICIENT = loaded_experiment_variables['RAYLEIGH_FRICTION_COEFFICIENT']
+sigma_x_multiplier = loaded_experiment_variables['sigma_x_multiplier']
+sigma_y_multiplier = loaded_experiment_variables['sigma_y_multiplier']
+ZONAL_MOISTENING_PARAMETER = loaded_experiment_variables['ZONAL_MOISTENING_PARAMETER']
+MERIDIONAL_MOISTENING_PARAMETER = loaded_experiment_variables['MERIDIONAL_MOISTENING_PARAMETER']
+MERIDIONAL_OFFSET_PARAMETER = loaded_experiment_variables['MERIDIONAL_OFFSET_PARAMETER']
+gravity_wave_phase_speed = loaded_experiment_variables['gravity_wave_phase_speed']
+time_scale = loaded_experiment_variables['time_scale']
+length_scale = loaded_experiment_variables['length_scale']
+gross_moisture_stratification = loaded_experiment_variables['gross_moisture_stratification']
+effective_sensitivity = loaded_experiment_variables['effective_sensitivity']
+effective_gross_moist_stability = loaded_experiment_variables['effective_gross_moist_stability']
+scaled_zonal_parameter = loaded_experiment_variables['scaled_zonal_parameter']
+scaled_meridional_parameter = loaded_experiment_variables['scaled_meridional_parameter']
+n_days = loaded_experiment_variables['n_days']
+n_chunks = loaded_experiment_variables['n_chunks']
+n_time_steps = loaded_experiment_variables['n_time_steps']
+meridional_domain_length = loaded_experiment_variables['meridional_domain_length']
+zonal_domain_length = loaded_experiment_variables['zonal_domain_length']
+nt = loaded_experiment_variables['nt']    
+nx = loaded_experiment_variables['nx']
+ny = loaded_experiment_variables['ny']
+zonal_grid_spacing = loaded_experiment_variables['zonal_grid_spacing']
+meridional_grid_spacing = loaded_experiment_variables['meridional_grid_spacing']
+simulation_length = loaded_experiment_variables['simulation_length']
+time_step = loaded_experiment_variables['time_step']
+zonal_step_size = loaded_experiment_variables['zonal_step_size']
+meridional_step_size = loaded_experiment_variables['meridional_step_size']
+CFL_x = loaded_experiment_variables['CFL_x']
+CFL_y = loaded_experiment_variables['CFL_y']
+fringe_region_latitude = loaded_experiment_variables['fringe_region_latitude']
+fringe_region_width = loaded_experiment_variables['fringe_region_width']
+fringe_region_strength = loaded_experiment_variables['fringe_region_strength']
+grid_scaling = loaded_experiment_variables['grid_scaling']
+additional_notes = loaded_experiment_variables['additional_notes']
+simulation_name = loaded_experiment_variables['simulation_name']
+output_file_directory = loaded_experiment_variables['output_file_directory']
+n_rk_steps = loaded_experiment_variables['n_rk_steps']
+save_downsampled = loaded_experiment_variables['save_downsampled']
+
+output_wavenumber = eval(specified_initial_condition_name.split('_')[0].split('=')[-1])/EARTH_RADIUS
+zonal_wavenumber      = 2*np.pi*fftfreq(nx, zonal_step_size)       # zonal wavenumbers
+meridional_wavenumber = 2*np.pi*fftfreq(ny, meridional_step_size)  # meridional wavenumbers
+frequencies           = 2*np.pi*fftfreq(nt, time_step)             # frequencies
+
+print("Experiment parameters loaded")
+print(f"{'':{'='}^{50}}")
+
+# Create a folder to save figures
+if not os.path.exists(f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"):
+    print("Creating figures folder...")
+    # os.system(f"mkdir {specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/")
+    os.makedirs(f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/", exist_ok=True)
+    print("Figures folder created")
+else:
+    print("Figures folder exists")
+print(f"{'':{'='}^{50}}")
+
+
+# # Visualize Simulation Output
+
+## Horizontal Structure
+
+# ### Single time
+print(f"{'Horizontal and temporal structures':^50}")
+print(f"{'':{'='}^{50}}")
+print(f"    → Plotting horizontal structures...")
+# In[572]:
+xlims = (-180/k, 180/k)
+ylims = (-35, 35)
+
+physical_parameters = (
+    SPECIFIC_HEAT, 
+    LATENT_HEAT,
+    WATER_DENSITY,
+    COLUMN_AVERAGE_MASS,
+    EARTH_RADIUS,
+    METERS_PER_DEGREE,
+    SECONDS_PER_DAY,
+)
+
+plotting_parameters = (
+    # (-180/k, 180/k),               # xlims
+    (-180/k, 180/k),
+    # (-50, 50),                 # ylims 
+    (-35, 35),                 # ylims 
+    20,14,                      # quiver plot spacing (x,y)
+    True,                     # save plot to png
+    'converted',               # plotting units - 'converted' or 'natural'
+    0.6,                       # maximum moisture anomaly in 'mm' - must be set to '1' if units are 'natural'
+    # 'natural',               # plotting units - 'converted' or 'natural'
+    # 1,                       # maximum moisture anomaly in 'mm' - must be set to '1' if units are 'natural'
+    grid_scaling,               # grid-scaling factor - DON'T CHANGE,
+    save_timestamp             # Whether or not to timestamp the output file
+)
+
+# Plot the initial conditon below
+plot_horizontal_structure(
+    day_to_index(360),
+    output_zonal_gridpoints,
+    output_meridional_gridpoints,
+    downsampled_timepoints,
+    zonal_velocity = np.copy(output_zonal_velocity), 
+    meridional_velocity = np.copy(output_meridional_velocity), 
+    column_temperature = np.copy(output_column_temperature), 
+    column_moisture = np.copy(output_column_moisture), 
+    specified_output_file_directory = specified_output_file_directory,
+    specified_initial_condition_name = specified_initial_condition_name,
+    physical_parameters = physical_parameters,
+    simulation_parameters = (simulation_moisture, fringe_region, fringe_region_latitude, fringe_region_width),
+    plotting_parameters = plotting_parameters
+)
+
+# # Plot the initial conditon below
+# plot_horizontal_structure(
+#     day_to_index(360),
+#     output_zonal_gridpoints,
+#     output_meridional_gridpoints,
+#     downsampled_timepoints,
+#     zonal_velocity = np.copy(output_zonal_velocity), 
+#     meridional_velocity = np.copy(output_meridional_velocity), 
+#     column_temperature = np.copy(output_column_temperature), 
+#     column_moisture = 
+#     np.copy(output_column_moisture), 
+#     specified_output_file_directory = specified_output_file_directory,
+#     specified_initial_condition_name = specified_initial_condition_name,
+#     physical_parameters = physical_parameters,
+#     simulation_parameters = (simulation_moisture, fringe_region, fringe_region_latitude, fringe_region_width),
+#     plotting_parameters = plotting_parameters
 # )
-# k = 2
+print("    → Horizontal structure plotted")
 
-# experiment_to_load = 'Gaussian Mean Moisture'
-# experiment_to_load = 'No Temperature Sensitivity'
-# experiment_to_load = 'k-scaled Initial Condition'
-experiment_to_load = 'Quadratic-No Temperature Sensitivity'
-
-for k in [1,2,3,4,5,6]:
-    specified_output_file_directory = f"output/Ahmed-21/{experiments_table[experiment_to_load]}"
-    specified_initial_condition_name = f"k={k}.0_m=1_Kelvin-wave"
-    initial_condition_type = specified_initial_condition_name.split('_')[-1]
-    
-    print(f"{f'{experiment_to_load} case':^50}")
-    print(f"{f'k = {k} {initial_condition_type} initial condition':^50}")
-    print(f"{'':{'='}^{50}}")
-    
-    
-    print(f"Loading experiment grid & field variables...")
-    downsampled_data = xr.load_dataset(
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/"
-        + f"{specified_initial_condition_name}" 
-        + f"_downsampled-model-data_compiled.nc"
-    )
-    
-    output_zonal_velocity = downsampled_data['u'].to_numpy()
-    output_meridional_velocity = downsampled_data['v'].to_numpy()
-    output_column_temperature = downsampled_data['T'].to_numpy()
-    output_column_moisture = downsampled_data['q'].to_numpy()
-    
-    output_zonal_gridpoints = downsampled_data.x.to_numpy()
-    output_meridional_gridpoints = downsampled_data.y.to_numpy()
-    downsampled_timepoints = downsampled_data.time.to_numpy()
-    
-    print(f"Experiment grid & field variables loaded")
-    print(f"{'':{'='}^{50}}")
-    
-    print("Loading experiment parameters...")
-    #### Load experiment variables
-    with open(
-        f"{specified_output_file_directory}/experiment_variables.json", 'r') as json_file:
-        loaded_experiment_variables = json.load(json_file)
-    
-    simulation_moisture = loaded_experiment_variables['simulation_moisture']
-    moisture_advection = loaded_experiment_variables['moisture_advection']
-    simulation_damping = loaded_experiment_variables['simulation_damping']
-    moisture_coupling = loaded_experiment_variables['moisture_coupling']
-    simulation_diffusion = loaded_experiment_variables['simulation_diffusion']
-    fringe_region = loaded_experiment_variables['fringe_region']
-    moisture_sensitivity_structure = loaded_experiment_variables['moisture_sensitivity_structure']
-    temperature_sensitivity_structure = loaded_experiment_variables['temperature_sensitivity_structure']
-    mean_moisture_profile = loaded_experiment_variables['mean_moisture_profile']
-    gaussian_length_scale = loaded_experiment_variables['moisture_length_scale']
-    GRAVITY = loaded_experiment_variables['GRAVITY']
-    EQUIVALENT_DEPTH = loaded_experiment_variables['EQUIVALENT_DEPTH']
-    CORIOLIS_PARAMETER = loaded_experiment_variables['CORIOLIS_PARAMETER']
-    EARTH_RADIUS = loaded_experiment_variables['EARTH_RADIUS']
-    AIR_DENSITY = loaded_experiment_variables['AIR_DENSITY']
-    WATER_DENSITY = loaded_experiment_variables['WATER_DENSITY']
-    LATENT_HEAT = loaded_experiment_variables['LATENT_HEAT']
-    SPECIFIC_HEAT = loaded_experiment_variables['SPECIFIC_HEAT']
-    DIFFUSIVITY = loaded_experiment_variables['DIFFUSIVITY']
-    METERS_PER_DEGREE = loaded_experiment_variables['METERS_PER_DEGREE']
-    SECONDS_PER_DAY = loaded_experiment_variables['SECONDS_PER_DAY']
-    COLUMN_AVERAGE_MASS = loaded_experiment_variables['COLUMN_AVERAGE_MASS']
-    GROSS_DRY_STABILITY = loaded_experiment_variables['GROSS_DRY_STABILITY']
-    MOISTURE_SENSITIVITY = loaded_experiment_variables['MOISTURE_SENSITIVITY']
-    TEMPERATURE_SENSITIVITY = loaded_experiment_variables['TEMPERATURE_SENSITIVITY']
-    CLOUD_RADIATIVE_PARAMETER = loaded_experiment_variables['CLOUD_RADIATIVE_PARAMETER']
-    sigma_x_multiplier = loaded_experiment_variables['sigma_x_multiplier']
-    sigma_y_multiplier = loaded_experiment_variables['sigma_y_multiplier']
-    ZONAL_MOISTENING_PARAMETER = loaded_experiment_variables['ZONAL_MOISTENING_PARAMETER']
-    MERIDIONAL_MOISTENING_PARAMETER = loaded_experiment_variables['MERIDIONAL_MOISTENING_PARAMETER']
-    MERIDIONAL_OFFSET_PARAMETER = loaded_experiment_variables['MERIDIONAL_OFFSET_PARAMETER']
-    gravity_wave_phase_speed = loaded_experiment_variables['gravity_wave_phase_speed']
-    time_scale = loaded_experiment_variables['time_scale']
-    length_scale = loaded_experiment_variables['length_scale']
-    gross_moisture_stratification = loaded_experiment_variables['gross_moisture_stratification']
-    effective_sensitivity = loaded_experiment_variables['effective_sensitivity']
-    effective_gross_moist_stability = loaded_experiment_variables['effective_gross_moist_stability']
-    scaled_zonal_parameter = loaded_experiment_variables['scaled_zonal_parameter']
-    scaled_meridional_parameter = loaded_experiment_variables['scaled_meridional_parameter']
-    n_days = loaded_experiment_variables['n_days']
-    n_chunks = loaded_experiment_variables['n_chunks']
-    n_time_steps = loaded_experiment_variables['n_time_steps']
-    meridional_domain_length = loaded_experiment_variables['meridional_domain_length']
-    zonal_domain_length = loaded_experiment_variables['zonal_domain_length']
-    nt = loaded_experiment_variables['nt']    
-    nx = loaded_experiment_variables['nx']
-    ny = loaded_experiment_variables['ny']
-    zonal_grid_spacing = loaded_experiment_variables['zonal_grid_spacing']
-    meridional_grid_spacing = loaded_experiment_variables['meridional_grid_spacing']
-    simulation_length = loaded_experiment_variables['simulation_length']
-    time_step = loaded_experiment_variables['time_step']
-    zonal_step_size = loaded_experiment_variables['zonal_step_size']
-    meridional_step_size = loaded_experiment_variables['meridional_step_size']
-    CFL_x = loaded_experiment_variables['CFL_x']
-    CFL_y = loaded_experiment_variables['CFL_y']
-    fringe_region_latitude = loaded_experiment_variables['fringe_region_latitude']
-    fringe_region_width = loaded_experiment_variables['fringe_region_width']
-    fringe_region_strength = loaded_experiment_variables['fringe_region_strength']
-    grid_scaling = loaded_experiment_variables['grid_scaling']
-    additional_notes = loaded_experiment_variables['additional_notes']
-    simulation_name = loaded_experiment_variables['simulation_name']
-    output_file_directory = loaded_experiment_variables['output_file_directory']
-    n_rk_steps = loaded_experiment_variables['n_rk_steps']
-    save_downsampled = loaded_experiment_variables['save_downsampled']
-    
-    output_wavenumber = eval(specified_initial_condition_name.split('_')[0].split('=')[-1])/EARTH_RADIUS
-    zonal_wavenumber      = 2*np.pi*fftfreq(nx, zonal_step_size)       # zonal wavenumbers
-    meridional_wavenumber = 2*np.pi*fftfreq(ny, meridional_step_size)  # meridional wavenumbers
-    frequencies           = 2*np.pi*fftfreq(nt, time_step)             # frequencies
-    
-    print("Experiment parameters loaded")
-    print(f"{'':{'='}^{50}}")
-    
-    # Create a folder to save figures
-    if not os.path.exists(f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"):
-        print("Creating figures folder...")
-        os.system(f"mkdir {specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/")
-        print("Figures folder created")
-    else:
-        print("Figures folder exists")
-    print(f"{'':{'='}^{50}}")
-    
-    
-    # # Visualize Simulation Output
-    
-    # ## Horizontal Structure
-    
-    # ### Single time
-    
-    # In[572]:
-    xlims = (-180/k, 180/k)
-    ylims = (-35, 35)
-    
-    physical_parameters = (
-        SPECIFIC_HEAT, 
-        LATENT_HEAT,
-        WATER_DENSITY,
-        COLUMN_AVERAGE_MASS,
-        EARTH_RADIUS,
-        METERS_PER_DEGREE,
-        SECONDS_PER_DAY,
-    )
-    
-    plotting_parameters = (
-        # (-180/k, 180/k),               # xlims
-        (-180/k, 180/k),
-        # (-50, 50),                 # ylims 
-        (-35, 35),                 # ylims 
-        20,13,                      # quiver plot spacing (x,y)
-        True,                     # save plot to png
-        'converted',               # plotting units - 'converted' or 'natural'
-        0.6,                       # maximum moisture anomaly in 'mm' - must be set to '1' if units are 'natural'
-        # 'natural',               # plotting units - 'converted' or 'natural'
-        # 1,                       # maximum moisture anomaly in 'mm' - must be set to '1' if units are 'natural'
-        grid_scaling,               # grid-scaling factor - DON'T CHANGE,
-        save_timestamp             # Whether or not to timestamp the output file
-    )
-    
-    # Plot the initial conditon below
-    plot_horizontal_structure(
-        day_to_index(0),
-        output_zonal_gridpoints,
-        output_meridional_gridpoints,
-        downsampled_timepoints,
-        zonal_velocity = np.copy(output_zonal_velocity), 
-        meridional_velocity = np.copy(output_meridional_velocity), 
-        column_temperature = np.copy(output_column_temperature), 
-        column_moisture = np.copy(output_column_moisture), 
-        specified_output_file_directory = specified_output_file_directory,
-        specified_initial_condition_name = specified_initial_condition_name,
-        physical_parameters = physical_parameters,
-        simulation_parameters = (simulation_moisture, fringe_region, fringe_region_latitude, fringe_region_width),
-        plotting_parameters = plotting_parameters
-    )
-    
-    # Plot the initial conditon below
-    plot_horizontal_structure(
-        day_to_index(360),
-        output_zonal_gridpoints,
-        output_meridional_gridpoints,
-        downsampled_timepoints,
-        zonal_velocity = np.copy(output_zonal_velocity), 
-        meridional_velocity = np.copy(output_meridional_velocity), 
-        column_temperature = np.copy(output_column_temperature), 
-        column_moisture = 
-        np.copy(output_column_moisture), 
-        specified_output_file_directory = specified_output_file_directory,
-        specified_initial_condition_name = specified_initial_condition_name,
-        physical_parameters = physical_parameters,
-        simulation_parameters = (simulation_moisture, fringe_region, fringe_region_latitude, fringe_region_width),
-        plotting_parameters = plotting_parameters
-    )
-    
-    
-    # # ### Animation
-    
-    # # In[ ]:
-    
-    
-    # starting_frame = day_to_index(0)
-    # ending_frame = day_to_index(360)
-    # frame_index = day_to_index(5)
-    
-    # physical_parameters = (
-    #     SPECIFIC_HEAT, 
-    #     LATENT_HEAT,
-    #     WATER_DENSITY,
-    #     COLUMN_AVERAGE_MASS,
-    #     EARTH_RADIUS,
-    #     METERS_PER_DEGREE,
-    #     SECONDS_PER_DAY,
-    # )
-    
-    # plotting_parameters = (
-    #     # (-180, 179),
-    #     (-180/k, 180/k),
-    #     (-35, 35),
-    #     20, 12,
-    #     # 16//k,12//k,
-    #     True, 
-    #     'converted',
-    #     0.6,
-    #     grid_scaling,
-    #     save_timestamp            
-    # )
-    
-    # animate_horizontal_structure(
-    #     output_zonal_gridpoints,
-    #     output_meridional_gridpoints,
-    #     downsampled_timepoints,
-    #     np.copy(output_zonal_velocity),
-    #     np.copy(output_meridional_velocity),
-    #     np.copy(output_column_temperature),
-    #     np.copy(output_column_moisture),
-    #     specified_output_file_directory = specified_output_file_directory,
-    #     specified_initial_condition_name = specified_initial_condition_name,
-    #     physical_parameters = physical_parameters,
-    #     simulation_parameters = (simulation_moisture, fringe_region),
-    #     plotting_parameters = plotting_parameters,
-    #     frames = np.arange(starting_frame, ending_frame, frame_index),
-    #     normalized_over_time=True
-    # )
-    
-    
-    # ## Temporal Structure
-    
-    # ### Near-Equatorial Average
-    
-    # In[573]:
-    
-    
-    plt.style.use('bmh')
-    plt.rcParams.update({'font.size':24})
-    
-    plotting_time_points = downsampled_timepoints
-    
-    # Latitudes over which to average
-    south_bound = -10
-    north_bound = 10
-    
-    # Find the indices of the meridional grid corresponding to those latitudes
-    south_lat_index = (
-        np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - south_bound).argmin()
-        if south_bound >= np.min(output_meridional_gridpoints)/METERS_PER_DEGREE else 0
-    )
-    north_lat_index = (
-        1 + np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - north_bound).argmin() 
-        if north_bound <= np.max(output_meridional_gridpoints)/METERS_PER_DEGREE else None
-    )
-    
-    # Average the field variables over the specified latitudes
-    near_equatorial_column_temperature = np.mean(
-        np.copy(output_column_temperature)[:, south_lat_index:north_lat_index, :],
-        axis=1
-    )
-    near_equatorial_column_moisture = np.mean(
-        np.copy(output_column_moisture)[:, south_lat_index:north_lat_index, :],
-        axis=1
-    )
-    near_equatorial_zonal_velocity = np.mean(
-        np.copy(output_zonal_velocity)[:, south_lat_index:north_lat_index, :],
-        axis=1
-    )
-    near_equatorial_meridional_velocity = np.mean(
-        np.copy(output_meridional_velocity)[:, south_lat_index:north_lat_index, :],
-        axis=1
-    )
-    
-    max_index = np.argmax(near_equatorial_column_temperature)
-    [t_index, x_index] = np.unravel_index(max_index, [nt, nx])
-    
-    [fig, ax] = plt.subplots(figsize=(16,6))
-    ax.set_title(
-        (
-            f"{np.abs(south_bound)}°S-{np.abs(north_bound)}°N averaged {initial_condition_type} amplitude \n over time," 
-          + r" ε$_t$ = " + f"{3600*TEMPERATURE_SENSITIVITY:0.3f}" + r" hr$^{-1},$"
-          + r" ε$_q$ = " + f"{3600*MOISTURE_SENSITIVITY:0.3f}" + r" hr$^{-1}$"
-        ), pad=15
-    )
-    
-    ax.axhline(
-        y=0,
-        color='black',
-        ls='--',
-        alpha=0.75
-    )
-    
-    ax.plot(
-        plotting_time_points/SECONDS_PER_DAY, 
-        near_equatorial_column_temperature[:, x_index]*gravity_wave_phase_speed/GROSS_DRY_STABILITY, 
-        lw=3, 
-        label=r"$\frac{c}{M_s}\langle T \rangle$",
-        color=bmh_colors('blue')
-    )
-    
-    ax.plot(
-        plotting_time_points/SECONDS_PER_DAY, 
-        near_equatorial_column_moisture[:, x_index]*gravity_wave_phase_speed/gross_moisture_stratification, 
-        lw=3, 
-        label=r"$\frac{c}{M_q}\langle q \rangle$",
-        color=bmh_colors('red')
-        
-    )
-    
-    ax.plot(
-        plotting_time_points/SECONDS_PER_DAY, 
-        -near_equatorial_zonal_velocity[:, x_index], 
-        lw=3, 
-        ls='--',
-        label='u',
-        color=bmh_colors('purple')
-        
-    )
-    
-    ax.plot(
-        plotting_time_points/SECONDS_PER_DAY, 
-        -near_equatorial_meridional_velocity[:, x_index], 
-        lw=3, 
-        ls='--',
-        label='v',
-        color=bmh_colors('green')
-    )
-    
-    # Maximum column temperature
-    ax.axhline(
-        y=np.max(near_equatorial_column_temperature[:, x_index])*gravity_wave_phase_speed/GROSS_DRY_STABILITY,
-        color=bmh_colors('blue'),
-        ls=':',
-        alpha=0.75
-    )
-    
-    ax.axhline(
-        y=np.min(near_equatorial_column_temperature[:, x_index])*gravity_wave_phase_speed/GROSS_DRY_STABILITY,
-        color=bmh_colors('blue'),
-        ls=':',
-        alpha=0.75
-    )
-    
-    # Maximum column moisture
-    ax.axhline(
-        y=np.max(near_equatorial_column_moisture[:, x_index])*gravity_wave_phase_speed/gross_moisture_stratification,
-        color=bmh_colors('red'),
-        ls=':',
-        alpha=0.75
-    )
-    
-    ax.axhline(
-        y=np.min(near_equatorial_column_moisture[:, x_index])*gravity_wave_phase_speed/gross_moisture_stratification,
-        color=bmh_colors('red'),
-        ls=':',
-        alpha=0.75
-    )
-    
-    ax.set_xlabel('Time (days)')
-    ax.set_ylabel(r"$\frac{m}{s}$", rotation=0, labelpad=20, fontsize=32)
-    
-    ax.legend(loc='best', fontsize=18)
-    
-    if initial_condition_type == 'EIG-wave' or initial_condition_type == 'WIG-wave':
-        plt.xlim(-1, 5)
-    
-        
-    # plt.xlim(-1, 15)
-    # plt.ylim(-2000,2000)
-    # plt.ylim(-1000,1000)
-    
-    # plt.show()
-    plt.savefig(
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-        + f"{specified_initial_condition_name}_temporal-structure"
-        + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-        + f".png", 
-        bbox_inches='tight'
-    )
-    
-    
-    # ### Hovmoller Diagram
-    
-    # In[ ]:
-    
-    
-    # plt.contourf(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE,
-    #     downsampled_timepoints[:day_to_index(100)]/SECONDS_PER_DAY,
-    #     output_column_moisture[:day_to_index(100), ny//2, :],
-    #     cmap='coolwarm',
-    #     norm=mcolors.CenteredNorm()
-    # )
-    
-    # # plt.xlabel('Latitude')
-    # plt.xlim(-180, 180)
-    # plt.xticks(ticks=np.arange(-120, 180, 60), labels=mjo.tick_labeller(np.arange(-120, 180, 60), 'lon'))
-    # plt.ylabel('Days')
-    # plt.show()
-    
-    
-    # ## Meridional Structure
-    
-    # In[ ]:
-    
-    
-    # starting_frame = np.where(np.floor(downsampled_timepoints/SECONDS_PER_DAY) >= 70)[0][0]
-    # ending_frame = np.where(np.floor(downsampled_timepoints/SECONDS_PER_DAY) >= 99)[0][0]
-    # frame_interval = 1
-    # lon_index = np.argmax(output_column_moisture[0, ny//2, :]) 
-    
-    # plt.style.use('bmh')
-    # [fig, ax] = plt.subplots(1, 1, figsize=(16,6))
-    # ax.set_title(f"Time: {downsampled_timepoints[0]/SECONDS_PER_DAY:0.1f} days")
-    
-    # axh_line = ax.axhline(y=0, color='k', lw=2, ls=':')
-    
-    # u_line = ax.plot(
-    #     meridional_gridpoints/METERS_PER_DEGREE,
-    #     output_zonal_velocity[starting_frame, :, lon_index],
-    #     color=bmh_colors('purple'),
-    #     label='u'
-    # )
-    
-    # v_line = ax.plot(
-    #     meridional_gridpoints/METERS_PER_DEGREE,
-    #     output_meridional_velocity[starting_frame, :, lon_index],
-    #     color=bmh_colors('green'),
-    #     label='v'
-    # )
-    
-    # T_line = ax.plot(
-    #     meridional_gridpoints/METERS_PER_DEGREE,
-    #     output_column_temperature[starting_frame, :, lon_index]*gravity_wave_phase_speed/GROSS_DRY_STABILITY,
-    #     color=bmh_colors('blue'),
-    #     label=r"$\frac{c}{M_s}\langle T \rangle$",
-    # )
-    
-    # q_line = ax.plot(
-    #     meridional_gridpoints/METERS_PER_DEGREE,
-    #     output_column_moisture[starting_frame, :, lon_index]*gravity_wave_phase_speed/gross_moisture_stratification,
-    #     color=bmh_colors('red'),
-    #     label=r"$\frac{c}{M_q}\langle q \rangle$",
-    # )
-    
-    # if fringe_region:
-    #     ax.axvline(x=fringe_region_latitude, color='k', ls=':')
-    #     ax.axvline(x=-fringe_region_latitude, color='k', ls=':')
-            
-    #     ax.axvline(x=(fringe_region_latitude-fringe_region_width), color='k', ls=':')
-    #     ax.axvline(x=-(fringe_region_latitude-fringe_region_width), color='k', ls=':')
-    
-    # # Set axis parameters
-    # ax.set_ylim(-20, 20)
-    # ax.set_xticks(ticks=np.arange(-60,80,20), labels=mjo.tick_labeller(np.arange(-60,80,20), 'lat'))
-    # # ax.set_xlim(60, 75)
-    # ax.set_ylabel('Amplitude (m/s)')
-    
-    # ax.legend(fontsize=12, loc='upper right')
-    
-    # def update(frame):
-    
-    #     # Clear the plot each frame
-    #     ax.clear()
-    
-    #     ax.set_title(f"Time: {downsampled_timepoints[frame]/SECONDS_PER_DAY:0.1f} days")
-    
-    #     axh_line = ax.axhline(y=0, color='k', lw=2, ls=':')
-        
-    #     u_line = ax.plot(
-    #     meridional_gridpoints/METERS_PER_DEGREE,
-    #     output_zonal_velocity[frame, :, lon_index],
-    #     color=bmh_colors('purple'),
-    #     label='u'
-    #     )
-        
-    #     v_line = ax.plot(
-    #         meridional_gridpoints/METERS_PER_DEGREE,
-    #         output_meridional_velocity[frame, :, lon_index],
-    #         color=bmh_colors('green'),
-    #         label='v'
-    #     )
-        
-    #     T_line = ax.plot(
-    #         meridional_gridpoints/METERS_PER_DEGREE,
-    #         output_column_temperature[frame, :, lon_index]*gravity_wave_phase_speed/GROSS_DRY_STABILITY,
-    #         color=bmh_colors('blue'),
-    #         label=r"$\frac{c}{M_s}\langle T \rangle$",
-    #     )
-        
-    #     q_line = ax.plot(
-    #         meridional_gridpoints/METERS_PER_DEGREE,
-    #         output_column_moisture[frame, :, lon_index]*gravity_wave_phase_speed/gross_moisture_stratification,
-    #         color=bmh_colors('red'),
-    #         label=r"$\frac{c}{M_q}\langle q \rangle$",
-    #     )    
-    
-    #     if fringe_region:
-    #         ax.axvline(x=fringe_region_latitude, color='k', ls=':')
-    #         ax.axvline(x=-fringe_region_latitude, color='k', ls=':')
-                
-    #         ax.axvline(x=(fringe_region_latitude-fringe_region_width), color='k', ls=':')
-    #         ax.axvline(x=-(fringe_region_latitude-fringe_region_width), color='k', ls=':')
-        
-    #     # Set axis parameters
-    #     ax.set_ylim(-20, 20)
-    #     # ax.set_ylim(-0.5, 0.5)
-    #     ax.set_xticks(ticks=np.arange(-60,80,20), labels=mjo.tick_labeller(np.arange(-60,80,20), 'lat'))
-    #     # ax.set_xlim(60, 75)
-    #     ax.set_ylabel('Amplitude (m/s)')
-    
-    #     ax.legend(fontsize=12, loc='upper right')
-        
-    #     return u_line, v_line, T_line, q_line
-        
-    # frames_array = range(starting_frame, ending_frame, frame_interval)
-    
-    # # Run the animation
-    # anim = FuncAnimation(fig, update, frames = tqdm(frames_array, position=0, leave=True, ncols=100), interval=50)
-    
-    # anim.save(
-    #     f"{output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-    #     + f"{initial_condition_name}_meridional-structure_animation"
-    #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-    #     + f".mp4", 
-    #     dpi=300
-    # )
-    
-    
-    # ### Meridional advection profile
-    
-    # In[ ]:
-    
-    
-    # t = day_to_index(30)
-    
-    # plt.figure(figsize=(12,6))
-    # plt.plot(
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     (
-    #         9e-9
-    #         *output_meridional_gridpoints[:,None]
-    #         *output_meridional_velocity
-    #     )[t, :, 50]
-    # )
-    # # plt.twinx()
-    # plt.plot(
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     (
-    #         MERIDIONAL_MOISTENING_PARAMETER
-    #         *(output_meridional_gridpoints*np.exp(-(output_meridional_gridpoints/gaussian_length_scale)**2))[:,None]
-    #         *output_meridional_velocity
-    #     )[t, :, 50],
-    #     color='red'
-    # )
-    # plt.show()
-    
-    
-    # ## Zonal Structure
-    
-    # In[ ]:
-    
-    
-    # plt.style.use('bmh')
-    # [fig, ax] = plt.subplots(1, 1, figsize=(16,9))
-    
-    # lat_index = -2
-    
-    # # ax.set_title(f"Time: {downsampled_timepoints[0]/SECONDS_PER_DAY:0.1f} days")
-    # ax.set_title(
-    #         f"Time: {downsampled_timepoints[0]/SECONDS_PER_DAY:0.1f} days, latitude: {meridional_gridpoints[lat_index]/METERS_PER_DEGREE:0.1f}"
-    #     )
-    # q_phase1 = ax.plot(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE, 
-    #     output_column_moisture[0,  lat_index, :]/np.max(np.abs(output_column_moisture[0, lat_index,:])), 
-    #     lw=3, 
-    #     color=bmh_colors('red'),
-    #     label='<q>'
-    # )
-    # q_phase2 = ax.plot(
-    #     (zonal_domain_length+output_zonal_gridpoints)/METERS_PER_DEGREE, 
-    #     output_column_moisture[0,  lat_index, :]/np.max(np.abs(output_column_moisture[0, lat_index,:])), 
-    #     lw=3, 
-    #     color=bmh_colors('red'), 
-    #     ls='--'
-    # )
-    
-    # T_phase1 = ax.plot(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE, 
-    #         output_column_temperature[0,  lat_index, :]/np.max(np.abs(output_column_temperature[0, lat_index,:])), 
-    #     lw=3, 
-    #     color=bmh_colors('blue'),
-    #     label='<T>'
-    # )
-    # T_phase2 = ax.plot(
-    #     (zonal_domain_length+output_zonal_gridpoints)/METERS_PER_DEGREE, 
-    #     output_column_temperature[0,  lat_index, :]/np.max(np.abs(output_column_temperature[0, lat_index,:])), 
-    #     lw=3, 
-    #     color=bmh_colors('blue'), 
-    #     ls='--'
-    # )
-    
-    # u_phase1 = ax.plot(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE, 
-    #     output_zonal_velocity[0,  lat_index, :]/np.max(np.abs(output_zonal_velocity[0, lat_index,:])), 
-    #     lw=3, 
-    #     color=bmh_colors('purple'),
-    #     label='u'
-    # )
-    # u_phase2 = ax.plot(
-    #     (zonal_domain_length+output_zonal_gridpoints)/METERS_PER_DEGREE, 
-    #     output_zonal_velocity[0,  lat_index, :]/np.max(np.abs(output_zonal_velocity[0, lat_index,:])), 
-    #     lw=3, 
-    #     color=bmh_colors('purple'), 
-    #     ls='--'
-    # )
-    
-    # # Meridional velocity
-    # v_phase1 = ax.plot(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE, 
-    #     output_meridional_velocity[0, lat_index, :]/np.max(np.abs(output_meridional_velocity[0, lat_index,:])), 
-    #     lw=3, 
-    #     color=bmh_colors('green'),
-    #     label='v'
-    # )
-    # v_phase2 = ax.plot(
-    #     (zonal_domain_length+output_zonal_gridpoints)/METERS_PER_DEGREE, 
-    #     output_meridional_velocity[0, lat_index, :]/np.max(np.abs(output_meridional_velocity[0, lat_index,:])), 
-    #     lw=3, 
-    #     color=bmh_colors('green'), 
-    #     ls='--'
-    # )
-    
-    # ax.legend(loc='upper right', fontsize=12)
-    
-    # ax.set_ylabel('<q>')
-    # ax.set_xlabel('Phase')
-    
-    # ax.set_xlim(100, 300) 
-    # ax.set_ylim(-1.1, 1.1)
-    
-    # def update(frame):
-    
-    #     # Clear the plot each frame
-    #     ax.clear()
-    
-    #     ax.set_title(
-    #         f"Time: {downsampled_timepoints[frame]/SECONDS_PER_DAY:0.1f} days, latitude: {meridional_gridpoints[lat_index]/METERS_PER_DEGREE:0.1f}"
-    #     )
-    
-    #     # Column moisture
-    #     q_phase1 = ax.plot(
-    #         output_zonal_gridpoints/METERS_PER_DEGREE, 
-    #         output_column_moisture[frame, lat_index, :]/np.max(np.abs(output_column_moisture[frame, lat_index,:])), 
-    #         lw=3, 
-    #         color=bmh_colors('red'),
-    #         label='<q>'
-    #     )
-    #     q_phase2 = ax.plot(
-    #         (zonal_domain_length+output_zonal_gridpoints)/METERS_PER_DEGREE, 
-    #         output_column_moisture[frame, lat_index, :]/np.max(np.abs(output_column_moisture[frame, lat_index,:])), 
-    #         lw=3, 
-    #         color=bmh_colors('red'), 
-    #         ls='--'
-    #     )
-    
-    #     # Column temperature
-    #     T_phase1 = ax.plot(
-    #         output_zonal_gridpoints/METERS_PER_DEGREE, 
-    #         output_column_temperature[frame, lat_index, :]/np.max(np.abs(output_column_temperature[frame, lat_index,:])), 
-    #         lw=3, 
-    #         color=bmh_colors('blue'),
-    #         label='<T>'
-    #     )
-    #     T_phase2 = ax.plot(
-    #         (zonal_domain_length+output_zonal_gridpoints)/METERS_PER_DEGREE, 
-    #         output_column_temperature[frame, lat_index, :]/np.max(np.abs(output_column_temperature[frame, lat_index,:])), 
-    #         lw=3, 
-    #         color=bmh_colors('blue'), 
-    #         ls='--'
-    #     )
-    
-    #     # Zonal velocity
-    #     u_phase1 = ax.plot(
-    #         output_zonal_gridpoints/METERS_PER_DEGREE, 
-    #         output_zonal_velocity[frame, lat_index, :]/np.max(np.abs(output_zonal_velocity[frame, lat_index,:])), 
-    #         lw=3, 
-    #         color=bmh_colors('purple'),
-    #         label='u'
-    #     )
-    #     u_phase2 = ax.plot(
-    #         (zonal_domain_length+output_zonal_gridpoints)/METERS_PER_DEGREE, 
-    #         output_zonal_velocity[frame, lat_index, :]/np.max(np.abs(output_zonal_velocity[frame, lat_index,:])), 
-    #         lw=3, 
-    #         color=bmh_colors('purple'), 
-    #         ls='--'
-    #     )
-    
-    #     # Meridional velocity
-    #     v_phase1 = ax.plot(
-    #         output_zonal_gridpoints/METERS_PER_DEGREE, 
-    #         output_meridional_velocity[frame, lat_index, :]/np.max(np.abs(output_meridional_velocity[frame, lat_index,:])), 
-    #         lw=3, 
-    #         color=bmh_colors('green'),
-    #         label='v'
-    #     )
-    #     v_phase2 = ax.plot(
-    #         (zonal_domain_length+output_zonal_gridpoints)/METERS_PER_DEGREE, 
-    #         output_meridional_velocity[frame, lat_index, :]/np.max(np.abs(output_meridional_velocity[frame, lat_index,:])), 
-    #         lw=3, 
-    #         color=bmh_colors('green'), 
-    #         ls='--'
-    #     )
-        
-    #     ax.legend(loc='upper right', fontsize=12)
-        
-    #     # ax.set_ylabel('')
-    #     ax.set_xlabel('Phase')
-        
-    #     ax.set_xlim(100, 300)
-    #     ax.set_ylim(-1.1, 1.1)
-    #     return q_phase1, q_phase2, T_phase1, T_phase2, u_phase1, u_phase2, v_phase1, v_phase2
-    
-    # # Run the animation
-    # anim = FuncAnimation(fig, update, frames = tqdm(range(0, 400, 6), position=0, leave=True, ncols=100), interval=300)
-    
-    # anim.save(
-    #     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-    #     + f"{specified_initial_condition_name}_BC_phase_animation"
-    #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-    #     + f".mp4", 
-    #     dpi=300
-    # )
-    
-    
-    # ## Zonal power spectrum
-    
-    # In[ ]:
-    
-    
-    # plt.style.use('bmh')
-    # plt.rcParams.update({'font.size':18})
-    # [fig, ax] = plt.subplots(1, 1, figsize=(11, 6.5))
-    
-    # zonal_data = np.mean(output_column_moisture, axis=1)/LATENT_HEAT*SPECIFIC_HEAT*1000/WATER_DENSITY
-    # zonal_data_normalized_in_time = zonal_data/np.max(zonal_data, axis=1)[:, None]
-    # zonal_data_fft = np.fft.rfft(zonal_data_normalized_in_time, axis=1)
-    # zonal_data_power_spectrum = np.abs(zonal_data_fft)**2/nx
-    # power_wavenumbers = 2*np.pi*EARTH_RADIUS*np.fft.rfftfreq(nx, zonal_step_size)
-    
-    # ax.set_title(f"Power spectrum over time", pad=10)
-    # for day in np.arange(0, 90, 15):
-    # # ax.set_title(f"Power spectrum at day {downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}", pad=10)
-    #     ax.semilogy(
-    #         power_wavenumbers,
-    #         zonal_data_power_spectrum[day_to_index(day)],
-    #         label=f"Day {day}"
-    #     )
-    # ax.legend(loc='upper right', fontsize=12)
-    # ax.set_ylabel(r'mm$^{2}$', rotation=0, labelpad=40, va='center')
-    # ax.set_xlabel('k')
-    # # plt.show()
-    # plt.savefig(
-    #     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-    #     + f"{specified_initial_condition_name}_zonal_power_spectrum"
-    #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-    #     + f".png", 
-    #     bbox_inches='tight'
-    # )
-    
-    
-    # ### Hovmoller diagram of zonal power
-    
-    # In[ ]:
-    
-    
-    # # plotting_wavenumber = nx//4
-    # plotting_wavenumber = 40
-    # zonal_data = output_column_moisture
-    # zonal_data_fft = np.fft.rfft(zonal_data, axis=2)
-    # zonal_data_wavenumber = zonal_data_fft[:, :, plotting_wavenumber]
-    # zonal_data_power_spectrum = np.abs(zonal_data_wavenumber)**2/nx
-    # power_wavenumbers = 2*np.pi*EARTH_RADIUS*np.fft.rfftfreq(nx, zonal_step_size)
-    
-    # plt.style.use('default')
-    # plt.rcParams.update({'font.size':18})
-    # plt.figure(figsize=(8.5,6.5))
-    # plt.title(f"k = {plotting_wavenumber:0.0f}") 
-    # plt.contourf(
-    #     downsampled_timepoints/SECONDS_PER_DAY,
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     np.log10(zonal_data_power_spectrum.T),
-    #     cmap='coolwarm',
-    #     norm=mcolors.CenteredNorm(),
-    #     levels=np.arange(-45, 70, 10)
-    # )
-    # cbar = plt.colorbar()
-    # cbar.set_label('log10(power)')
-    
-    # if fringe_region:
-    #     plt.axhline(-fringe_region_latitude, color='magenta', ls='--')
-    #     plt.axhline(-fringe_region_latitude+fringe_region_width, color='magenta', ls='--')
-    #     plt.axhline(fringe_region_latitude, color='magenta', ls='--')
-    #     plt.axhline(fringe_region_latitude-fringe_region_width, color='magenta', ls='--')
-    
-    # plt.ylabel('Latitude')
-    # plt.ylim(-60, 60)
-    # plt.yticks(ticks=np.arange(-60, 90, 30), labels=mjo.tick_labeller(np.arange(-60, 90, 30), 'lat'))
-    # plt.xlabel('Days')
-    # plt.show()
-    
-    
-    # ## Frequency & Growth Rate
-    
-    # In[ ]:
-    
-    
-    # start_index = day_to_index(10)
-    # stop_index = day_to_index(30)
-    # signal = near_equatorial_zonal_velocity[start_index:stop_index, 10]
-    
-    # signal_duration = downsampled_timepoints[start_index:stop_index][-1]
-    # sampling_frequency = 1/np.diff(downsampled_timepoints)[0]
-    # n_samples = int(sampling_frequency*signal_duration)
-    # analytic_signal = hilbert(signal)
-    # amplitude_envelope = np.abs(analytic_signal)
-    # instantaneous_phase = np.unwrap(np.angle(analytic_signal))
-    # instantaneous_frequency = (np.diff(instantaneous_phase) /(2.0*np.pi) * sampling_frequency)
-    
-    # linear_fit = np.polyfit(downsampled_timepoints[start_index:stop_index], np.log(amplitude_envelope), 1)
-    # exponential_fit = np.exp(np.polyval(linear_fit, downsampled_timepoints[start_index:stop_index]))
-    # wave_growth_rate = linear_fit[0]*SECONDS_PER_DAY
-    
-    # signal_frequencies = np.fft.fftfreq(len(signal), 1/sampling_frequency)
-    # signal_fft = np.fft.fft(signal)
-    # wave_frequency = np.abs(signal_frequencies[np.argmax(signal_fft)])
-    
-    # zonal_slice = near_equatorial_zonal_velocity[200, :]
-    # output_wavenumber = zonal_wavenumber[np.argmax(np.abs(np.fft.fft(zonal_slice)))]
-    
-    # print(f"Frequency:   {2*np.pi*SECONDS_PER_DAY*wave_frequency:0.3f} day^-1")
-    # print(f"Period:      {1/(SECONDS_PER_DAY*wave_frequency):0.3f} day")
-    # print(f"Growth Rate: {wave_growth_rate:0.3f} day^-1")
-    # print(f"Phase Speed: {2*np.pi*wave_frequency/(output_wavenumber):0.3f} m/s")
-    
-    # plt.style.use('bmh')
-    # plt.figure(figsize=(16,4))
-    # plt.plot(
-    #     downsampled_timepoints[start_index:stop_index]/SECONDS_PER_DAY, 
-    #     signal, 
-    #     label='Signal', 
-    #     color=bmh_colors('purple'),
-    #     ls='--'
-    # )
-    # plt.plot(
-    #     downsampled_timepoints[start_index:stop_index]/SECONDS_PER_DAY, 
-    #     exponential_fit, 
-    #     label='Exp. envelope', 
-    #     color='black',
-    #     lw=1
-    # )
-    # plt.axhline(y=0, color='k', ls=':')
-    
-    # plt.legend(loc='upper left')
-    # plt.xlabel('Days')
-    # plt.ylabel('Amplitude')
-    # plt.show()
-    
-    
-    # ## Pattern & Phase Speed Correlation
-    
-    # ### Calculate Phase Speed
-    
-    # In[574]:
-    
-    
-    south_bound = -90
-    north_bound = 90
-    
-    south_lat_index = (
-        np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - south_bound).argmin()
-        if south_bound >= np.min(output_meridional_gridpoints)/METERS_PER_DEGREE else 0
-    )
-    north_lat_index = (
-        1 + np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - north_bound).argmin() 
-        if north_bound <= np.max(output_meridional_gridpoints)/METERS_PER_DEGREE else None
-    )
-    
-    phase_speed_moisture = np.copy(output_column_moisture)
-    normalized_column_moisture = np.mean(phase_speed_moisture[:, south_lat_index:north_lat_index], axis=1)
-    
-    #### Phase Speed
-    # phase_speed_correlation = np.einsum(
-    #     'k,ik->i',
-    #     np.exp(1j*output_wavenumber*output_zonal_gridpoints),
-    #     np.mean(np.copy(output_column_moisture)[:, south_lat_index:north_lat_index, :], axis=1)
-    # ) / len(output_zonal_gridpoints)
-    
-    phase_speed_correlation = np.einsum(
-        'k,ik->i',
-        np.exp(1j*output_wavenumber*output_zonal_gridpoints),
-        normalized_column_moisture
-    ) / len(output_zonal_gridpoints)
-    
-    # Calculate the phase
-    phase = np.log(phase_speed_correlation).imag
-    instantaneous_phase_speed_array = np.gradient(np.unwrap(phase), downsampled_timepoints)*(1/output_wavenumber)
-    
-    instantaneous_phase_speed =  xr.DataArray(
-        data = instantaneous_phase_speed_array,
-        dims = ['time'],
-        coords = {'time' : downsampled_timepoints},
-        name = 'phase speed',
-        attrs = {'Latitude Bounds' : (south_bound, north_bound)}
-    )
-    
-    # Save instantaneous phase speed as a netCDF file
-    phase_speed_file_name = (
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/"
-        + f"{specified_initial_condition_name}_instantaneous-phase-speed" 
-        + f"_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
-    )
-    instantaneous_phase_speed.to_netcdf(phase_speed_file_name)
-    print(f"Instantaneous Phase Speed saved as:\n{phase_speed_file_name}")
-    
-    
-    # ### Calculate Pattern Correlation
-    
-    # In[575]:
-    
-    
-    south_bound = -90
-    north_bound = 90
-    
-    south_lat_index = (
-        np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - south_bound).argmin()
-        if south_bound >= np.min(output_meridional_gridpoints)/METERS_PER_DEGREE else 0
-    )
-    north_lat_index = (
-        1 + np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - north_bound).argmin() 
-        if north_bound <= np.max(output_meridional_gridpoints)/METERS_PER_DEGREE else None
-    )
-    
-    # Initialize arrays for the instantaneous phase speed & pattern correlation
-    backward_pattern_correlation = xr.DataArray(
-        data = np.empty((len(downsampled_timepoints))),
-        dims = ['time'],
-        coords = {'time' : downsampled_timepoints},
-        name = 'correlation',
-        attrs = {'Latitude Bounds' : (south_bound, north_bound)}
-    )
-    
-    forward_pattern_correlation = xr.DataArray(
-        data = np.empty((len(downsampled_timepoints))),
-        dims = ['time'],
-        coords = {'time' : downsampled_timepoints},
-        name = 'correlation',
-        attrs = {'Latitude Bounds' : (south_bound, north_bound)}
-    )
-    
-    pattern_correlation_moisture = np.copy(output_column_moisture)
-    
-    # Iterate over the length of the simulation
-    for day_index in range(len(downsampled_timepoints)):
-    
-        daily_column_moisture = pattern_correlation_moisture[day_index]
-        final_column_moisture = pattern_correlation_moisture[-1]
-        
-        # Calculate the pattern correlation between
-        backward_pattern_correlation[day_index] = np.einsum(
-            'ij,ij->',
-            daily_column_moisture, 
-            final_column_moisture
-        ) / (
-            np.std(daily_column_moisture)
-            * np.std(final_column_moisture) 
-            * len(output_zonal_gridpoints) 
-            * len(output_meridional_gridpoints)
-        )
-    
-        # forward_pattern_correlation[day_index] = np.einsum(
-        #     'ij,ij->',
-        #     output_column_moisture[day_index], 
-        #     output_column_moisture[0],
-        # ) / (
-        #     np.std(output_column_moisture[day_index])
-        #     * np.std(output_column_moisture[0]) 
-        #     * len(output_zonal_gridpoints) 
-        #     * len(output_meridional_gridpoints)
-        # )
-    
-    # Save pattern correlation as a netCDF file
-    # Save instantaneous phase speed as a netCDF file
-    pattern_correlation_file_name = (
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/"
-        + f"{specified_initial_condition_name}_pattern-correlation" 
-        + f"_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
-    )
-    backward_pattern_correlation.to_netcdf(pattern_correlation_file_name)
-    print(f"Pattern Correlation saved as:\n{pattern_correlation_file_name}")
-    print(f"{'':{'='}^{50}}")
-    
-    
-    # ### Plot Phase Speed & Pattern Correlation
-    
-    # #### Pattern Correlation
-    
-    # In[ ]:
-    
-    
-    # plt.figure(figsize=(16,9))
-    # plt.title(
-    #     r"Pattern correlation (r$^{2}$), " 
-    #     + f"k = {k} {initial_condition_type} initial condition, "
-    #     + f"{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}",
-    #     fontsize=20,
-    #     pad=10
-    # )
-    # plt.plot(
-    #     downsampled_timepoints/SECONDS_PER_DAY,
-    #     loaded_pattern_correlation**2,
-    # )
-    # plt.plot(downsampled_timepoints[padded_peaks]/SECONDS_PER_DAY, loaded_pattern_correlation[padded_peaks]**2)
-    # plt.xlabel('Day')
-    
-    # # plt.show()
-    # plt.savefig(
-    #       f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-    #     + f"{specified_initial_condition_name}_pattern-correlation"
-    #     + f"_{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}"
-    #     + f"_{time.strftime('%Y%m%d-%H%M')}.png", 
-    #     bbox_inches='tight'
-    # )
-    
-    
-    # #### Pattern correlation and phase speed
-    
-    # In[576]:
-    
-    
-    loaded_phase_speed = xr.load_dataarray(phase_speed_file_name)
-    print(f"Instantaneous phase speed loaded from:\n{phase_speed_file_name}")
-    print(f"{'':{'='}^{50}}")
-    
-    loaded_pattern_correlation = xr.load_dataarray(pattern_correlation_file_name)
-    print(f"Pattern correlation loaded from:\n{pattern_correlation_file_name}")
-    print(f"{'':{'='}^{50}}")
-    
-    peaks = sp.signal.find_peaks(loaded_pattern_correlation**2)[0]
-    padded_peaks = np.insert(peaks, 0, 0)
-    padded_peaks = np.append(padded_peaks, len(downsampled_timepoints)-1)
-    
-    #### Plot the phase speed
-    plt.style.use('bmh')
-    plt.rcParams.update({'font.size':22})
-    plt.figure(figsize=(16,9))
-    plt.title(
-        f"k = {k} {initial_condition_type} initial condition \n"
-        + f"Instantaneous phase speed (blue) and Pattern correlation (red), "
-        + f"{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}",
-        fontsize=20,
-        pad=10
-    )
-    plt.plot(
-        downsampled_timepoints/SECONDS_PER_DAY,
-        loaded_phase_speed,
-        color=bmh_colors('blue'),
-        lw=3
-        # marker='o'
-    )
-    
-    ## Add a line with the phase speed of A21
-    # plt.axhline(y=6.7, color='black', ls='--', alpha=0.5, label='A21: 6.7 m/s')
-    
-    y_max = np.max(loaded_phase_speed[day_to_index(3):])
-    y_min = np.min(loaded_phase_speed[day_to_index(3):])
-    # plt.xlim(3, 360)
-    plt.ylim(0.9*y_min, 1.1*y_max)
-    plt.xlabel('Day')
-    plt.ylabel('m/s', rotation=0, labelpad=40, va='center')
-    plt.gca().spines['left'].set_color(bmh_colors('blue'))
-    plt.gca().spines['left'].set_linewidth(4)
-    
-    #### Plot the Pattern correlation
-    plt.twinx()
-    plt.grid(False)
-    plt.plot(
-        downsampled_timepoints/SECONDS_PER_DAY,
-        loaded_pattern_correlation**2,
-        color=bmh_colors('red'),
-        lw=2,
-        alpha=0.5,
-        # marker='o'
-    )
-    plt.plot(
-        downsampled_timepoints[padded_peaks]/SECONDS_PER_DAY, 
-        loaded_pattern_correlation[padded_peaks]**2, 
-        color=bmh_colors('red'),
-        ls=':',
-        lw=3
-    )
-    plt.axhline(y=0, color='k', alpha=0.2)
-    plt.axhline(y=1, color='k', alpha=0.2)
-    plt.gca().spines['right'].set_color(bmh_colors('red'))
-    plt.gca().spines['right'].set_linewidth(4)
-    plt.ylabel(r"r$^{2}$", rotation=0, va='center', labelpad=20)
-    plt.ylim(-0.05, 1.05)
-    
-    # plt.xlim(-5,365)
-    # plt.show()
-    plt.savefig(
-          f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-        + f"{specified_initial_condition_name}_phase-speed_pattern-correlation"
-        + f"_{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}"
-        + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-        + f".png", 
-        bbox_inches='tight'
-    )
-    
-    specified_output_file_directory = f"output/Ahmed-21/{experiments_table[experiment_to_load]}"
-    specified_initial_condition_name = f"k={k}.0_m=1_Kelvin-wave"
-    initial_condition_type = specified_initial_condition_name.split('_')[-1]
-    
-    print(f"{f'{experiment_to_load} case':^50}")
-    print(f"{f'k = {k} {initial_condition_type} initial condition':^50}")
-    print(f"{'':{'='}^{50}}")
-    
-    
-    print(f"Loading experiment grid & field variables...")
-    downsampled_data = xr.load_dataset(
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/"
-        + f"{specified_initial_condition_name}" 
-        + f"_downsampled-model-data_compiled.nc"
-    )
-    
-    output_zonal_velocity = downsampled_data['u'].to_numpy()
-    output_meridional_velocity = downsampled_data['v'].to_numpy()
-    output_column_temperature = downsampled_data['T'].to_numpy()
-    output_column_moisture = downsampled_data['q'].to_numpy()
-    
-    output_zonal_gridpoints = downsampled_data.x.to_numpy()
-    output_meridional_gridpoints = downsampled_data.y.to_numpy()
-    downsampled_timepoints = downsampled_data.time.to_numpy()
-    
-    print(f"Experiment grid & field variables loaded")
-    print(f"{'':{'='}^{50}}")
-    
-    print("Loading experiment parameters...")
-    #### Load experiment variables
-    with open(
-        f"{specified_output_file_directory}/experiment_variables.json", 'r') as json_file:
-        loaded_experiment_variables = json.load(json_file)
-    
-    simulation_moisture = loaded_experiment_variables['simulation_moisture']
-    moisture_advection = loaded_experiment_variables['moisture_advection']
-    simulation_damping = loaded_experiment_variables['simulation_damping']
-    moisture_coupling = loaded_experiment_variables['moisture_coupling']
-    simulation_diffusion = loaded_experiment_variables['simulation_diffusion']
-    fringe_region = loaded_experiment_variables['fringe_region']
-    moisture_sensitivity_structure = loaded_experiment_variables['moisture_sensitivity_structure']
-    temperature_sensitivity_structure = loaded_experiment_variables['temperature_sensitivity_structure']
-    mean_moisture_profile = loaded_experiment_variables['mean_moisture_profile']
-    gaussian_length_scale = loaded_experiment_variables['moisture_length_scale']
-    GRAVITY = loaded_experiment_variables['GRAVITY']
-    EQUIVALENT_DEPTH = loaded_experiment_variables['EQUIVALENT_DEPTH']
-    CORIOLIS_PARAMETER = loaded_experiment_variables['CORIOLIS_PARAMETER']
-    EARTH_RADIUS = loaded_experiment_variables['EARTH_RADIUS']
-    AIR_DENSITY = loaded_experiment_variables['AIR_DENSITY']
-    WATER_DENSITY = loaded_experiment_variables['WATER_DENSITY']
-    LATENT_HEAT = loaded_experiment_variables['LATENT_HEAT']
-    SPECIFIC_HEAT = loaded_experiment_variables['SPECIFIC_HEAT']
-    DIFFUSIVITY = loaded_experiment_variables['DIFFUSIVITY']
-    METERS_PER_DEGREE = loaded_experiment_variables['METERS_PER_DEGREE']
-    SECONDS_PER_DAY = loaded_experiment_variables['SECONDS_PER_DAY']
-    COLUMN_AVERAGE_MASS = loaded_experiment_variables['COLUMN_AVERAGE_MASS']
-    GROSS_DRY_STABILITY = loaded_experiment_variables['GROSS_DRY_STABILITY']
-    MOISTURE_SENSITIVITY = loaded_experiment_variables['MOISTURE_SENSITIVITY']
-    TEMPERATURE_SENSITIVITY = loaded_experiment_variables['TEMPERATURE_SENSITIVITY']
-    CLOUD_RADIATIVE_PARAMETER = loaded_experiment_variables['CLOUD_RADIATIVE_PARAMETER']
-    sigma_x_multiplier = loaded_experiment_variables['sigma_x_multiplier']
-    sigma_y_multiplier = loaded_experiment_variables['sigma_y_multiplier']
-    ZONAL_MOISTENING_PARAMETER = loaded_experiment_variables['ZONAL_MOISTENING_PARAMETER']
-    MERIDIONAL_MOISTENING_PARAMETER = loaded_experiment_variables['MERIDIONAL_MOISTENING_PARAMETER']
-    MERIDIONAL_OFFSET_PARAMETER = loaded_experiment_variables['MERIDIONAL_OFFSET_PARAMETER']
-    gravity_wave_phase_speed = loaded_experiment_variables['gravity_wave_phase_speed']
-    time_scale = loaded_experiment_variables['time_scale']
-    length_scale = loaded_experiment_variables['length_scale']
-    gross_moisture_stratification = loaded_experiment_variables['gross_moisture_stratification']
-    effective_sensitivity = loaded_experiment_variables['effective_sensitivity']
-    effective_gross_moist_stability = loaded_experiment_variables['effective_gross_moist_stability']
-    scaled_zonal_parameter = loaded_experiment_variables['scaled_zonal_parameter']
-    scaled_meridional_parameter = loaded_experiment_variables['scaled_meridional_parameter']
-    n_days = loaded_experiment_variables['n_days']
-    n_chunks = loaded_experiment_variables['n_chunks']
-    n_time_steps = loaded_experiment_variables['n_time_steps']
-    meridional_domain_length = loaded_experiment_variables['meridional_domain_length']
-    zonal_domain_length = loaded_experiment_variables['zonal_domain_length']
-    nt = loaded_experiment_variables['nt']    
-    nx = loaded_experiment_variables['nx']
-    ny = loaded_experiment_variables['ny']
-    zonal_grid_spacing = loaded_experiment_variables['zonal_grid_spacing']
-    meridional_grid_spacing = loaded_experiment_variables['meridional_grid_spacing']
-    simulation_length = loaded_experiment_variables['simulation_length']
-    time_step = loaded_experiment_variables['time_step']
-    zonal_step_size = loaded_experiment_variables['zonal_step_size']
-    meridional_step_size = loaded_experiment_variables['meridional_step_size']
-    CFL_x = loaded_experiment_variables['CFL_x']
-    CFL_y = loaded_experiment_variables['CFL_y']
-    fringe_region_latitude = loaded_experiment_variables['fringe_region_latitude']
-    fringe_region_width = loaded_experiment_variables['fringe_region_width']
-    fringe_region_strength = loaded_experiment_variables['fringe_region_strength']
-    grid_scaling = loaded_experiment_variables['grid_scaling']
-    additional_notes = loaded_experiment_variables['additional_notes']
-    simulation_name = loaded_experiment_variables['simulation_name']
-    output_file_directory = loaded_experiment_variables['output_file_directory']
-    n_rk_steps = loaded_experiment_variables['n_rk_steps']
-    save_downsampled = loaded_experiment_variables['save_downsampled']
-    
-    output_wavenumber = eval(specified_initial_condition_name.split('_')[0].split('=')[-1])/EARTH_RADIUS
-    zonal_wavenumber      = 2*np.pi*fftfreq(nx, zonal_step_size)       # zonal wavenumbers
-    meridional_wavenumber = 2*np.pi*fftfreq(ny, meridional_step_size)  # meridional wavenumbers
-    frequencies           = 2*np.pi*fftfreq(nt, time_step)             # frequencies
-    
-
-    # # Budget Analysis
-    
-    # Calculate the contribution of each term in the MSE equation to the total budget of the wave using the following equation for some variable x
-    # <p align="center">
-    #     <img src="attachment:a1357888-87f8-4531-87c2-d3558457c281.png" width="300">
-    # </p>
-    
-    # ## Define budget calculation function
-    
-    # In[579]:
-    
-    
-    def calculate_budget(field, column_MSE):
-        budget = np.einsum(
-            '...ji, ...ji -> ...',
-            field,
-            column_MSE
-        ) / np.einsum(
-            '...ji, ...ji -> ...',
-            column_MSE,
-            column_MSE
-        )
-        return budget
-    
-    
-    # ## Growth Budget
-    
-    # ### Calculate growth budget
-    
-    # In[580]:
-    
-    
-    south_bound = -90
-    north_bound = 90
-    south_lat_index = (
-        np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - south_bound).argmin()
-        if south_bound >= np.min(output_meridional_gridpoints)/METERS_PER_DEGREE else 0
-    )
-    north_lat_index = (
-        1 + np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - north_bound).argmin() 
-        if north_bound <= np.max(output_meridional_gridpoints)/METERS_PER_DEGREE else None
-    )
-    
-    # Calculate the column MSE : <h> = <T> + <q>
-    column_MSE = np.copy(output_column_temperature + output_column_moisture)
-    
-    # Calculate the MSE tendency directly from the variable
-    MSE_tendency = np.gradient(column_MSE, downsampled_timepoints, axis=0)
-    
-    growth_budget = calculate_budget(
-        MSE_tendency[:, south_lat_index:north_lat_index],
-        column_MSE[:, south_lat_index:north_lat_index]
-    )
-    
-    # Calculate the contribution of zonal advection : σ_x {u_1 <h>}
-    zonal_advection_growth_contribution = ZONAL_MOISTENING_PARAMETER*calculate_budget(
-        output_zonal_velocity[:, south_lat_index:north_lat_index, :], 
-        column_MSE[:, south_lat_index:north_lat_index, :]
-    )
-    
-    # Calculate the contribution of meridional advection : -σ_y {y v_1 <h>}
-    meridional_advection_growth_contribution = -MERIDIONAL_MOISTENING_PARAMETER*calculate_budget(
-        (
-            ( # Quadratic base state σ_y * y * v_1
-                output_meridional_gridpoints
-                if mean_moisture_profile == 'quadratic' else np.ones_like(output_meridional_gridpoints)
-            )
-            * ( # Exponential base state σ_y * y * e^(-y^2) * v_1
-                (output_meridional_gridpoints*np.exp(-(output_meridional_gridpoints/gaussian_length_scale)**2))
-                if mean_moisture_profile == 'gaussian' else np.ones_like(output_meridional_gridpoints)
-            )
-            * ( # Offset gaussian base state σ_y * y * e^(-(y-δ)^2/σ^2) * v_1
-                (
-                    (output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)*np.exp(
-                        -((output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)/gaussian_length_scale)**2
-                    )
-                )
-                if mean_moisture_profile == 'asymmetric-gaussian' else np.ones_like(output_meridional_gridpoints)
-            )
-        )[None, south_lat_index:north_lat_index, None]
-        *output_meridional_velocity[:, south_lat_index:north_lat_index, :], 
-        column_MSE[:, south_lat_index:north_lat_index, :]
-    )
-    
-    ### Compute the divergence of the velocity field to get vertical velocity
-    # dudx
-    output_ux_fft = fft(np.copy(output_zonal_velocity), axis=2)
-    output_dudx_fft = np.einsum(
-        'i, kji -> kji',
-        (1j*zonal_wavenumber),
-        output_ux_fft
-    )
-    output_dudx = np.real(ifft(output_dudx_fft, axis=2))
-    
-    # dvdy
-    output_vy_fft = fft(np.copy(output_meridional_velocity), axis=1)
-    output_dvdy_fft = np.einsum(
-        'j, kji -> kji',
-        (1j*meridional_wavenumber),
-        output_vy_fft
-    )
-    output_dvdy = np.real(ifft(output_dvdy_fft, axis=1))
-    
-    # ω = -(dudx + dvdy)
-    divergence = output_dudx + output_dvdy
-    vertical_velocity = -divergence
-    
-    # Calculate the contribution of vertical advection : m M_s {ω_1 <h>}
-    vertical_advection_growth_contribution = (
-        (GROSS_DRY_STABILITY - gross_moisture_stratification)/GROSS_DRY_STABILITY
-        * GROSS_DRY_STABILITY
-        * calculate_budget(
-            vertical_velocity[:, south_lat_index:north_lat_index, :], 
-            column_MSE[:, south_lat_index:north_lat_index, :]
-        )
-    )
-    
-    # Calculate column convective heating <Q_c> = ε_q<q> -ε_t<T> 
-    moisture_sensitivity_array = MOISTURE_SENSITIVITY * (
-        (
-            np.exp(-(output_meridional_gridpoints/length_scale)**2)
-            if moisture_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
-        )
-        *(
-        (1-fringe_region_damping_function(output_meridional_gridpoints/METERS_PER_DEGREE, -30, 30, 25, 1))
-            if  moisture_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
-        )
-    )[None, :, None]
-    
-    temperature_sensitivity_array = TEMPERATURE_SENSITIVITY * (
-        (
-            np.exp(-(output_meridional_gridpoints/length_scale)**2)
-            if temperature_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
-        )
-        *(
-        (1-fringe_region_damping_function(output_meridional_gridpoints/METERS_PER_DEGREE, -30, 30, 25, 1))
-            if  temperature_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
-        )
-    )[None, :, None]
-    
-    column_convective_heating = (
-        moisture_sensitivity_array * output_column_moisture
-        - temperature_sensitivity_array * output_column_temperature
-    ) 
-    
-    # Calculate column radiative heating <Q_r> = r<Q_c>
-    column_radiative_heating = CLOUD_RADIATIVE_PARAMETER*column_convective_heating
-    
-    # Calculate the contribution of column radiative heating : {<Q_r> <h>}
-    column_radiative_heating_growth_contribution = calculate_budget(
-        column_radiative_heating[:, south_lat_index:north_lat_index, :], 
-        column_MSE[:, south_lat_index:north_lat_index, :]
-    )
-    
-    #### # Calculate the contribution of diffusion : {𝒟∇^2(<h>)*<h>}
-    MSEx_fft = fft(column_MSE, axis=2)
-    MSEy_fft = fft(column_MSE, axis=1)
-    
-    dMSEdx_dx_fft = np.einsum(
-        'i, kji -> kji',
-        (1j*zonal_wavenumber)**2, 
-        MSEx_fft 
-    )
-    
-    dMSEdy_dy_fft = np.einsum(
-        'j, kji -> kji',   
-        (1j*meridional_wavenumber)**2,
-        MSEy_fft
-    )
-    
-    dMSEdx_dx = np.real(ifft(dMSEdx_dx_fft, axis=2))
-    dMSEdy_dy = np.real(ifft(dMSEdy_dy_fft, axis=1))
-    
-    laplacian_MSE = dMSEdx_dx + dMSEdy_dy 
-    diffusion_growth_contribution = DIFFUSIVITY*calculate_budget(
-        laplacian_MSE[:, south_lat_index:north_lat_index, :],
-        column_MSE[:, south_lat_index:north_lat_index, :]
-    )
-    
-    #### Residual
-    residual_MSE_growth = growth_budget - (
-        vertical_advection_growth_contribution
-        + zonal_advection_growth_contribution
-        + meridional_advection_growth_contribution
-        + column_radiative_heating_growth_contribution
-        + diffusion_growth_contribution
-    )
-    
-    growth_budget_dataset = xr.Dataset(
-        data_vars = {
-            'growth' : (['time'], growth_budget),
-            'omega'  : (['time'], vertical_advection_growth_contribution),
-            'u'      : (['time'], zonal_advection_growth_contribution),
-            'v'      : (['time'], meridional_advection_growth_contribution),
-            'Qr'     : (['time'], column_radiative_heating_growth_contribution),
-            'D'      : (['time'], diffusion_growth_contribution),
-            'residual':(['time'], residual_MSE_growth),
-        },
-        coords = {
-            'time' : downsampled_timepoints
-        },
-        attrs= {
-            'Latitude Bounds' : (south_bound, north_bound),
-            'Initial Wavenumber' : output_wavenumber*EARTH_RADIUS
-        }
-    )
-    
-    growth_budget_filename = (
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
-        + f"_growth-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
-    )
-    growth_budget_dataset.to_netcdf(growth_budget_filename)
-    print(f"Growth budget saved as:\n{growth_budget_filename}")
-    
-    
-    # ### Plot growth budget
-    
-    # #### Single time
-    
-    # In[ ]:
-    
-    
-    # Load growth budget
-    loaded_growth_budget_filename = (
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
-        + f"_growth-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
-    )
-    loaded_growth_budget = xr.load_dataset(loaded_growth_budget_filename)
-    print(f"Growth budget loaded from:\n{loaded_growth_budget_filename}")
-    print(f"{'':{'='}^{50}}")
-    
-    # # Specify the time at which to calculate/plot the budget
-    # t = day_to_index(30)
-    
-    # # Label the bars 
-    # bar_labels = [
-    #     r'Growth',
-    #     r'ω$_1$mM$_s$',
-    #     r'σ$_x$u$_1$',
-    #     r'-σ$_y$yv$_1$', 
-    #     r'$\langle$Q$_r$$\rangle$',
-    #     r'$\mathcal{D}\nabla^{2} \langle$h$\rangle$', 
-    #     r'residual'
-    # ]
-    
-    # bar_values = [
-    #     3600*loaded_growth_budget['growth'][t],   
-    #     3600*loaded_growth_budget['omega'][t], 
-    #     3600*loaded_growth_budget['u'][t], 
-    #     3600*loaded_growth_budget['v'][t], 
-    #     3600*loaded_growth_budget['Qr'][t],
-    #     3600*loaded_growth_budget['D'][t],
-    #     3600*loaded_growth_budget['residual'][t],
-    # ]
-    
-    # bar_colors = [
-    #     '#ffa500', 
-    #     '#1cf91a',
-    #     '#0533ff', 
-    #     '#ff40ff', 
-    #     '#4e2d8c', 
-    #     'red', 
-    #     '#bcbcbc'
-    # ]
-    
-    # # Plot the budgets
-    # plt.style.use('default')
-    # plt.rcParams.update({'font.size':22})
-    # plt.figure(figsize=(16.5, 6.4))
-    # plt.title(
-    #     f"Growth budget, day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}, " 
-    #     + f"{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}", 
-    #     pad=10
-    # )
-    # plt.bar(bar_labels, bar_values, color=bar_colors, edgecolor='gray', linewidth=3)
-    # plt.axhline(y=0, color='gray', lw=3, alpha=0.75)
-    # plt.ylabel(r'hr$^{-1}$', labelpad=35, rotation=0, va='center')
-    # # plt.show()
-    # plt.savefig(
-    #       f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-    #     + f"{specified_initial_condition_name}_growth-budget"
-    #     + f"_{downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}-days"
-    #     + f"_{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}"
-    #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-    #     + f".png", 
-    #     bbox_inches='tight'
-    # )
-    
-    
-    # #### Animation
-    
-    # In[581]:
-    
-    
-    # Load growth budget
-    loaded_growth_budget_filename = (
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
-        + f"_growth-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
-    )
-    loaded_growth_budget = xr.load_dataset(loaded_growth_budget_filename)
-    print(f"Growth budget loaded from:\n{loaded_growth_budget_filename}")
-    print(f"{'':{'='}^{50}}")
-    
-    starting_frame = day_to_index(2)
-    ending_frame = day_to_index(300)
-    frame_interval = day_to_index(2)
-    
-    bar_labels = [
-        r'Growth',
-        r'ω$_1$mM$_s$',
-        r'σ$_x$u$_1$',
-        r'-σ$_y$yv$_1$', 
-        r'$\langle$Q$_r$$\rangle$',
-        # r'$\mathcal{D}\nabla^{2} \langle$h$\rangle$', 
-        r'residual'
-    ]
-    bar_colors = [
-        '#ffa500', 
-        '#1cf91a', 
-        '#0533ff', 
-        '#ff40ff', 
-        '#4e2d8c', 
-        # 'red', 
-        '#bcbcbc'
-    ]
-    
-    grand_max = np.max(
-        (
-            SECONDS_PER_DAY*loaded_growth_budget['growth'][starting_frame:ending_frame],
-            SECONDS_PER_DAY*loaded_growth_budget['omega'][starting_frame:ending_frame],
-            SECONDS_PER_DAY*loaded_growth_budget['u'][starting_frame:ending_frame],
-            SECONDS_PER_DAY*loaded_growth_budget['v'][starting_frame:ending_frame],
-            SECONDS_PER_DAY*loaded_growth_budget['Qr'][starting_frame:ending_frame],
-            # SECONDS_PER_DAY*loaded_growth_budget['D'][starting_frame:ending_frame],
-            SECONDS_PER_DAY*loaded_growth_budget['residual'][starting_frame:ending_frame],
-        )
-    )
-    
-    grand_min = np.min(
-        (
-            SECONDS_PER_DAY*loaded_growth_budget['growth'][starting_frame:ending_frame],
-            SECONDS_PER_DAY*loaded_growth_budget['omega'][starting_frame:ending_frame],
-            SECONDS_PER_DAY*loaded_growth_budget['u'][starting_frame:ending_frame],
-            SECONDS_PER_DAY*loaded_growth_budget['v'][starting_frame:ending_frame],
-            SECONDS_PER_DAY*loaded_growth_budget['Qr'][starting_frame:ending_frame],
-            # SECONDS_PER_DAY*loaded_growth_budget['D'][starting_frame:ending_frame],
-            SECONDS_PER_DAY*loaded_growth_budget['residual'][starting_frame:ending_frame],
-        )
-    )
-    
-    plt.style.use('default')
-    plt.rcParams.update({'font.size':22})
-    [fig, ax] = plt.subplots(1, 1, figsize=(16.5, 6.4))
-    
-    def update(t):
-        bar_values = [
-            SECONDS_PER_DAY*loaded_growth_budget['growth'][t],
-            SECONDS_PER_DAY*loaded_growth_budget['omega'][t],
-            SECONDS_PER_DAY*loaded_growth_budget['u'][t],
-            SECONDS_PER_DAY*loaded_growth_budget['v'][t],
-            SECONDS_PER_DAY*loaded_growth_budget['Qr'][t],
-            # SECONDS_PER_DAY*loaded_growth_budget['D'][t],
-            SECONDS_PER_DAY*loaded_growth_budget['residual'][t],
-            ]
-    
-        ax.clear()
-        ax.set_title(
-            f"Growth budget, day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}, " 
-            + f"{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}", 
-            pad=10
-    )
-        ax.bar(bar_labels, bar_values, color=bar_colors, edgecolor='gray', linewidth=3)
-        ax.axhline(y=0, color='gray', lw=3, alpha=0.75)
-        ax.set_ylabel(r'day$^{-1}$', labelpad=20, rotation=0, va='center')
-        ax.set_ylim(1.1*round_out(grand_min, 'tenths'), 1.1*round_out(grand_max, 'tenths'))
-    
-    # Run the animation
-    anim = FuncAnimation(
-        fig, 
-        update, 
-        frames=tqdm(
-            np.arange(starting_frame, ending_frame, frame_interval), 
-            ncols=100, 
-            position=0, 
-            leave=True
-        ), interval=300
-    )
-    
-    anim.save(
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-        + f"{specified_initial_condition_name}"
-        + f"_growth-budget_animation"
-        + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-        + f".mp4", 
-        dpi=200
-    )
-    
-    
-    # ## Propagation Budget
-    
-    # ### Calculate propagation budget
-    
-    # In[582]:
-    
-    
-    # south_bound = -10
-    # north_bound = 10
-    south_lat_index = (
-        np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - south_bound).argmin()
-        if south_bound >= np.min(output_meridional_gridpoints)/METERS_PER_DEGREE else 0
-    )
-    north_lat_index = (
-        1 + np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - north_bound).argmin() 
-        if north_bound <= np.max(output_meridional_gridpoints)/METERS_PER_DEGREE else None
-    )
-    
-    # Calculate the column MSE : <h> = <T> + <q>
-    column_MSE = np.copy(output_column_temperature + output_column_moisture)
-    
-    # Calculate the MSE tendency directly from the variable
-    MSE_tendency = np.gradient(column_MSE, downsampled_timepoints, axis=0)
-    
-    propagation_budget = calculate_budget(
-        MSE_tendency[:, south_lat_index:north_lat_index, :],
-        MSE_tendency[:, south_lat_index:north_lat_index, :]
-    )
-    
-    # Calculate the contribution of zonal advection : σ_x {u_1 <h>}
-    zonal_advection_propagation_contribution = ZONAL_MOISTENING_PARAMETER*calculate_budget(
-        output_zonal_velocity[:, south_lat_index:north_lat_index, :], 
-        MSE_tendency[:, south_lat_index:north_lat_index, :]
-    )
-    
-    # Calculate the contribution of meridional advection : -σ_y {y v_1 <h>}
-    meridional_advection_propagation_contribution = -MERIDIONAL_MOISTENING_PARAMETER*calculate_budget(
-        (
-            ( # Quadratic base state σ_y * y * v_1
-                output_meridional_gridpoints
-                if mean_moisture_profile == 'quadratic' else np.ones_like(output_meridional_gridpoints)
-            )
-            * ( # Gaussian base state σ_y * y * e^(-y^2/σ^2) * v_1
-                (output_meridional_gridpoints*np.exp(-(output_meridional_gridpoints/gaussian_length_scale)**2))
-                if mean_moisture_profile == 'gaussian' else np.ones_like(output_meridional_gridpoints)
-            )
-            * ( # Offset gaussian base state σ_y * y * e^(-(y-δ)^2/σ^2) * v_1
-                (
-                    (output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)*np.exp(
-                        -((output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)/gaussian_length_scale)**2
-                    )
-                )
-                if mean_moisture_profile == 'asymmetric-gaussian' else np.ones_like(output_meridional_gridpoints)
-            )
-        )[None, south_lat_index:north_lat_index, None]
-        * output_meridional_velocity[:, south_lat_index:north_lat_index, :], 
-        MSE_tendency[:, south_lat_index:north_lat_index, :]
-    )
-    
-    ### Compute the divergence of the velocity field to get vertical velocity
-    # dudx
-    output_ux_fft = fft(output_zonal_velocity, axis=2)
-    output_dudx_fft = 1j*zonal_wavenumber[None,:]*output_ux_fft
-    output_dudx = np.real(ifft(output_dudx_fft, axis=2))
-    
-    # dvdy
-    output_vy_fft = fft(output_meridional_velocity, axis=1)
-    output_dvdy_fft = 1j*meridional_wavenumber[:,None]*output_vy_fft
-    output_dvdy = np.real(ifft(output_dvdy_fft, axis=1))
-    
-    # ω = -(dudx + dvdy)
-    divergence = output_dudx + output_dvdy
-    vertical_velocity = -divergence
-    
-    # Calculate the contribution of vertical advection : m M_s {ω_1 <h>}
-    vertical_advection_propagation_contribution = (
-        (GROSS_DRY_STABILITY - gross_moisture_stratification)/GROSS_DRY_STABILITY
-        * GROSS_DRY_STABILITY
-        * calculate_budget(
-            vertical_velocity[:, south_lat_index:north_lat_index, :], 
-            MSE_tendency[:, south_lat_index:north_lat_index, :]
-        )
-    )
-    
-    # Calculate column convective heating <Q_c> = ε_q<q> -ε_t<T> 
-    moisture_sensitivity_array = MOISTURE_SENSITIVITY * (
-        (
-            np.exp(-(output_meridional_gridpoints/length_scale)**2)
-            if moisture_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
-        )
-        *(
-        (1-fringe_region_damping_function(output_meridional_gridpoints/METERS_PER_DEGREE, -30, 30, 25, 1))
-            if  moisture_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
-        )
-    )[None, :, None]
-    
-    temperature_sensitivity_array = TEMPERATURE_SENSITIVITY * (
-        (
-            np.exp(-(output_meridional_gridpoints/length_scale)**2)
-            if temperature_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
-        )
-        *(
-        (1-fringe_region_damping_function(output_meridional_gridpoints/METERS_PER_DEGREE, -30, 30, 25, 1))
-            if  temperature_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
-        )
-    )[None, :, None]
-    
-    column_convective_heating = (
-        moisture_sensitivity_array * output_column_moisture
-        - temperature_sensitivity_array * output_column_temperature
-    ) 
-        
-    # Calculate column radiative heating <Q_r> = r<Q_c>
-    column_radiative_heating = CLOUD_RADIATIVE_PARAMETER*column_convective_heating
-    
-    # Calculate the contribution of column radiative heating : {<Q_r> <h>}
-    column_radiative_heating_propagation_contribution = calculate_budget(
-        column_radiative_heating[:, south_lat_index:north_lat_index, :],
-        MSE_tendency[:, south_lat_index:north_lat_index, :]
-    )
-    
-    #### # Calculate the contribution of diffusion : {𝒟∇^2<h> <h>}
-    MSEx_fft = fft(column_MSE, axis=2)
-    MSEy_fft = fft(column_MSE, axis=1)
-    
-    dMSEdx_dx_fft = np.einsum(
-        'i, kji -> kji',
-        (1j*zonal_wavenumber)**2, 
-        MSEx_fft 
-    )
-    
-    dMSEdy_dy_fft = np.einsum(
-        'j, kji -> kji',   
-        (1j*meridional_wavenumber)**2,
-        MSEy_fft
-    )
-    
-    dMSEdx_dx = np.real(ifft(dMSEdx_dx_fft, axis=2))
-    dMSEdy_dy = np.real(ifft(dMSEdy_dy_fft, axis=1))
-    
-    laplacian_MSE = dMSEdx_dx + dMSEdy_dy 
-    diffusion_propagation_contribution = DIFFUSIVITY*calculate_budget(
-        laplacian_MSE[:, south_lat_index:north_lat_index, :],
-        MSE_tendency[:, south_lat_index:north_lat_index, :]
-    )
-    
-    #### Residual
-    residual_MSE_propagation = propagation_budget - (
-        vertical_advection_propagation_contribution
-        + zonal_advection_propagation_contribution
-        + meridional_advection_propagation_contribution
-        + column_radiative_heating_propagation_contribution
-        + diffusion_propagation_contribution
-    )
-    
-    propagation_budget_dataset = xr.Dataset(
-        data_vars = {
-            'propagation' : (['time'], propagation_budget),
-            'omega'  : (['time'], vertical_advection_propagation_contribution),
-            'u'      : (['time'], zonal_advection_propagation_contribution),
-            'v'      : (['time'], meridional_advection_propagation_contribution),
-            'Qr'     : (['time'], column_radiative_heating_propagation_contribution),
-            'D'      : (['time'], diffusion_propagation_contribution),
-            'residual':(['time'], residual_MSE_propagation),
-        },
-        coords = {
-            'time' : downsampled_timepoints
-        },
-        attrs= {
-            'Latitude Bounds' : (south_bound, north_bound),
-            'Initial Wavenumber' : output_wavenumber*EARTH_RADIUS
-        }
-    )
-    
-    propagation_budget_filename = (
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
-        + f"_propagation-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
-    )
-    propagation_budget_dataset.to_netcdf(propagation_budget_filename)
-    print(f"Propagation budget saved as:\n{propagation_budget_filename}")
-    
-    
-    # ### Plot propagation budget
-    
-    # #### Single time
-    
-    # In[ ]:
-    
-    
-    # Load growth budget
-    loaded_propagation_budget_filename = (
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
-        + f"_propagation-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
-    )
-    loaded_propagation_budget = xr.load_dataset(loaded_propagation_budget_filename)
-    print(f"Propagation budget loaded from:\n{loaded_propagation_budget_filename}")
-    print(f"{'':{'='}^{50}}")
-    
-    
-    # # Specify the time at which to calculate/plot the propagation_contribution
-    # t = day_to_index(30)
-    
-    # # Label the bars 
-    # bar_labels = [
-    #     r'Propagation',
-    #     r'ω$_1$mM$_s$',
-    #     r'σ$_x$u$_1$', 
-    #     r'-σ$_y$yv$_1$',
-    #     r'$\langle$Q$_r$$\rangle$',
-    #     # r'$\mathcal{D}\nabla^{2} \langle$h$\rangle$',
-    #     r'residual'
-    # ]
-    
-    # bar_values = [
-    #     loaded_propagation_budget['propagation'][t],
-    #     loaded_propagation_budget['omega'][t],
-    #     loaded_propagation_budget['u'][t],
-    #     loaded_propagation_budget['v'][t],
-    #     loaded_propagation_budget['Qr'][t],
-    #     # loaded_propagation_budget['D'][t],
-    #     loaded_propagation_budget['residual'][t],
-    # ]    
-    
-    # bar_colors = [
-    #     '#ffa500',
-    #     '#1cf91a',
-    #     '#0533ff',
-    #     '#ff40ff',
-    #     '#4e2d8c',
-    #     # 'red',
-    #     '#bcbcbc'
-    # ]
-    
-    # # Plot the propagation budgets
-    # plt.style.use('default')
-    # plt.rcParams.update({'font.size':22})
-    # plt.figure(figsize=(16.5, 6.4))
-    # plt.title(
-    #     f"Propagation budget, day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}, " 
-    #     + f"{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}", 
-    #     pad=10
-    # )
-    # plt.bar(bar_labels, bar_values, color=bar_colors, edgecolor='gray', linewidth=3)
-    # plt.axhline(y=0, color='gray', lw=3, alpha=0.75)
-    # # plt.ylabel(r's$^{-1}$', labelpad=35, rotation=0, va='center')
-    # # plt.show()
-    # plt.savefig(
-    #       f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-    #     + f"{specified_initial_condition_name}_propagation-budget"
-    #     + f"_{downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}-days" 
-    #     + f"_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}"
-    #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-    #     + f".png", 
-    #     bbox_inches='tight'
-    # )
-    
-    
-    # #### Animation
-    
-    # In[583]:
-    
-    
-    starting_frame = day_to_index(2)
-    ending_frame = day_to_index(300)
-    frame_interval = day_to_index(2)
-    
-    # Load growth budget
-    loaded_propagation_budget_filename = (
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
-        + f"_propagation-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
-    )
-    loaded_propagation_budget = xr.load_dataset(loaded_propagation_budget_filename)
-    print(f"Propagation budget loaded from:\n{loaded_propagation_budget_filename}")
-    print(f"{'':{'='}^{50}}")
-    
-    grand_max = np.max(
-        (
-            loaded_propagation_budget['propagation'][starting_frame:ending_frame],
-            loaded_propagation_budget['omega'][starting_frame:ending_frame],
-            loaded_propagation_budget['u'][starting_frame:ending_frame],
-            loaded_propagation_budget['v'][starting_frame:ending_frame],
-            loaded_propagation_budget['Qr'][starting_frame:ending_frame],
-            # loaded_propagation_budget['D'][starting_frame:ending_frame],
-            loaded_propagation_budget['residual'][starting_frame:ending_frame],
-        )
-    )
-    grand_min = np.min(
-        (
-            loaded_propagation_budget['propagation'][starting_frame:ending_frame],
-            loaded_propagation_budget['omega'][starting_frame:ending_frame],
-            loaded_propagation_budget['u'][starting_frame:ending_frame],
-            loaded_propagation_budget['v'][starting_frame:ending_frame],
-            loaded_propagation_budget['Qr'][starting_frame:ending_frame],
-            # loaded_propagation_budget['D'][starting_frame:ending_frame],
-            loaded_propagation_budget['residual'][starting_frame:ending_frame],
-        )
-    )
-    
-    bar_labels = [
-        r'Propagation',
-        r'ω$_1$mM$_s$',
-        r'σ$_x$u$_1$',
-        r'-σ$_y$yv$_1$', 
-        r'$\langle$Q$_r$$\rangle$',
-        # r'$\mathcal{D}\nabla^{2} \langle$h$\rangle$', 
-        r'residual'
-    ]
-    bar_colors = [
-        '#ffa500',
-        '#1cf91a',
-        '#0533ff',
-        '#ff40ff',
-        '#4e2d8c',
-        # 'red',
-        '#bcbcbc'
-    ]
-    
-    plt.style.use('default')
-    plt.rcParams.update({'font.size':22})
-    [fig, ax] = plt.subplots(1, 1, figsize=(16.5, 6.4))
-    
-    
-    def update(t):
-        bar_values = [
-            loaded_propagation_budget['propagation'][t],
-            loaded_propagation_budget['omega'][t],
-            loaded_propagation_budget['u'][t],
-            loaded_propagation_budget['v'][t],
-            loaded_propagation_budget['Qr'][t],
-            # loaded_propagation_budget['D'][t],
-            loaded_propagation_budget['residual'][t],
-            ]
-    
-        plt.cla()
-        ax.set_title(
-            f"Propagation budget, day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}, " 
-            + f"{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}", 
-            pad=10
-    )
-        ax.bar(bar_labels, bar_values, color=bar_colors, edgecolor='gray', linewidth=3)
-        ax.axhline(y=0, color='gray', lw=3, alpha=0.75)
-        ax.set_ylabel(r'hr$^{-1}$', labelpad=20, rotation=0, va='center')
-        ax.set_ylim(1.1*round_out(grand_min, 'tenths'), 1.1*round_out(grand_max, 'tenths'))
-    
-    # Run the animation
-    anim = FuncAnimation(
-        fig, 
-        update, 
-        frames=tqdm(
-            np.arange(starting_frame, ending_frame, frame_interval), 
-            ncols=100, 
-            position=0, 
-            leave=True
-        ), interval=300
-    )
-    
-    anim.save(
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-        + f"{specified_initial_condition_name}"
-        + f"_propagation-budget_animation"
-        + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-        + f".mp4", 
-        dpi=300
-    )
-    
-    
-    # ## Horizontal structure of budget terms
-    
-    # ### Calculate horizontal structure of advection fields
-    
-    # In[456]:
-    
-    
-    print(f"Calculating advection fields...")
-    print(f"{'':{'='}^{50}}")
-    
-    # Calculate the column MSE : <h> = <T> + <q>
-    column_MSE = np.copy(output_column_temperature + output_column_moisture)
-    
-    # Calculate the MSE tendency directly from the variable
-    MSE_tendency = np.gradient(column_MSE, downsampled_timepoints, axis=0)
-    
-    #### Zonal advection field
-    zonal_advection_field = ZONAL_MOISTENING_PARAMETER*output_zonal_velocity
-    
-    #### Meridional advection field
-    print(f"Mean Moisture Profile: {mean_moisture_profile}")
-    meridional_advection_field = -MERIDIONAL_MOISTENING_PARAMETER*(
-        (
-            ( # Quadratic base state σ_y * y * v_1
-                output_meridional_gridpoints
-                if mean_moisture_profile == 'quadratic' else np.ones_like(output_meridional_gridpoints)
-            )
-            * ( # Exponential base state σ_y * y * e^(-y^2) * v_1
-                (output_meridional_gridpoints*np.exp(-(output_meridional_gridpoints/gaussian_length_scale)**2))
-                if mean_moisture_profile == 'gaussian' else np.ones_like(output_meridional_gridpoints)
-            )
-            * ( # Offset gaussian base state σ_y * y * e^(-(y-δ)^2/σ^2) * v_1
-                (
-                    (output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)*np.exp(
-                        -((output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)/gaussian_length_scale)**2
-                    )
-                )
-                if mean_moisture_profile == 'asymmetric-gaussian' else np.ones_like(output_meridional_gridpoints)
-            )
-        )[None, :, None]
-        * output_meridional_velocity 
-    )
-    
-    #### Vertical advection field
-    ## Compute the divergence of the velocity field to get vertical velocity
-    # dudx
-    output_ux_fft = fft(output_zonal_velocity, axis=2)
-    output_dudx_fft = np.einsum(
-        'i, kji -> kji',
-        (1j*zonal_wavenumber),
-        output_ux_fft
-    )
-    output_dudx = np.real(ifft(output_dudx_fft, axis=2))
-    
-    # dvdy
-    output_vy_fft = fft(output_meridional_velocity, axis=1)
-    output_dvdy_fft = np.einsum(
-        'j, kji -> kji',
-        (1j*meridional_wavenumber),
-        output_vy_fft
-    )
-    output_dvdy = np.real(ifft(output_dvdy_fft, axis=1))
-    
-    # ω = -(dudx + dvdy)
-    divergence = output_dudx + output_dvdy
-    vertical_velocity = -divergence
-    
-    vertical_advection_field = (
-        (GROSS_DRY_STABILITY - gross_moisture_stratification)/GROSS_DRY_STABILITY
-        * GROSS_DRY_STABILITY
-        * vertical_velocity
-    )
-    
-    # Calculate column convective heating <Q_c> = ε_q<q> -ε_t<T> 
-    moisture_sensitivity_array = MOISTURE_SENSITIVITY * (
-        (
-            np.exp(-(output_meridional_gridpoints/length_scale)**2)
-            if moisture_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
-        )
-        *(
-        (1-fringe_region_damping_function(output_meridional_gridpoints/METERS_PER_DEGREE, -30, 30, 25, 1))
-            if  moisture_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
-        )
-    )[None, :, None]
-    
-    temperature_sensitivity_array = TEMPERATURE_SENSITIVITY * (
-        (
-            np.exp(-(output_meridional_gridpoints/length_scale)**2)
-            if temperature_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
-        )
-        *(
-        (1-fringe_region_damping_function(output_meridional_gridpoints/METERS_PER_DEGREE, -30, 30, 25, 1))
-            if  temperature_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
-        )
-    )[None, :, None]
-    
-    column_convective_heating = (
-        moisture_sensitivity_array * output_column_moisture
-        - temperature_sensitivity_array * output_column_temperature
-    ) 
-    
-    # Calculate column radiative heating <Q_r> = r<Q_c>
-    column_radiative_heating = CLOUD_RADIATIVE_PARAMETER*column_convective_heating
-    
-    print(f"{'':{'='}^{50}}")
-    print(f"Advection fields calculated")
-    
-    
-    # In[464]:
-    
-    
-    # np.shape(column_convective_heating)
-    # column_convective_heating_tendency = np.gradient(column_convective_heating, downsampled_timepoints, axis=0)
-    
-    # plt.figure(figsize=(8.5, 8.5))
-    # plt.contourf(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE,
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     column_convective_heating[day_to_index(360)],
-    #     cmap='coolwarm',
-    #     norm=mcolors.CenteredNorm(vcenter=0)
-    # )
-    # plt.colorbar()
-    
-    # plt.contour(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE,
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     column_convective_heating_tendency[day_to_index(360)],
-    #     colors='k'
-    # )
-    
-    # ### Plot MSE structure and advection fields
-    
-    # #### Single time
-    
-    # ##### Horizontal orientation
-    
-    # In[ ]:
-    
-    
-    bar_colors = [
-        '#ffa500', 
-        '#1cf91a',
-        '#0533ff', 
-        '#ff40ff', 
-        '#4e2d8c', 
-        'red', 
-        '#bcbcbc'
-    ]
-    
-    # plt.style.use('default')
-    # plt.rcParams.update({'font.size':16})
-    # fig = plt.figure(figsize=(16.5, 6.5))
-    # gs_main = gs.GridSpec(2, 1, height_ratios = [30,1], figure=fig)
-    # gs_main.update(left=0.05, right=0.95, top=0.95, bottom=0.05, hspace=0.25)
-    
-    # gs_maps = gs.GridSpecFromSubplotSpec(1, 2, wspace=0.05, subplot_spec=gs_main[0])
-    # gs_cbar = gs.GridSpecFromSubplotSpec(1, 30, subplot_spec=gs_main[1])
-    
-    # ax = []
-    # ax.append(fig.add_subplot(gs_maps[0]))
-    # ax.append(fig.add_subplot(gs_maps[1]))
-    
-    # cbar_ax = fig.add_subplot(gs_cbar[:, 1:-1])
-    
-    # t = day_to_index(30)
-    # plt.suptitle(f"Day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}", y=1.01, fontsize=20)
-    
-    # #### First plot
-    # ax[0].set_title(r'(a) MSE, -σ$_y$yv$_1$, and σ$_x$u$_1$')
-    # CF_MSE = ax[0].contourf(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     column_MSE[t]/COLUMN_AVERAGE_MASS,
-    #     cmap=Ahmed_cmap,
-    #     norm=mcolors.CenteredNorm(vcenter=0),
-    #     levels=21,
-    #     # alpha=0.75
-    # )
-    
-    # CS_v = ax[0].contour(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     meridional_advection_field[t],
-    #     colors=bar_colors[3],
-    #     levels=np.delete(np.linspace(np.min(meridional_advection_field[t]), np.max(meridional_advection_field[t]), 11), [5])
-    # )
-    
-    
-    # CS_u = ax[0].contour(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     zonal_advection_field[t],
-    #     colors=bar_colors[2],
-    #     levels=np.delete(np.linspace(np.min(zonal_advection_field[t]), np.max(zonal_advection_field[t]), 11), [5])
-    # )
-    
-    # xlims = (-180/k, 180/k)
-    # ylims = (-35, 35)
-    # cbar = plt.colorbar(CF_MSE, cax=cbar_ax, orientation='horizontal')
-    # cbar.set_label('K', rotation=0, va='center', labelpad=20)
-    
-    # # longitude_ticks = np.arange(-180+60, 180+60, 60)
-    # longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-    # longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-    # ax[0].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-    # # Latitude
-    # # latitude_ticks = np.arange(-90, 90+20, 20)
-    # latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-    # latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-    # ax[0].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-    # ax[1].set_yticklabels('')
-    # ax[0].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-    # ax[0].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-    # ax[0].set_aspect('auto')
-    
-    
-    # #### Second Plot
-    # ax[1].set_title(r'(b) MSE, $\langle$Q$_r$$\rangle$, and ω$_1$mM$_s$')
-    # ax[1].contourf(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     column_MSE[t]/COLUMN_AVERAGE_MASS,
-    #     cmap=Ahmed_cmap,
-    #     norm=mcolors.CenteredNorm(vcenter=0),
-    #     levels=21,
-    #     # alpha=0.75
-    # )
-    
-    # CS_Qr = ax[1].contour(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     column_radiative_heating[t],
-    #     colors=bar_colors[4],
-    #     levels=np.delete(np.linspace(np.min(column_radiative_heating[t]), np.max(column_radiative_heating[t]), 11), [5])
-    # )
-    
-    # CS_omega = ax[1].contour(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     vertical_advection_field[t],
-    #     colors=bar_colors[1],
-    #     levels=np.delete(np.linspace(np.min(vertical_advection_field[t]), np.max(vertical_advection_field[t]), 11), [5])
-    # )
-    
-    
-    # # longitude_ticks = np.arange(-180+60, 180+60, 60)
-    # longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-    # longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-    # ax[1].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-    # # Latitude
-    # # latitude_ticks = np.arange(-90, 90+20, 20)
-    # latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-    # latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-    # ax[1].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-    # ax[1].set_yticklabels('')
-    # ax[1].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-    # ax[1].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-    # ax[1].set_aspect('auto')
-    
-    # plt.show()
-    # plt.savefig(
-    #       f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-    #     + f"{specified_initial_condition_name}_MSE-structure"
-    #     + f"_{downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}-days"
-    #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-    #     + f".png", 
-    #     bbox_inches='tight'
-    # )
-    
-    
-    # ##### Vertical orientation
-    
-    # # In[ ]:
-    
-    
-    # plt.style.use('default')
-    # plt.rcParams.update({'font.size':16})
-    # fig = plt.figure(figsize=(8.5, 8.5))
-    # gs_main = gs.GridSpec(1, 1, figure=fig)
-    # gs_main.update(left=0.03, right=0.97, top=0.95, bottom=0.05, wspace=0.25)
-    
-    # gs_maps = gs.GridSpecFromSubplotSpec(2, 1, hspace=0.25, subplot_spec=gs_main[0])
-    # # gs_cbar = gs.GridSpecFromSubplotSpec(30, 1, subplot_spec=gs_main[1])
-    
-    # ax = []
-    # ax.append(fig.add_subplot(gs_maps[0]))
-    # ax.append(fig.add_subplot(gs_maps[1]))
-    
-    # # cbar_ax = fig.add_subplot(gs_cbar[1:-1, :])
-    
-    # t = day_to_index(30)
-    # plt.suptitle(f"Day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}", y=1.05, fontsize=20)
-    
-    # #### First plot
-    # ax[0].set_title(r'(a) MSE, -σ$_y$yv$_1$, and σ$_x$u$_1$')
-    # CF_MSE = ax[0].contourf(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     column_MSE[t]/COLUMN_AVERAGE_MASS,
-    #     cmap=Ahmed_cmap,
-    #     norm=mcolors.CenteredNorm(vcenter=0),
-    #     levels=21,
-    #     # alpha=0.75
-    # )
-    
-    # CS_v = ax[0].contour(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     meridional_advection_field[t],
-    #     colors=bar_colors[3],
-    #     levels=np.delete(np.linspace(np.min(meridional_advection_field[t]), np.max(meridional_advection_field[t]), 11), [5])
-    # )
-    
-    
-    # CS_u = ax[0].contour(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     zonal_advection_field[t],
-    #     colors=bar_colors[2],
-    #     levels=np.delete(np.linspace(np.min(zonal_advection_field[t]), np.max(zonal_advection_field[t]), 11), [5])
-    # )
-    
-    # # longitude_ticks = np.arange(-180+60, 180+60, 60)
-    # longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-    # longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-    # ax[0].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-    # # Latitude
-    # # latitude_ticks = np.arange(-90, 90+20, 20)
-    # latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-    # latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-    # ax[0].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-    # # ax[0].set_yticklabels('')
-    # ax[0].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-    # ax[0].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-    # ax[0].set_aspect('auto')
-    
-    # #### Second Plot
-    # ax[1].set_title(r'(b) MSE, $\langle$Q$_r$$\rangle$, and ω$_1$mM$_s$')
-    # ax[1].contourf(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     column_MSE[t]/COLUMN_AVERAGE_MASS,
-    #     cmap=Ahmed_cmap,
-    #     norm=mcolors.CenteredNorm(vcenter=0),
-    #     levels=21,
-    #     # alpha=0.75
-    # )
-    
-    # CS_Qr = ax[1].contour(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     column_radiative_heating[t],
-    #     colors=bar_colors[4],
-    #     levels=np.delete(np.linspace(np.min(column_radiative_heating[t]), np.max(column_radiative_heating[t]), 11), [5])
-    # )
-    
-    # CS_omega = ax[1].contour(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     vertical_advection_field[t],
-    #     colors=bar_colors[1],
-    #     levels=np.delete(np.linspace(np.min(vertical_advection_field[t]), np.max(vertical_advection_field[t]), 11), [5])
-    # )
-    # # longitude_ticks = np.arange(-180+60, 180+60, 60)
-    # longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-    # longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-    # ax[1].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-    # # Latitude
-    # # latitude_ticks = np.arange(-90, 90+20, 20)
-    # latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-    # latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-    # ax[1].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-    # # ax[1].set_yticklabels('')
-    # ax[1].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-    # ax[1].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-    # ax[1].set_aspect('auto')
-    
-    # plt.show()
-    # # plt.savefig(
-    # #       f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-    # #     + f"{specified_initial_condition_name}_MSE-structure"
-    # #     + f"_{downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}-days"
-    # #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-    # #     + f".png", 
-    # #     bbox_inches='tight'
-    # # )
-    
-    
-    # #### Animation
-    
-    # In[ ]:
-    
-    
-    plt.style.use('default')
-    plt.rcParams.update({'font.size':16})
-    fig = plt.figure(figsize=(16.5, 6.5))
-    gs_main = gs.GridSpec(2, 1, height_ratios = [30,1], figure=fig)
-    gs_main.update(left=0.05, right=0.95, top=0.9, bottom=0.05, hspace=0.25)
-    
-    gs_maps = gs.GridSpecFromSubplotSpec(1, 2, wspace=0.05, subplot_spec=gs_main[0])
-    gs_cbar = gs.GridSpecFromSubplotSpec(1, 30, subplot_spec=gs_main[1])
-    
-    ax = []
-    # Add an axis for the initial condition
-    ax.append(fig.add_subplot(gs_maps[0]))
-    ax.append(fig.add_subplot(gs_maps[1]))
-    
-    cbar_ax = fig.add_subplot(gs_cbar[:, 1:-1])
-    
-    starting_frame = day_to_index(0)
-    ending_frame = day_to_index(360)
-    frame_interval = day_to_index(5)
-    plt.suptitle(f"Day {downsampled_timepoints[starting_frame]/SECONDS_PER_DAY :0.1f}", y=0.995, fontsize=20)
-    
-    def update(t):
-        plt.suptitle(f"Day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}", y=0.995, fontsize=20)
-        
-        #### First plot
-        ax[0].clear()
-        ax[0].set_title(r'(a) MSE, -σ$_y$yv$_1$, and σ$_x$u$_1$')
-        CF_MSE = ax[0].contourf(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            column_MSE[t]/COLUMN_AVERAGE_MASS,
-            cmap=Ahmed_cmap,
-            norm=mcolors.CenteredNorm(vcenter=0),
-            levels=21,
-            # alpha=0.75
-        )
-        
-        CS_v = ax[0].contour(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            meridional_advection_field[t],
-            colors=bar_colors[3],
-            levels=np.delete(np.linspace(np.min(meridional_advection_field[t]), np.max(meridional_advection_field[t]), 11), [5])
-        )
-        
-        CS_u = ax[0].contour(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            zonal_advection_field[t],
-            colors=bar_colors[2],
-            levels=np.delete(np.linspace(np.min(zonal_advection_field[t]), np.max(zonal_advection_field[t]), 11), [5])
-        )
-        
-        longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-        longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-        ax[0].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-        latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-        latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-        ax[0].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-        ax[0].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-        ax[0].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-        ax[0].set_aspect('auto')
-        cbar = plt.colorbar(CF_MSE, cax=cbar_ax, orientation='horizontal')
-        cbar.set_label('K', rotation=0, va='center', labelpad=20)
-        
-        #### Second Plot
-        ax[1].clear()
-        ax[1].set_title(r'(b) MSE, $\langle$Q$_r$$\rangle$, and ω$_1$mM$_s$')
-        ax[1].contourf(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            column_MSE[t]/COLUMN_AVERAGE_MASS,
-            cmap=Ahmed_cmap,
-            norm=mcolors.CenteredNorm(vcenter=0),
-            levels=21,
-            # alpha=0.75
-        )
-        
-        CS_Qr = ax[1].contour(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            column_radiative_heating[t],
-            colors=bar_colors[4],
-            levels=np.delete(np.linspace(np.min(column_radiative_heating[t]), np.max(column_radiative_heating[t]), 11), [5])
-        )
-        
-        CS_omega = ax[1].contour(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            vertical_advection_field[t],
-            colors=bar_colors[1],
-            levels=np.delete(np.linspace(np.min(vertical_advection_field[t]), np.max(vertical_advection_field[t]), 11), [5])
-        )
-    
-        longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-        longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-        ax[1].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-        latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-        latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-        ax[1].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-        ax[1].set_yticklabels('')
-        ax[1].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-        ax[1].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-        ax[1].set_aspect('auto')
-    
-    # Run the animation
-    anim = FuncAnimation(
-        fig, 
-        update, 
-        frames=tqdm(
-            np.arange(starting_frame, ending_frame, frame_interval), 
-            ncols=100, 
-            position=0, 
-            leave=True
-        ), interval=300
-    )
-    
-    anim.save(
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-        + f"{specified_initial_condition_name}"
-        + f"_MSE-structure_animation"
-        + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-        + f".mp4", 
-        dpi=150
-    )
-    
-    
-    # ### Plot MSE Tendency structure and advection fields
-    
-    # #### Single time
-    
-    # In[ ]:
-    
-    
-    # #### Plot fields
-    # plt.style.use('default')
-    # plt.rcParams.update({'font.size':16})
-    # fig = plt.figure(figsize=(16.5, 6.5))
-    # gs_main = gs.GridSpec(2, 1, height_ratios = [30,1], figure=fig)
-    # gs_main.update(left=0.05, right=0.95, top=0.95, bottom=0.05, hspace=0.25)
-    
-    # gs_maps = gs.GridSpecFromSubplotSpec(1, 2, wspace=0.05, subplot_spec=gs_main[0])
-    # gs_cbar = gs.GridSpecFromSubplotSpec(1, 30, subplot_spec=gs_main[1])
-    
-    # ax = []
-    # ax.append(fig.add_subplot(gs_maps[0]))
-    # ax.append(fig.add_subplot(gs_maps[1]))
-    
-    # cbar_ax = fig.add_subplot(gs_cbar[:, 1:-1])
-    
-    # t = day_to_index(30)
-    # plt.suptitle(f"Day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}", y=1.01, fontsize=20)
-    
-    # #### First plot
-    # ax[0].set_title(r'(a) $\frac{dMSE}{dt}$, -σ$_y$yv$_1$, and σ$_x$u$_1$')
-    # CF_MSE = ax[0].contourf(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE,
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     MSE_tendency[t]/COLUMN_AVERAGE_MASS,
-    #     cmap=Ahmed_cmap,
-    #     norm=mcolors.CenteredNorm(vcenter=0),
-    #     levels=21,
-    #     # alpha=0.75
-    # )
-    
-    # CS_v = ax[0].contour(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE,
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     meridional_advection_field[t],
-    #     colors=bar_colors[3],
-    #     levels=np.delete(
-    #         np.linspace(np.min(meridional_advection_field[t]), np.max(meridional_advection_field[t]), 11), 
-    #         [5]
-    #     )
-    # )
-    
-    
-    # CS_u = ax[0].contour(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE,
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     zonal_advection_field[t],
-    #     colors=bar_colors[2],
-    #     levels=np.delete(
-    #         np.linspace(np.min(zonal_advection_field[t]), np.max(zonal_advection_field[t]), 11), 
-    #         [5]
-    #     )
-    # )
-    
-    # ax[0].set_ylim(-35, 35)
-    # ax[0].set_aspect('auto')
-    # cbar = plt.colorbar(CF_MSE, cax=cbar_ax, orientation='horizontal')
-    # cbar.set_label(r'$\frac{K}{s}$', rotation=0, va='center', labelpad=25, fontsize=32)
-    
-    # #### Second Plot
-    # ax[1].set_title(r'(b) $\frac{dMSE}{dt}$, $\langle$Q$_r$$\rangle$, and ω$_1$mM$_s$')
-    # ax[1].contourf(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE,
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     MSE_tendency[t]/COLUMN_AVERAGE_MASS,
-    #     cmap=Ahmed_cmap,
-    #     norm=mcolors.CenteredNorm(vcenter=0),
-    #     levels=21,
-    #     # alpha=0.75
-    # )
-    
-    # CS_Qr = ax[1].contour(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE,
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     column_radiative_heating[t],
-    #     colors=bar_colors[4],
-    #     levels=np.delete(
-    #         np.linspace(np.min(column_radiative_heating[t]), np.max(column_radiative_heating[t]), 11), 
-    #         [5]
-    #     )
-    # )
-    
-    # CS_omega = ax[1].contour(
-    #     output_zonal_gridpoints/METERS_PER_DEGREE,
-    #     output_meridional_gridpoints/METERS_PER_DEGREE,
-    #     vertical_advection_field[t],
-    #     colors=bar_colors[1],
-    #     levels=np.delete(
-    #         np.linspace(np.min(vertical_advection_field[t]), np.max(vertical_advection_field[t]), 11), 
-    #         [5]
-    #     )
-    # )
-    # ax[1].set_yticklabels('')
-    # ax[1].set_ylim(-35, 35)
-    # ax[1].set_aspect('auto')
-    
-    # # plt.show()
-    # plt.savefig(
-    #       f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-    #     + f"{specified_initial_condition_name}_MSE-tendency-structure"
-    #     + f"_{downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}-days"
-    #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-    #     + f".png", 
-    #     bbox_inches='tight'
-    # )
-    
-    
-    # #### Animation
-    
-    # In[168]:
-    
-    
-    bar_colors = ['#ffa500', '#1cf91a', '#0533ff', '#ff40ff', '#4e2d8c']
-    xlims = (-180/k, 180/k)
-    ylims = (-35, 35)
-    
-    plt.style.use('default')
-    plt.rcParams.update({'font.size':16})
-    fig = plt.figure(figsize=(16.5, 6.5))
-    # gs_main = gs.GridSpec(2, 1, height_ratios = [30,1], figure=fig)
-    gs_main = gs.GridSpec(1, 1, figure=fig)
-    gs_main.update(left=0.05, right=0.95, top=0.9, bottom=0.05, hspace=0.25)
-    
-    gs_maps = gs.GridSpecFromSubplotSpec(1, 2, wspace=0.05, subplot_spec=gs_main[0])
-    # gs_cbar = gs.GridSpecFromSubplotSpec(1, 30, subplot_spec=gs_main[1])
-    
-    ax = []
-    # Add an axis for the initial condition
-    ax.append(fig.add_subplot(gs_maps[0]))
-    ax.append(fig.add_subplot(gs_maps[1]))
-    
-    # cbar_ax = fig.add_subplot(gs_cbar[:, 1:-1])
-    
-    starting_frame = day_to_index(0)
-    ending_frame = day_to_index(360)
-    frame_interval = day_to_index(5)
-    plt.suptitle(f"Day {downsampled_timepoints[starting_frame]/SECONDS_PER_DAY :0.1f}", y=0.995, fontsize=20)
-    
-    def update(t):
-        plt.suptitle(f"Day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}", y=0.995, fontsize=20)
-        
-        #### First plot
-        ax[0].clear()
-        ax[0].set_title(r'(a) $\frac{dMSE}{dt}$, -σ$_y$yv$_1$, and σ$_x$u$_1$')
-        CF_MSE = ax[0].contourf(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            MSE_tendency[t]/COLUMN_AVERAGE_MASS,
-            cmap=Ahmed_cmap,
-            norm=mcolors.CenteredNorm(vcenter=0),
-            levels=21,
-            # alpha=0.75
-        )
-        
-        CS_v = ax[0].contour(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            meridional_advection_field[t],
-            colors=bar_colors[3],
-            levels=np.delete(np.linspace(np.min(meridional_advection_field[t]), np.max(meridional_advection_field[t]), 11), [5])
-        )
-        
-        CS_u = ax[0].contour(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            zonal_advection_field[t],
-            colors=bar_colors[2],
-            levels=np.delete(np.linspace(np.min(zonal_advection_field[t]), np.max(zonal_advection_field[t]), 11), [5])
-        )
-        
-        longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-        longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-        ax[0].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-        latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-        latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-        ax[0].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-        ax[0].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-        ax[0].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-        ax[0].set_aspect('auto')
-        # cbar = plt.colorbar(CF_MSE, cax=cbar_ax, orientation='horizontal')
-        # cbar.set_label('K/s', rotation=0, va='center', labelpad=20)
-        
-        #### Second Plot
-        ax[1].clear()
-        ax[1].set_title(r'(b) $\frac{dMSE}{dt}$, $\langle$Q$_r$$\rangle$, and ω$_1$mM$_s$')
-        ax[1].contourf(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            MSE_tendency[t]/COLUMN_AVERAGE_MASS,
-            cmap=Ahmed_cmap,
-            norm=mcolors.CenteredNorm(vcenter=0),
-            levels=21,
-            # alpha=0.75
-        )
-        
-        CS_Qr = ax[1].contour(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            column_radiative_heating[t],
-            colors=bar_colors[4],
-            levels=np.delete(np.linspace(np.min(column_radiative_heating[t]), np.max(column_radiative_heating[t]), 11), [5])
-        )
-        
-        CS_omega = ax[1].contour(
-            output_zonal_gridpoints*grid_scaling,
-            output_meridional_gridpoints*grid_scaling,
-            vertical_advection_field[t],
-            colors=bar_colors[1],
-            levels=np.delete(np.linspace(np.min(vertical_advection_field[t]), np.max(vertical_advection_field[t]), 11), [5])
-        )
-    
-        longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-        longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-        ax[1].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-        latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-        latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-        ax[1].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-        ax[1].set_yticklabels('')
-        ax[1].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-        ax[1].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-        ax[1].set_aspect('auto')
-    
-    # Run the animation
-    anim = FuncAnimation(
-        fig, 
-        update, 
-        frames=tqdm(
-            np.arange(starting_frame, ending_frame, frame_interval), 
-            ncols=100, 
-            position=0, 
-            leave=True
-        ), interval=300
-    )
-    
-    anim.save(
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-        + f"{specified_initial_condition_name}"
-        + f"_MSE-tendency-structure_animation"
-        + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-        + f".mp4", 
-        dpi=150
-    )
-    
-    
-    # # Relative anomaly magnitudes
-    
-    # ## Scatter plot of all latitudes
-    
-    # In[584]:
-    
-    
-    t = day_to_index(360)
-    column_MSE = np.copy(output_column_temperature + output_column_moisture)
-    
-    plt.style.use('bmh')
-    plt.rcParams.update({'font.size':11})
-    fig = plt.figure(figsize=(8+2,4+2))
-    fig.suptitle(t=f"k = {k}", x=0.5, y=0.85, fontsize=20)
-    gs_main = gs.GridSpec(1, 2, figure=fig)
-    gs_main.update(bottom=0.125, top=0.875, left=0.15, right=0.85, wspace=0.1)
-    ax = []
-    ax.append(fig.add_subplot(gs_main[0,0]))
-    ax.append(fig.add_subplot(gs_main[0,1]))
-    
-    
-    # print(specified_lat_index)
-    scaled_column_moisture = (output_column_moisture[t]/np.max(output_column_moisture[t])).flatten()
-    scaled_column_temperature = (output_column_temperature[t]/np.max(output_column_moisture[t])).flatten()
-    scaled_column_MSE = (column_MSE[t]/np.max(output_column_moisture[t])).flatten()
-    
-    ax[0].scatter(
-        scaled_column_MSE,
-        scaled_column_moisture,
-        
-    )
-    
-    slope, intercept, r_value, p_value, std_err = sp.stats.linregress(
-        scaled_column_MSE,
-        scaled_column_moisture, 
-    )
-    
-    ax[0].plot(
-        scaled_column_MSE, 
-        (slope*scaled_column_MSE+intercept),
-        color='red'
-    )
-    
-    ax[0].plot(
-        [-1.5,1.5],
-        [-1.5,1.5],
-        ls=':',
-        color='k',
-        alpha=0.25
-    )
-    
-    ax[0].set_yticks(np.arange(-1,2,0.5))
-    ax[0].set_xlim(-1.5,1.5)
-    ax[0].set_ylim(-1.5,1.5)
-    ax[0].text(
-        -1.35, 1.25, 
-        f"m={slope:0.2f}",
-        bbox=dict(facecolor='#eeeeee', edgecolor='#bcbcbc', boxstyle='round'), 
-        ha='left', 
-        va='center',
-        fontsize=16
-    )
-    ax[0].set_ylabel(r'$\langle$q$\rangle$', rotation=0, va='center', labelpad=15)
-    ax[0].set_aspect('equal')
-    
-    #### Column Temperature
-    ax[1].scatter(
-        scaled_column_MSE,
-        scaled_column_temperature,
-        
-    )
-    slope, intercept, r_value, p_value, std_err = sp.stats.linregress(
-        scaled_column_MSE,
-        scaled_column_temperature, 
-    )
-    ax[1].plot(
-        scaled_column_MSE, 
-        (slope*scaled_column_MSE+intercept),
-        color='red'
-    )
-    ax[1].plot(
-        [-1.5,1.5],
-        [-1.5,1.5],
-        ls=':',
-        color='k',
-        alpha=0.25
-    )
-    
-    ax[1].set_yticks(np.arange(-1,2,0.5))
-    ax[1].set_xlim(-1.5,1.5)
-    ax[1].set_ylim(-1.5,1.5)
-    
-    ax[1].text(
-        -1.35, 1.25, 
-        f"m={slope:0.2f}",
-        bbox=dict(facecolor='#eeeeee', edgecolor='#bcbcbc', boxstyle='round'), 
-        ha='left', 
-        va='center',
-        fontsize=16
-    )
-    
-    ax[1].yaxis.set_label_position("right")
-    ax[1].yaxis.tick_right()
-    ax[1].set_ylabel(r'$\langle$T$\rangle$', rotation=0, va='center', labelpad=15)
-    ax[1].set_aspect('equal')
-    
-    ax[-1].set_xticks(np.arange(-1.5,2,0.5))
-    ax[-2].set_xticks(np.arange(-1.5,2,0.5))
-    ax[-1].set_xlabel(r'$\langle$MSE$\rangle$')
-    ax[-2].set_xlabel(r'$\langle$MSE$\rangle$')
-    
-    
-    # plt.show()
-    plt.savefig(
-          f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-        + f"{specified_initial_condition_name}_relative-anomaly-slopes_all-latitudes"
-        + f"_{downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}-days"
-        + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-        + f".png", 
-        bbox_inches='tight'
-    )
-    
-    
-    # # ## Scatter plots by latitude
-    
-    # # In[382]:
-    
-    
-    # t = day_to_index(360)
-    # column_MSE = np.copy(output_column_temperature + output_column_moisture)
-    
-    # plt.style.use('bmh')
-    # plt.rcParams.update({'font.size':11})
-    # fig = plt.figure(figsize=(8,14))
-    # fig.suptitle(t=f"k = {k}", x=0.5, y=0.895, fontsize=14)
-    # gs_main = gs.GridSpec(4, 2, figure=fig)
-    # gs_main.update(bottom=0.125, top=0.875, left=0.15, right=0.85, wspace=0.2, hspace=0.05)
-    # ax = []
-    # ax.append(fig.add_subplot(gs_main[0,0]))
-    # ax.append(fig.add_subplot(gs_main[0,1]))
-    # ax.append(fig.add_subplot(gs_main[1,0]))
-    # ax.append(fig.add_subplot(gs_main[1,1]))
-    # ax.append(fig.add_subplot(gs_main[2,0]))
-    # ax.append(fig.add_subplot(gs_main[2,1]))
-    # ax.append(fig.add_subplot(gs_main[3,0]))
-    # ax.append(fig.add_subplot(gs_main[3,1]))
-    
-    # for row, specified_latitude in enumerate([0, 5, 10, 15]):
-    #     specified_lat_index = np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - specified_latitude).argmin()
-    #     # print(specified_lat_index)
-    #     scaled_column_moisture = output_column_moisture[t, specified_lat_index]/np.max(output_column_moisture[t, specified_lat_index])
-    #     scaled_column_temperature = output_column_temperature[t, specified_lat_index]/np.max(output_column_moisture[t, specified_lat_index])
-    #     scaled_column_MSE = column_MSE[t, specified_lat_index]/np.max(output_column_moisture[t, specified_lat_index])
-    
-    #     index = row
-    #     ax[2*index].scatter(
-    #         scaled_column_MSE,
-    #         scaled_column_moisture,
-            
-    #     )
-        
-    #     slope, intercept, r_value, p_value, std_err = sp.stats.linregress(
-    #         scaled_column_MSE,
-    #         scaled_column_moisture, 
-    #     )
-        
-    #     ax[2*index].plot(
-    #         scaled_column_MSE, 
-    #         (slope*scaled_column_MSE+intercept),
-    #         color='red'
-    #     )
-    
-    #     ax[2*index].plot(
-    #         [-1.5,1.5],
-    #         [-1.5,1.5],
-    #         ls=':',
-    #         color='k',
-    #         alpha=0.25
-    #     )
-        
-    #     if index != 3:
-    #         ax[2*index].set_xticklabels([''])
-    
-    #     ax[2*index].set_yticks(np.arange(-1,2,0.5))
-    #     ax[2*index].set_xlim(-1.5,1.5)
-    #     ax[2*index].set_ylim(-1.5,1.5)
-    #     ax[2*index].text(
-    #         -1.35, 1.25, 
-    #         f"m={slope:0.2f}",
-    #         bbox=dict(facecolor='#eeeeee', edgecolor='#bcbcbc', boxstyle='round'), 
-    #         ha='left', 
-    #         va='center'
-    #     )
-    #     # ax[2*index].set_ylabel(r'$\langle$q$\rangle$', rotation=0, va='center', labelpad=15)
-    #     ax[2*index].set_ylabel(f"{mjo.tick_labeller([specified_latitude], 'lat')[0]}", rotation=0, va='center', labelpad=15)
-    #     ax[2*index].set_aspect('equal')
-        
-    #     #### Column Temperature
-    #     ax[2*index+1].scatter(
-    #         scaled_column_MSE,
-    #         scaled_column_temperature,
-            
-    #     )
-    #     slope, intercept, r_value, p_value, std_err = sp.stats.linregress(
-    #         scaled_column_MSE,
-    #         scaled_column_temperature, 
-            
-    #     )
-    #     ax[2*index+1].plot(
-    #         scaled_column_MSE, 
-    #         (slope*scaled_column_MSE+intercept),
-    #         color='red'
-    #     )
-    #     ax[2*index+1].plot(
-    #         [-1.5,1.5],
-    #         [-1.5,1.5],
-    #         ls=':',
-    #         color='k',
-    #         alpha=0.25
-    #     )
-    
-    #     if index != 3:
-    #         ax[2*index+1].set_xticklabels([''])
-    
-        
-    #     ax[2*index+1].set_yticklabels([''])
-    #     ax[2*index+1].set_xlim(-1.5,1.5)
-    #     ax[2*index+1].set_ylim(-1.5,1.5)
-        
-    #     ax[2*index+1].text(
-    #         -1.35, 1.25, 
-    #         f"m={slope:0.2f}",
-    #         bbox=dict(facecolor='#eeeeee', edgecolor='#bcbcbc', boxstyle='round'), 
-    #         ha='left', 
-    #         va='center'
-    #     )
-    #     # ax[2*index+1].set_ylabel(r'$\langle$T$\rangle$', rotation=0, va='center', labelpad=15)
-    #     ax[2*index+1].set_aspect('equal')
-    
-    # ax[0].set_title(r'$\langle$q$\rangle$')
-    # ax[1].set_title(r'$\langle$T$\rangle$')
-    
-    # ax[-1].set_xticks(np.arange(-1.5,2,0.5))
-    # ax[-2].set_xticks(np.arange(-1.5,2,0.5))
-    # ax[-1].set_xlabel(r'$\langle$MSE$\rangle$')
-    # ax[-2].set_xlabel(r'$\langle$MSE$\rangle$')
-    
-    # # plt.show()
-    # plt.savefig(
-    #       f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-    #     + f"{specified_initial_condition_name}_relative-anomaly-slopes"
-    #     + f"_{downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}-days"
-    #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-    #     + f".png", 
-    #     bbox_inches='tight'
-    # )
-    
-    # ## Horizontal structure
-    
-    # In[585]:
-    
-    
-    day = 360
-    t = day_to_index(day)
-    plt.style.use('default')
-    plt.rcParams.update({'font.size':16})
-    fig = plt.figure(figsize=(8.5,11))
-    gs_main = gs.GridSpec(2, 2, width_ratios=[35,1])
-    gs_main.update(hspace=0.25, wspace=0.08)
-    
-    ax = []
-    ax.append(fig.add_subplot(gs_main[0,0]))
-    ax.append(fig.add_subplot(gs_main[1,0]))
-    
-    cbar_ax = []
-    cbar_ax.append(fig.add_subplot(gs_main[:, 1]))
-    # cbar_ax.append(fig.add_subplot(gs_main[1,1]))
-    
-    xlims = (-180/k, 180/k)
-    
-    column_MSE = np.copy(output_column_temperature + output_column_moisture)
-    scaled_column_moisture = output_column_moisture[t]/np.max(output_column_moisture[t])
-    scaled_column_temperature = output_column_temperature[t]/np.max(output_column_moisture[t])
-    scaled_column_MSE = column_MSE[t]/np.max(output_column_moisture[t])
-    levels = np.linspace(-1, 1, 11)
-    
-    
-    # max_val = np.max(1/COLUMN_AVERAGE_MASS*output_column_moisture[t])
-    # min_val = np.min(1/COLUMN_AVERAGE_MASS*output_column_moisture[t])
-    # levels = np.linspace(0.95*min_val, 1.05*max_val, 15)
-    
-    #### Moisture
-    ax[0].set_title(r'$\langle$q$\rangle$ (colors) & $\langle$MSE$\rangle$ (contours)' + f", day {day}", pad=10)
-    CF0 = ax[0].contourf(
-        output_zonal_gridpoints*grid_scaling,
-        output_meridional_gridpoints*grid_scaling,
-        # 1/COLUMN_AVERAGE_MASS*output_column_moisture[t],
-        scaled_column_moisture,
-        cmap='coolwarm',
-        norm=mcolors.CenteredNorm(vcenter=0),
-        levels=np.linspace(-1, 1, 11),
-        extend='both'
-    )
-    cbar0 = plt.colorbar(CF0, cax=cbar_ax[0])
-    # cbar0.set_label('K', rotation=0, va='center', labelpad=10)
-    
-    ax[0].contour(
-        output_zonal_gridpoints*grid_scaling,
-        output_meridional_gridpoints*grid_scaling,
-        # 1/COLUMN_AVERAGE_MASS*column_MSE[t],
-        scaled_column_MSE, 
-        colors='k',
-        levels=np.delete(np.linspace(-1, 1, 11), [5])
-    )
-    
-    longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-    longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-    ax[0].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-    # Latitude
-    # latitude_ticks = np.arange(-90, 90+20, 20)
-    latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-    latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-    ax[0].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-    ax[1].set_yticklabels('')
-    ax[0].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-    ax[0].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-    ax[0].set_aspect('auto')
-    
-    #### Temperature
-    ax[1].set_title(r'$\langle$T$\rangle$ (colors) & $\langle$MSE$\rangle$ (contours)' + f", day {day}", pad=10)
-    CF1 = ax[1].contourf(
-        output_zonal_gridpoints*grid_scaling,
-        output_meridional_gridpoints*grid_scaling,
-        # 1/COLUMN_AVERAGE_MASS*output_column_temperature[t],
-        scaled_column_temperature,
-        cmap='coolwarm',
-        norm=mcolors.CenteredNorm(vcenter=0),
-        levels=np.linspace(-1, 1, 11),
-        extend='both'
-    )
-    # cbar1 = plt.colorbar(CF1, cax=cbar_ax[1])
-    # cbar1.set_label('K', rotation=0, va='center', labelpad=10)
-    
-    ax[1].contour(
-        output_zonal_gridpoints*grid_scaling,
-        output_meridional_gridpoints*grid_scaling,
-        # 1/COLUMN_AVERAGE_MASS*column_MSE[t],
-        scaled_column_MSE, 
-        colors='k',
-        levels=np.delete(np.linspace(-1, 1, 11), [5])
-    )
-    
-    for index,_ in enumerate(ax):
-        longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-        longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-        ax[index].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-        # Latitude
-        # latitude_ticks = np.arange(-90, 90+20, 20)
-        latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-        latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-        ax[index].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-        ax[index].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-        ax[index].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-        ax[index].set_aspect('auto')
-    
-    # ax[1].set_aspect('auto')
-    # plt.show()
-    plt.savefig(
-        f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
-        + f"{specified_initial_condition_name}_relative-anomaly-horizontal-structure"
-        + f"_{downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}-days"
-        + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
-        + f".png", 
-        bbox_inches='tight'
-    )
-
-    # # Calculate vorticity
-    
-    # In[531]:
-    
-    
-    # #### Vertical advection field
-    # ## Compute the divergence of the velocity field to get vertical velocity
-    # # dudx
-    # output_uy_fft = fft(output_zonal_velocity, axis=1)
-    # output_dudy_fft = np.einsum(
-    #     'j, kji -> kji',
-    #     (1j*meridional_wavenumber),
-    #     output_uy_fft
-    # )
-    # output_dudy = np.real(ifft(output_dudy_fft, axis=1))
-    
-    # # dvdy
-    # output_vx_fft = fft(output_meridional_velocity, axis=2)
-    # output_dvdx_fft = np.einsum(
-    #     'i, kji -> kji',
-    #     (1j*zonal_wavenumber),
-    #     output_vx_fft
-    # )
-    # output_dvdx = np.real(ifft(output_dvdx_fft, axis=2))
-    
-    # vorticity = output_dvdx - output_dudy
-    
-    
-    # # In[564]:
-    
-    
-    # day = 360
-    
-    # plt.style.use('default')
-    # plt.rcParams.update({'font.size':20})
-    # [fig, ax] = plt.subplots(1,1, figsize=(16,9))
-    # ax.set_title(f"{experiment_to_load} case \nVorticity (colors) and divergence (contours)", pad=10)
-    # CF = ax.contourf(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     vorticity[day_to_index(day)],
-    #     # cmap = 'PRGn',
-    #     cmap = 'PuOr',
-    #     norm=mcolors.CenteredNorm(vcenter=0)
-    # )
-    # cbar = plt.colorbar(CF)
-    # cbar.set_label(r'$s^{-1}$', rotation=0, labelpad=20)
-    
-    # CS = ax.contour(
-    #     output_zonal_gridpoints*grid_scaling,
-    #     output_meridional_gridpoints*grid_scaling,
-    #     -divergence[day_to_index(day)],
-    #     colors='black'
-    # )
-    
-    # # vorticity_tendency = -CORIOLIS_PARAMETER*output_meridional_gridpoints[None, :, None]*divergence - CORIOLIS_PARAMETER*output_meridional_velocity
-    # # vorticity_tendency = np.gradient(vorticity, downsampled_timepoints, axis=0)
-    
-    # # CS = ax.contour(
-    # #     output_zonal_gridpoints*grid_scaling,
-    # #     output_meridional_gridpoints*grid_scaling,
-    # #     vorticity_tendency[day_to_index(day)],
-    # #     colors='black'
-    # # )
-    
-    
-    # longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
-    # longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
-    # ax.set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
-    # # Latitude
-    # # latitude_ticks = np.arange(-90, 90+20, 20)
-    # latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
-    # latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
-    # ax.set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
-    # ax.set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
-    # ax.set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
-    # ax.set_aspect('auto')
-    # plt.show()
-    
+# ### Animation
 
 # In[ ]:
 
 
+# starting_frame = day_to_index(0)
+# ending_frame = day_to_index(360)
+# frame_index = day_to_index(5)
+
+# physical_parameters = (
+#     SPECIFIC_HEAT, 
+#     LATENT_HEAT,
+#     WATER_DENSITY,
+#     COLUMN_AVERAGE_MASS,
+#     EARTH_RADIUS,
+#     METERS_PER_DEGREE,
+#     SECONDS_PER_DAY,
+# )
+
+# plotting_parameters = (
+#     # (-180, 179),
+#     (-180/k, 180/k),
+#     (-35, 35),
+#     20, 12,
+#     # 16//k,12//k,
+#     True, 
+#     'converted',
+#     0.6,
+#     grid_scaling,
+#     save_timestamp            
+# )
+
+# animate_horizontal_structure(
+#     output_zonal_gridpoints,
+#     output_meridional_gridpoints,
+#     downsampled_timepoints,
+#     np.copy(output_zonal_velocity),
+#     np.copy(output_meridional_velocity),
+#     np.copy(output_column_temperature),
+#     np.copy(output_column_moisture),
+#     specified_output_file_directory = specified_output_file_directory,
+#     specified_initial_condition_name = specified_initial_condition_name,
+#     physical_parameters = physical_parameters,
+#     simulation_parameters = (simulation_moisture, fringe_region),
+#     plotting_parameters = plotting_parameters,
+#     frames = np.arange(starting_frame, ending_frame, frame_index),
+#     normalized_over_time=True
+# )
 
 
+# Temporal Structure
+
+## Near-Equatorial Average
+
+# print("    → Plotting temporal structure...")
+# # In[573]:
+
+
+# plt.style.use('bmh')
+# plt.rcParams.update({'font.size':24})
+
+# plotting_time_points = downsampled_timepoints
+
+# # Latitudes over which to average
+# south_bound = -10
+# north_bound = 10
+
+# # Find the indices of the meridional grid corresponding to those latitudes
+# south_lat_index = (
+#     np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - south_bound).argmin()
+#     if south_bound >= np.min(output_meridional_gridpoints)/METERS_PER_DEGREE else 0
+# )
+# north_lat_index = (
+#     1 + np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - north_bound).argmin() 
+#     if north_bound <= np.max(output_meridional_gridpoints)/METERS_PER_DEGREE else None
+# )
+
+# # Average the field variables over the specified latitudes
+# near_equatorial_column_temperature = np.mean(
+#     np.copy(output_column_temperature)[:, south_lat_index:north_lat_index, :],
+#     axis=1
+# )
+# near_equatorial_column_moisture = np.mean(
+#     np.copy(output_column_moisture)[:, south_lat_index:north_lat_index, :],
+#     axis=1
+# )
+# near_equatorial_zonal_velocity = np.mean(
+#     np.copy(output_zonal_velocity)[:, south_lat_index:north_lat_index, :],
+#     axis=1
+# )
+# near_equatorial_meridional_velocity = np.mean(
+#     np.copy(output_meridional_velocity)[:, south_lat_index:north_lat_index, :],
+#     axis=1
+# )
+
+# max_index = np.argmax(near_equatorial_column_temperature)
+# [t_index, x_index] = np.unravel_index(max_index, [nt, nx])
+
+# [fig, ax] = plt.subplots(figsize=(16,6))
+# ax.set_title(
+#     (
+#         f"{np.abs(south_bound)}°S-{np.abs(north_bound)}°N averaged {initial_condition_type} amplitude \n over time," 
+#       + r" ε$_t$ = " + f"{3600*TEMPERATURE_SENSITIVITY:0.3f}" + r" hr$^{-1},$"
+#       + r" ε$_q$ = " + f"{3600*MOISTURE_SENSITIVITY:0.3f}" + r" hr$^{-1}$"
+#     ), pad=15
+# )
+
+# ax.axhline(
+#     y=0,
+#     color='black',
+#     ls='--',
+#     alpha=0.75
+# )
+
+# ax.plot(
+#     plotting_time_points/SECONDS_PER_DAY, 
+#     near_equatorial_column_temperature[:, x_index]*gravity_wave_phase_speed/GROSS_DRY_STABILITY, 
+#     lw=3, 
+#     label=r"$\frac{c}{M_s}\langle T \rangle$",
+#     color=bmh_colors('blue')
+# )
+
+# ax.plot(
+#     plotting_time_points/SECONDS_PER_DAY, 
+#     near_equatorial_column_moisture[:, x_index]*gravity_wave_phase_speed/gross_moisture_stratification, 
+#     lw=3, 
+#     label=r"$\frac{c}{M_q}\langle q \rangle$",
+#     color=bmh_colors('red')
+    
+# )
+
+# ax.plot(
+#     plotting_time_points/SECONDS_PER_DAY, 
+#     -near_equatorial_zonal_velocity[:, x_index], 
+#     lw=3, 
+#     ls='--',
+#     label='u',
+#     color=bmh_colors('purple')
+    
+# )
+
+# ax.plot(
+#     plotting_time_points/SECONDS_PER_DAY, 
+#     -near_equatorial_meridional_velocity[:, x_index], 
+#     lw=3, 
+#     ls='--',
+#     label='v',
+#     color=bmh_colors('green')
+# )
+
+# # Maximum column temperature
+# ax.axhline(
+#     y=np.max(near_equatorial_column_temperature[:, x_index])*gravity_wave_phase_speed/GROSS_DRY_STABILITY,
+#     color=bmh_colors('blue'),
+#     ls=':',
+#     alpha=0.75
+# )
+
+# ax.axhline(
+#     y=np.min(near_equatorial_column_temperature[:, x_index])*gravity_wave_phase_speed/GROSS_DRY_STABILITY,
+#     color=bmh_colors('blue'),
+#     ls=':',
+#     alpha=0.75
+# )
+
+# # Maximum column moisture
+# ax.axhline(
+#     y=np.max(near_equatorial_column_moisture[:, x_index])*gravity_wave_phase_speed/gross_moisture_stratification,
+#     color=bmh_colors('red'),
+#     ls=':',
+#     alpha=0.75
+# )
+
+# ax.axhline(
+#     y=np.min(near_equatorial_column_moisture[:, x_index])*gravity_wave_phase_speed/gross_moisture_stratification,
+#     color=bmh_colors('red'),
+#     ls=':',
+#     alpha=0.75
+# )
+
+# ax.set_xlabel('Time (days)')
+# ax.set_ylabel(r"$\frac{m}{s}$", rotation=0, labelpad=20, fontsize=32)
+
+# ax.legend(loc='best', fontsize=18)
+
+# if initial_condition_type == 'EIG-wave' or initial_condition_type == 'WIG-wave':
+#     plt.xlim(-1, 5)
+
+    
+# # plt.xlim(-1, 15)
+# # plt.ylim(-2000,2000)
+# # plt.ylim(-1000,1000)
+
+# # plt.show()
+# plt.savefig(
+#     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
+#     + f"{specified_initial_condition_name}_temporal-structure"
+#     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
+#     + f".png", 
+#     bbox_inches='tight'
+# )
+# print("    → Temporal structure plotted")
+# print(f"{'':{'='}^{50}}")
+# # ## Pattern & Phase Speed Correlation
+
+# # ### Calculate Phase Speed
+
+# # In[574]:
+# # # Budget Analysis
+# # ## Define budget calculation function
+
+# # In[579]:
+
+
+def calculate_budget(field, column_MSE):
+    budget = np.einsum(
+        '...ji, ...ji -> ...',
+        field,
+        column_MSE
+    ) / np.einsum(
+        '...ji, ...ji -> ...',
+        column_MSE,
+        column_MSE
+    )
+    return budget
+
+print(f"{'Growth and Propagation Budgets':^50}")
+print(f"{'':{'='}^{50}}")
+# ## Growth Budget
+
+# ### Calculate growth budget
+print("    → Calculating MSE growth budget...")
+# In[580]:
+
+
+south_bound = -90
+north_bound = 90
+south_lat_index = (
+    np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - south_bound).argmin()
+    if south_bound >= np.min(output_meridional_gridpoints)/METERS_PER_DEGREE else 0
+)
+north_lat_index = (
+    1 + np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - north_bound).argmin() 
+    if north_bound <= np.max(output_meridional_gridpoints)/METERS_PER_DEGREE else None
+)
+
+# Calculate the column MSE : <h> = <T> + <q>
+column_MSE = np.copy(output_column_temperature + output_column_moisture)
+
+# Calculate the MSE tendency directly from the variable
+MSE_tendency = np.gradient(column_MSE, downsampled_timepoints, axis=0)
+
+growth_budget = calculate_budget(
+    MSE_tendency[:, south_lat_index:north_lat_index],
+    column_MSE[:, south_lat_index:north_lat_index]
+)
+
+# zonal_moistening_array = ZONAL_MOISTENING_PARAMETER
+
+# Calculate the contribution of zonal advection : σ_x {u_1 <h>}
+# zonal_advection_growth_contribution = ZONAL_MOISTENING_PARAMETER*calculate_budget(
+#     output_zonal_velocity[:, south_lat_index:north_lat_index, :], 
+#     column_MSE[:, south_lat_index:north_lat_index, :]
+# )
+# zonal_moistening_array = ZONAL_MOISTENING_PARAMETER * 0.5*(1 + np.cos(output_zonal_gridpoints/EARTH_RADIUS))[None, None, :]
+zonal_moistening_array = ZONAL_MOISTENING_PARAMETER * np.cos(output_zonal_gridpoints/EARTH_RADIUS)[None, None, :]
+
+zonal_advection_growth_contribution = calculate_budget(
+    zonal_moistening_array*output_zonal_velocity[:, south_lat_index:north_lat_index, :], 
+    column_MSE[:, south_lat_index:north_lat_index, :]
+)
+
+# Calculate the contribution of meridional advection : -σ_y {y v_1 <h>}
+meridional_advection_growth_contribution = -MERIDIONAL_MOISTENING_PARAMETER*calculate_budget(
+    (
+        ( # Quadratic base state σ_y * y * v_1
+            output_meridional_gridpoints
+            if mean_moisture_profile == 'quadratic' else np.ones_like(output_meridional_gridpoints)
+        )
+        * ( # Exponential base state σ_y * y * e^(-y^2) * v_1
+            (output_meridional_gridpoints*np.exp(-(output_meridional_gridpoints/gaussian_length_scale)**2))
+            if mean_moisture_profile == 'gaussian' else np.ones_like(output_meridional_gridpoints)
+        )
+        * ( # Offset gaussian base state σ_y * y * e^(-(y-δ)^2/σ^2) * v_1
+            (
+                (output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)*np.exp(
+                    -((output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)/gaussian_length_scale)**2
+                )
+            )
+            if mean_moisture_profile == 'asymmetric-gaussian' else np.ones_like(output_meridional_gridpoints)
+        )
+    )[None, south_lat_index:north_lat_index, None]
+    *output_meridional_velocity[:, south_lat_index:north_lat_index, :], 
+    column_MSE[:, south_lat_index:north_lat_index, :]
+)
+
+### Compute the divergence of the velocity field to get vertical velocity
+# dudx
+output_ux_fft = fft(np.copy(output_zonal_velocity), axis=2)
+output_dudx_fft = np.einsum(
+    'i, kji -> kji',
+    (1j*zonal_wavenumber),
+    output_ux_fft
+)
+output_dudx = np.real(ifft(output_dudx_fft, axis=2))
+
+# dvdy
+output_vy_fft = fft(np.copy(output_meridional_velocity), axis=1)
+output_dvdy_fft = np.einsum(
+    'j, kji -> kji',
+    (1j*meridional_wavenumber),
+    output_vy_fft
+)
+output_dvdy = np.real(ifft(output_dvdy_fft, axis=1))
+
+# ω = -(dudx + dvdy)
+divergence = output_dudx + output_dvdy
+vertical_velocity = -divergence
+
+moisture_stratification_structure = ''
+moisture_stratification_array = gross_moisture_stratification * (
+    (
+        np.exp(-(output_meridional_gridpoints/length_scale)**2)
+        if moisture_stratification_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
+    )
+    *(
+    (1-fringe_region_damping_function(
+        output_meridional_gridpoints/METERS_PER_DEGREE, 
+        -sensitivity_limit, 
+        sensitivity_limit, 
+        sensitivity_width, 
+        1
+    ))
+        if  moisture_stratification_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
+    )
+    * (
+        np.exp(-(output_meridional_gridpoints/gaussian_length_scale)**2)
+        if moisture_stratification_structure == '-gaussian-y' else np.ones_like(output_meridional_gridpoints)
+    )
+)[None, south_lat_index:north_lat_index, None]
+
+# Calculate the contribution of vertical advection : m M_s {ω_1 <h>}
+# vertical_advection_growth_contribution = (
+#     (GROSS_DRY_STABILITY - gross_moisture_stratification)/GROSS_DRY_STABILITY
+#     * GROSS_DRY_STABILITY
+#     * calculate_budget(
+#         vertical_velocity[:, south_lat_index:north_lat_index, :], 
+#         column_MSE[:, south_lat_index:north_lat_index, :]
+#     )
+# )
+
+vertical_advection_growth_contribution = (
+    GROSS_DRY_STABILITY
+    * calculate_budget(
+            (GROSS_DRY_STABILITY - moisture_stratification_array)/GROSS_DRY_STABILITY*vertical_velocity[:, south_lat_index:north_lat_index, :], 
+        column_MSE[:, south_lat_index:north_lat_index, :]
+    )
+)
+
+# Calculate column convective heating <Q_c> = ε_q<q> -ε_t<T> 
+moisture_sensitivity_array = MOISTURE_SENSITIVITY * (
+    (
+        np.exp(-(output_meridional_gridpoints/length_scale)**2)
+        if moisture_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
+    )
+    *(
+    (
+        1-fringe_region_damping_function(
+            output_meridional_gridpoints/METERS_PER_DEGREE, 
+            -sensitivity_limit, 
+            sensitivity_limit, 
+            sensitivity_width, 
+            1
+        )
+    )
+        if  moisture_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
+    )
+    * (
+        np.exp(-(output_meridional_gridpoints/gaussian_length_scale)**2)
+        if moisture_sensitivity_structure == '-gaussian-y' else np.ones_like(output_meridional_gridpoints)
+    )
+)[None, :, None]
+
+temperature_sensitivity_array = TEMPERATURE_SENSITIVITY * (
+    (
+        np.exp(-(output_meridional_gridpoints/length_scale)**2)
+        if temperature_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
+    )
+    *(
+    (
+        1-fringe_region_damping_function(
+            output_meridional_gridpoints/METERS_PER_DEGREE, 
+            -sensitivity_limit, 
+            sensitivity_limit, 
+            sensitivity_width, 
+            1
+        )
+    )
+        if  temperature_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
+    )
+)[None, :, None]
+
+column_convective_heating = (
+    moisture_sensitivity_array * output_column_moisture
+    - temperature_sensitivity_array * output_column_temperature
+) 
+
+# Calculate column radiative heating <Q_r> = r<Q_c>
+column_radiative_heating = CLOUD_RADIATIVE_PARAMETER*column_convective_heating
+
+# Calculate the contribution of column radiative heating : {<Q_r> <h>}
+column_radiative_heating_growth_contribution = calculate_budget(
+    column_radiative_heating[:, south_lat_index:north_lat_index, :], 
+    column_MSE[:, south_lat_index:north_lat_index, :]
+)
+
+#### # Calculate the contribution of diffusion : {𝒟∇^2(<h>)*<h>}
+MSEx_fft = fft(column_MSE, axis=2)
+MSEy_fft = fft(column_MSE, axis=1)
+
+dMSEdx_dx_fft = np.einsum(
+    'i, kji -> kji',
+    (1j*zonal_wavenumber)**2, 
+    MSEx_fft 
+)
+
+dMSEdy_dy_fft = np.einsum(
+    'j, kji -> kji',   
+    (1j*meridional_wavenumber)**2,
+    MSEy_fft
+)
+
+dMSEdx_dx = np.real(ifft(dMSEdx_dx_fft, axis=2))
+dMSEdy_dy = np.real(ifft(dMSEdy_dy_fft, axis=1))
+
+laplacian_MSE = dMSEdx_dx + dMSEdy_dy 
+diffusion_growth_contribution = DIFFUSIVITY*calculate_budget(
+    laplacian_MSE[:, south_lat_index:north_lat_index, :],
+    column_MSE[:, south_lat_index:north_lat_index, :]
+)
+
+#### Residual
+residual_MSE_growth = growth_budget - (
+    vertical_advection_growth_contribution
+    + zonal_advection_growth_contribution
+    + meridional_advection_growth_contribution
+    + column_radiative_heating_growth_contribution
+    + diffusion_growth_contribution
+)
+
+growth_budget_dataset = xr.Dataset(
+    data_vars = {
+        'growth' : (['time'], growth_budget),
+        'omega'  : (['time'], vertical_advection_growth_contribution),
+        'u'      : (['time'], zonal_advection_growth_contribution),
+        'v'      : (['time'], meridional_advection_growth_contribution),
+        'Qr'     : (['time'], column_radiative_heating_growth_contribution),
+        'D'      : (['time'], diffusion_growth_contribution),
+        'residual':(['time'], residual_MSE_growth),
+    },
+    coords = {
+        'time' : downsampled_timepoints
+    },
+    attrs= {
+        'Latitude Bounds' : (south_bound, north_bound),
+        'Initial Wavenumber' : output_wavenumber*EARTH_RADIUS
+    }
+)
+
+print("    → Saving MSE growth budget...")
+growth_budget_filename = (
+    f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
+    + f"_MSE-growth-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
+)
+growth_budget_dataset.to_netcdf(growth_budget_filename)
+# print(f"    → MSE growth budget saved as:\n{growth_budget_filename}")
+print(f"    → MSE growth budget saved")
+
+
+# ### Plot growth budget
+
+# #### Single time
+
+# In[ ]:
+
+
+# # Load growth budget
+# loaded_growth_budget_filename = (
+#     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
+#     + f"_growth-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
+# )
+# loaded_growth_budget = xr.load_dataset(loaded_growth_budget_filename)
+# # print(f"Growth budget loaded from:\n{loaded_growth_budget_filename}")
+# # print(f"{'':{'='}^{50}}")
+
+# # # Specify the time at which to calculate/plot the budget
+# # t = day_to_index(30)
+
+# # # Label the bars 
+# # bar_labels = [
+# #     r'Growth',
+# #     r'ω$_1$mM$_s$',
+# #     r'σ$_x$u$_1$',
+# #     r'-σ$_y$yv$_1$', 
+# #     r'$\langle$Q$_r$$\rangle$',
+# #     r'$\mathcal{D}\nabla^{2} \langle$h$\rangle$', 
+# #     r'residual'
+# # ]
+
+# # bar_values = [
+# #     3600*loaded_growth_budget['growth'][t],   
+# #     3600*loaded_growth_budget['omega'][t], 
+# #     3600*loaded_growth_budget['u'][t], 
+# #     3600*loaded_growth_budget['v'][t], 
+# #     3600*loaded_growth_budget['Qr'][t],
+# #     3600*loaded_growth_budget['D'][t],
+# #     3600*loaded_growth_budget['residual'][t],
+# # ]
+
+# # bar_colors = [
+# #     '#ffa500', 
+# #     '#1cf91a',
+# #     '#0533ff', 
+# #     '#ff40ff', 
+# #     '#4e2d8c', 
+# #     'red', 
+# #     '#bcbcbc'
+# # ]
+
+# # # Plot the budgets
+# # plt.style.use('default')
+# # plt.rcParams.update({'font.size':22})
+# # plt.figure(figsize=(16.5, 6.4))
+# # plt.title(
+# #     f"Growth budget, day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}, " 
+# #     + f"{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}", 
+# #     pad=10
+# # )
+# # plt.bar(bar_labels, bar_values, color=bar_colors, edgecolor='gray', linewidth=3)
+# # plt.axhline(y=0, color='gray', lw=3, alpha=0.75)
+# # plt.ylabel(r'hr$^{-1}$', labelpad=35, rotation=0, va='center')
+# # # plt.show()
+# # plt.savefig(
+# #       f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
+# #     + f"{specified_initial_condition_name}_growth-budget"
+# #     + f"_{downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}-days"
+# #     + f"_{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}"
+# #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
+# #     + f".png", 
+# #     bbox_inches='tight'
+# # )
+
+
+# # #### Animation
+
+# # In[581]:
+
+# print("    → Animating MSE growth budget...")
+# # Load growth budget
+# loaded_growth_budget_filename = (
+#     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
+#     + f"_growth-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
+# )
+# loaded_growth_budget = xr.load_dataset(loaded_growth_budget_filename)
+# # print(f"    → Growth budget loaded from:\n{loaded_growth_budget_filename}")
+# # print(f"{'':{'='}^{50}}")
+
+# starting_frame = day_to_index(3)
+# ending_frame = day_to_index(360)
+# frame_interval = day_to_index(5)
+
+# bar_labels = [
+#     r'Growth',
+#     r'ω$_1$mM$_s$',
+#     r'σ$_x$u$_1$',
+#     r'-σ$_y$yv$_1$', 
+#     r'$\langle$Q$_r$$\rangle$',
+#     # r'$\mathcal{D}\nabla^{2} \langle$h$\rangle$', 
+#     r'residual'
+# ]
+# bar_colors = [
+#     '#ffa500', 
+#     '#1cf91a', 
+#     '#0533ff', 
+#     '#ff40ff', 
+#     '#4e2d8c', 
+#     # 'red', 
+#     '#bcbcbc'
+# ]
+
+# grand_max = np.max(
+#     (
+#         SECONDS_PER_DAY*loaded_growth_budget['growth'][starting_frame:ending_frame],
+#         SECONDS_PER_DAY*loaded_growth_budget['omega'][starting_frame:ending_frame],
+#         SECONDS_PER_DAY*loaded_growth_budget['u'][starting_frame:ending_frame],
+#         SECONDS_PER_DAY*loaded_growth_budget['v'][starting_frame:ending_frame],
+#         SECONDS_PER_DAY*loaded_growth_budget['Qr'][starting_frame:ending_frame],
+#         # SECONDS_PER_DAY*loaded_growth_budget['D'][starting_frame:ending_frame],
+#         SECONDS_PER_DAY*loaded_growth_budget['residual'][starting_frame:ending_frame],
+#     )
+# )
+
+# grand_min = np.min(
+#     (
+#         SECONDS_PER_DAY*loaded_growth_budget['growth'][starting_frame:ending_frame],
+#         SECONDS_PER_DAY*loaded_growth_budget['omega'][starting_frame:ending_frame],
+#         SECONDS_PER_DAY*loaded_growth_budget['u'][starting_frame:ending_frame],
+#         SECONDS_PER_DAY*loaded_growth_budget['v'][starting_frame:ending_frame],
+#         SECONDS_PER_DAY*loaded_growth_budget['Qr'][starting_frame:ending_frame],
+#         # SECONDS_PER_DAY*loaded_growth_budget['D'][starting_frame:ending_frame],
+#         SECONDS_PER_DAY*loaded_growth_budget['residual'][starting_frame:ending_frame],
+#     )
+# )
+
+# plt.style.use('default')
+# plt.rcParams.update({'font.size':22})
+# [fig, ax] = plt.subplots(1, 1, figsize=(16.5, 6.4))
+
+# def update(t):
+#     bar_values = [
+#         SECONDS_PER_DAY*loaded_growth_budget['growth'][t],
+#         SECONDS_PER_DAY*loaded_growth_budget['omega'][t],
+#         SECONDS_PER_DAY*loaded_growth_budget['u'][t],
+#         SECONDS_PER_DAY*loaded_growth_budget['v'][t],
+#         SECONDS_PER_DAY*loaded_growth_budget['Qr'][t],
+#         # SECONDS_PER_DAY*loaded_growth_budget['D'][t],
+#         SECONDS_PER_DAY*loaded_growth_budget['residual'][t],
+#         ]
+
+#     ax.clear()
+#     ax.set_title(
+#         f"Growth budget, day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}, " 
+#         + f"{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}", 
+#         pad=10
+# )
+#     ax.bar(bar_labels, bar_values, color=bar_colors, edgecolor='gray', linewidth=3)
+#     ax.axhline(y=0, color='gray', lw=3, alpha=0.75)
+#     ax.set_ylabel(r'day$^{-1}$', labelpad=20, rotation=0, va='center')
+#     ax.set_ylim(1.1*round_out(grand_min, 'tenths'), 1.1*round_out(grand_max, 'tenths'))
+
+# # Run the animation
+# anim = FuncAnimation(
+#     fig, 
+#     update, 
+#     frames=tqdm(
+#         np.arange(starting_frame, ending_frame, frame_interval), 
+#         ncols=100, 
+#         position=0, 
+#         leave=True
+#     ), interval=300
+# )
+
+# anim.save(
+#     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
+#     + f"{specified_initial_condition_name}"
+#     + f"_growth-budget_animation"
+#     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
+#     + f".mp4", 
+#     dpi=200
+# )
+# print(f"    → MSE Growth budget animated")
+# ## Propagation Budget
+
+# ### Calculate propagation budget
+
+# In[582]:
+
+print(f"    → Calculating MSE propagation budget...")
+# south_bound = -10
+# north_bound = 10
+south_lat_index = (
+    np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - south_bound).argmin()
+    if south_bound >= np.min(output_meridional_gridpoints)/METERS_PER_DEGREE else 0
+)
+north_lat_index = (
+    1 + np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - north_bound).argmin() 
+    if north_bound <= np.max(output_meridional_gridpoints)/METERS_PER_DEGREE else None
+)
+
+# Calculate the column MSE : <h> = <T> + <q>
+column_MSE = np.copy(output_column_temperature + output_column_moisture)
+
+# Calculate the MSE tendency directly from the variable
+MSE_tendency = np.gradient(column_MSE, downsampled_timepoints, axis=0)
+
+propagation_budget = calculate_budget(
+    MSE_tendency[:, south_lat_index:north_lat_index, :],
+    MSE_tendency[:, south_lat_index:north_lat_index, :]
+)
+
+# Calculate the contribution of zonal advection : σ_x {u_1 <h>}
+# zonal_advection_propagation_contribution = ZONAL_MOISTENING_PARAMETER*calculate_budget(
+#     output_zonal_velocity[:, south_lat_index:north_lat_index, :], 
+#     MSE_tendency[:, south_lat_index:north_lat_index, :]
+# )
+
+zonal_advection_propagation_contribution = calculate_budget(
+    zonal_moistening_array*output_zonal_velocity[:, south_lat_index:north_lat_index, :], 
+    MSE_tendency[:, south_lat_index:north_lat_index, :]
+)
+
+# Calculate the contribution of meridional advection : -σ_y {y v_1 <h>}
+meridional_advection_propagation_contribution = -MERIDIONAL_MOISTENING_PARAMETER*calculate_budget(
+    (
+        ( # Quadratic base state σ_y * y * v_1
+            output_meridional_gridpoints
+            if mean_moisture_profile == 'quadratic' else np.ones_like(output_meridional_gridpoints)
+        )
+        * ( # Gaussian base state σ_y * y * e^(-y^2/σ^2) * v_1
+            (output_meridional_gridpoints*np.exp(-(output_meridional_gridpoints/gaussian_length_scale)**2))
+            if mean_moisture_profile == 'gaussian' else np.ones_like(output_meridional_gridpoints)
+        )
+        * ( # Offset gaussian base state σ_y * y * e^(-(y-δ)^2/σ^2) * v_1
+            (
+                (output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)*np.exp(
+                    -((output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)/gaussian_length_scale)**2
+                )
+            )
+            if mean_moisture_profile == 'asymmetric-gaussian' else np.ones_like(output_meridional_gridpoints)
+        )
+    )[None, south_lat_index:north_lat_index, None]
+    * output_meridional_velocity[:, south_lat_index:north_lat_index, :], 
+    MSE_tendency[:, south_lat_index:north_lat_index, :]
+)
+
+### Compute the divergence of the velocity field to get vertical velocity
+# dudx
+output_ux_fft = fft(output_zonal_velocity, axis=2)
+output_dudx_fft = 1j*zonal_wavenumber[None,:]*output_ux_fft
+output_dudx = np.real(ifft(output_dudx_fft, axis=2))
+
+# dvdy
+output_vy_fft = fft(output_meridional_velocity, axis=1)
+output_dvdy_fft = 1j*meridional_wavenumber[:,None]*output_vy_fft
+output_dvdy = np.real(ifft(output_dvdy_fft, axis=1))
+
+# ω = -(dudx + dvdy)
+divergence = output_dudx + output_dvdy
+vertical_velocity = -divergence
+
+# Calculate the contribution of vertical advection : m M_s {ω_1 <h>}
+# vertical_advection_propagation_contribution = (
+#     (GROSS_DRY_STABILITY - gross_moisture_stratification)/GROSS_DRY_STABILITY
+#     * GROSS_DRY_STABILITY
+#     * calculate_budget(
+#         vertical_velocity[:, south_lat_index:north_lat_index, :], 
+#         MSE_tendency[:, south_lat_index:north_lat_index, :]
+#     )
+# )
+
+vertical_advection_propagation_contribution = (
+    GROSS_DRY_STABILITY
+    * calculate_budget(
+            (GROSS_DRY_STABILITY - moisture_stratification_array)/GROSS_DRY_STABILITY*vertical_velocity[:, south_lat_index:north_lat_index, :], 
+        MSE_tendency[:, south_lat_index:north_lat_index, :]
+    )
+)
+
+# Calculate column convective heating <Q_c> = ε_q<q> -ε_t<T> 
+moisture_sensitivity_array = MOISTURE_SENSITIVITY * (
+    (
+        np.exp(-(output_meridional_gridpoints/length_scale)**2)
+        if moisture_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
+    )
+    *(
+    (
+        1-fringe_region_damping_function(
+            output_meridional_gridpoints/METERS_PER_DEGREE, 
+            -sensitivity_limit, 
+            sensitivity_limit, 
+            sensitivity_width, 
+            1
+        )
+    )
+        if  moisture_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
+    )
+    * (
+        np.exp(-(output_meridional_gridpoints/gaussian_length_scale)**2)
+        if moisture_sensitivity_structure == '-gaussian-y' else np.ones_like(output_meridional_gridpoints)
+    )
+)[None, :, None]
+
+temperature_sensitivity_array = TEMPERATURE_SENSITIVITY * (
+    (
+        np.exp(-(output_meridional_gridpoints/length_scale)**2)
+        if temperature_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
+    )
+    *(
+    (
+        1-fringe_region_damping_function(
+            output_meridional_gridpoints/METERS_PER_DEGREE, 
+            -sensitivity_limit, 
+            sensitivity_limit, 
+            sensitivity_width, 
+            1
+        )
+    )
+        if  temperature_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
+    )
+)[None, :, None]
+
+column_convective_heating = (
+    moisture_sensitivity_array * output_column_moisture
+    - temperature_sensitivity_array * output_column_temperature
+) 
+    
+# Calculate column radiative heating <Q_r> = r<Q_c>
+column_radiative_heating = CLOUD_RADIATIVE_PARAMETER*column_convective_heating
+
+# Calculate the contribution of column radiative heating : {<Q_r> <h>}
+column_radiative_heating_propagation_contribution = calculate_budget(
+    column_radiative_heating[:, south_lat_index:north_lat_index, :],
+    MSE_tendency[:, south_lat_index:north_lat_index, :]
+)
+
+#### # Calculate the contribution of diffusion : {𝒟∇^2<h> <h>}
+MSEx_fft = fft(column_MSE, axis=2)
+MSEy_fft = fft(column_MSE, axis=1)
+
+dMSEdx_dx_fft = np.einsum(
+    'i, kji -> kji',
+    (1j*zonal_wavenumber)**2, 
+    MSEx_fft 
+)
+
+dMSEdy_dy_fft = np.einsum(
+    'j, kji -> kji',   
+    (1j*meridional_wavenumber)**2,
+    MSEy_fft
+)
+
+dMSEdx_dx = np.real(ifft(dMSEdx_dx_fft, axis=2))
+dMSEdy_dy = np.real(ifft(dMSEdy_dy_fft, axis=1))
+
+laplacian_MSE = dMSEdx_dx + dMSEdy_dy 
+diffusion_propagation_contribution = DIFFUSIVITY*calculate_budget(
+    laplacian_MSE[:, south_lat_index:north_lat_index, :],
+    MSE_tendency[:, south_lat_index:north_lat_index, :]
+)
+
+#### Residual
+residual_MSE_propagation = propagation_budget - (
+    vertical_advection_propagation_contribution
+    + zonal_advection_propagation_contribution
+    + meridional_advection_propagation_contribution
+    + column_radiative_heating_propagation_contribution
+    + diffusion_propagation_contribution
+)
+
+propagation_budget_dataset = xr.Dataset(
+    data_vars = {
+        'propagation' : (['time'], propagation_budget),
+        'omega'  : (['time'], vertical_advection_propagation_contribution),
+        'u'      : (['time'], zonal_advection_propagation_contribution),
+        'v'      : (['time'], meridional_advection_propagation_contribution),
+        'Qr'     : (['time'], column_radiative_heating_propagation_contribution),
+        'D'      : (['time'], diffusion_propagation_contribution),
+        'residual':(['time'], residual_MSE_propagation),
+    },
+    coords = {
+        'time' : downsampled_timepoints
+    },
+    attrs= {
+        'Latitude Bounds' : (south_bound, north_bound),
+        'Initial Wavenumber' : output_wavenumber*EARTH_RADIUS
+    }
+)
+
+print(f"    → Saving MSE propagation budget...")
+propagation_budget_filename = (
+    f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
+    + f"_MSE-propagation-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
+)
+propagation_budget_dataset.to_netcdf(propagation_budget_filename)
+# print(f"    → Propagation budget saved as:\n{propagation_budget_filename}")
+print(f"    → Propagation budget saved")
+
+
+print(f"{'Phase Speed and Pattern Correlation':^50}")
+print(f"{'':{'='}^{50}}")
+print("    → Calculating Phase Speed...")
+south_bound = -90
+north_bound = 90
+
+south_lat_index = (
+    np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - south_bound).argmin()
+    if south_bound >= np.min(output_meridional_gridpoints)/METERS_PER_DEGREE else 0
+)
+north_lat_index = (
+    1 + np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - north_bound).argmin() 
+    if north_bound <= np.max(output_meridional_gridpoints)/METERS_PER_DEGREE else None
+)
+
+phase_speed_moisture = np.copy(output_column_moisture)
+normalized_column_moisture = np.mean(phase_speed_moisture[:, south_lat_index:north_lat_index], axis=1)
+
+#### Phase Speed
+phase_speed_correlation = np.einsum(
+    'k,ik->i',
+    np.exp(1j*output_wavenumber*output_zonal_gridpoints),
+    normalized_column_moisture
+) / len(output_zonal_gridpoints)
+
+# Calculate the phase
+phase = np.log(phase_speed_correlation).imag
+instantaneous_phase_speed_array = np.gradient(np.unwrap(phase), downsampled_timepoints)*(1/output_wavenumber)
+
+instantaneous_phase_speed =  xr.DataArray(
+    data = instantaneous_phase_speed_array,
+    dims = ['time'],
+    coords = {'time' : downsampled_timepoints},
+    name = 'phase speed',
+    attrs = {'Latitude Bounds' : (south_bound, north_bound)}
+)
+
+print("    → Saving Phase Speed...")
+# Save instantaneous phase speed as a netCDF file
+phase_speed_file_name = (
+    f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/"
+    + f"{specified_initial_condition_name}_instantaneous-phase-speed" 
+    + f"_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
+)
+instantaneous_phase_speed.to_netcdf(phase_speed_file_name)
+# print(f"    → Instantaneous Phase Speed saved as:\n{phase_speed_file_name}")
+print(f"    → Instantaneous Phase Speed saved")
+
+
+# ### Calculate Pattern Correlation
+
+# In[575]:
+
+print("    → Calculating pattern correlation...")
+south_bound = -90
+north_bound = 90
+
+south_lat_index = (
+    np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - south_bound).argmin()
+    if south_bound >= np.min(output_meridional_gridpoints)/METERS_PER_DEGREE else 0
+)
+north_lat_index = (
+    1 + np.abs(output_meridional_gridpoints/METERS_PER_DEGREE - north_bound).argmin() 
+    if north_bound <= np.max(output_meridional_gridpoints)/METERS_PER_DEGREE else None
+)
+
+# Initialize arrays for the instantaneous phase speed & pattern correlation
+backward_pattern_correlation = xr.DataArray(
+    data = np.empty((len(downsampled_timepoints))),
+    dims = ['time'],
+    coords = {'time' : downsampled_timepoints},
+    name = 'correlation',
+    attrs = {'Latitude Bounds' : (south_bound, north_bound)}
+)
+
+forward_pattern_correlation = xr.DataArray(
+    data = np.empty((len(downsampled_timepoints))),
+    dims = ['time'],
+    coords = {'time' : downsampled_timepoints},
+    name = 'correlation',
+    attrs = {'Latitude Bounds' : (south_bound, north_bound)}
+)
+
+pattern_correlation_moisture = np.copy(output_column_moisture)
+
+# Iterate over the length of the simulation
+for day_index in range(len(downsampled_timepoints)):
+
+    daily_column_moisture = pattern_correlation_moisture[day_index]
+    final_column_moisture = pattern_correlation_moisture[-1]
+    
+    # Calculate the pattern correlation between
+    backward_pattern_correlation[day_index] = np.einsum(
+        'ij,ij->',
+        daily_column_moisture, 
+        final_column_moisture
+    ) / (
+        np.std(daily_column_moisture)
+        * np.std(final_column_moisture) 
+        * len(output_zonal_gridpoints) 
+        * len(output_meridional_gridpoints)
+    )
+
+    # forward_pattern_correlation[day_index] = np.einsum(
+    #     'ij,ij->',
+    #     output_column_moisture[day_index], 
+    #     output_column_moisture[0],
+    # ) / (
+    #     np.std(output_column_moisture[day_index])
+    #     * np.std(output_column_moisture[0]) 
+    #     * len(output_zonal_gridpoints) 
+    #     * len(output_meridional_gridpoints)
+    # )
+
+print(f"    → Saving pattern correlation...")
+# Save pattern correlation as a netCDF file
+# Save instantaneous phase speed as a netCDF file
+pattern_correlation_file_name = (
+    f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/"
+    + f"{specified_initial_condition_name}_pattern-correlation" 
+    + f"_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
+)
+backward_pattern_correlation.to_netcdf(pattern_correlation_file_name)
+# print(f"    → Pattern Correlation saved as:\n{pattern_correlation_file_name}")    
+print(f"    → Pattern Correlation saved")    
+
+# ### Plot Phase Speed & Pattern Correlation
+# #### Pattern correlation and phase speed
+print(f"    → Plotting phase speed and pattern correlation...")
+# In[576]:
+
+loaded_phase_speed = xr.load_dataarray(phase_speed_file_name)
+# print(f"    → Instantaneous phase speed loaded from:\n{phase_speed_file_name}")
+# print(f"{'':{'='}^{50}}")
+
+loaded_pattern_correlation = xr.load_dataarray(pattern_correlation_file_name)
+# print(f"    → Pattern correlation loaded from:\n{pattern_correlation_file_name}")
+# print(f"{'':{'='}^{50}}")
+
+peaks = sp.signal.find_peaks(loaded_pattern_correlation**2)[0]
+padded_peaks = np.insert(peaks, 0, 0)
+padded_peaks = np.append(padded_peaks, len(downsampled_timepoints)-1)
+
+#### Plot the phase speed
+plt.style.use('bmh')
+plt.rcParams.update({'font.size':22})
+plt.figure(figsize=(16,9))
+plt.title(
+    f"k = {k} {initial_condition_type} initial condition \n"
+    + f"Instantaneous phase speed (blue) and Pattern correlation (red), "
+    + f"{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}",
+    fontsize=20,
+    pad=10
+)
+plt.plot(
+    downsampled_timepoints/SECONDS_PER_DAY,
+    loaded_phase_speed,
+    color=bmh_colors('blue'),
+    lw=3
+    # marker='o'
+)
+
+## Add a line with the phase speed of A21
+# plt.axhline(y=6.7, color='black', ls='--', alpha=0.5, label='A21: 6.7 m/s')
+
+y_max = np.max(loaded_phase_speed[day_to_index(3):])
+y_min = np.min(loaded_phase_speed[day_to_index(3):])
+# plt.xlim(3, 360)
+plt.ylim(0.9*y_min, 1.1*y_max)
+plt.xlabel('Day')
+plt.ylabel('m/s', rotation=0, labelpad=40, va='center')
+plt.gca().spines['left'].set_color(bmh_colors('blue'))
+plt.gca().spines['left'].set_linewidth(4)
+
+#### Plot the Pattern correlation
+plt.twinx()
+plt.grid(False)
+plt.plot(
+    downsampled_timepoints/SECONDS_PER_DAY,
+    loaded_pattern_correlation**2,
+    color=bmh_colors('red'),
+    lw=2,
+    alpha=0.5,
+    # marker='o'
+)
+plt.plot(
+    downsampled_timepoints[padded_peaks]/SECONDS_PER_DAY, 
+    loaded_pattern_correlation[padded_peaks]**2, 
+    color=bmh_colors('red'),
+    ls=':',
+    lw=3
+)
+plt.axhline(y=0, color='k', alpha=0.2)
+plt.axhline(y=1, color='k', alpha=0.2)
+plt.gca().spines['right'].set_color(bmh_colors('red'))
+plt.gca().spines['right'].set_linewidth(4)
+plt.ylabel(r"r$^{2}$", rotation=0, va='center', labelpad=20)
+plt.ylim(-0.05, 1.05)
+
+# plt.xlim(-5,365)
+# plt.show()
+plt.savefig(
+      f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
+    + f"{specified_initial_condition_name}_phase-speed_pattern-correlation"
+    + f"_{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}"
+    + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
+    + f".png", 
+    bbox_inches='tight'
+)
+print(f"    → Phase speed and pattern correlation plotted")
+print(f"{'':{'='}^{50}}")
+
+
+
+# # ### Plot propagation budget
+
+# # #### Single time
+
+# # In[ ]:
+
+
+# # Load growth budget
+# # loaded_propagation_budget_filename = (
+# #     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
+# #     + f"_propagation-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
+# # )
+# # loaded_propagation_budget = xr.load_dataset(loaded_propagation_budget_filename)
+# # # print(f"Propagation budget loaded from:\n{loaded_propagation_budget_filename}")
+# # # print(f"{'':{'='}^{50}}")
+
+# # # #### Animation
+
+# # # In[583]:
+
+# # print("    → Animating MSE propagation budget...")
+# # starting_frame = day_to_index(3)
+# # ending_frame = day_to_index(360)
+# # frame_interval = day_to_index(5)
+
+# # # Load growth budget
+# # loaded_propagation_budget_filename = (
+# #     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/{specified_initial_condition_name}" 
+# #     + f"_propagation-budget_{mjo.tick_labeller([south_bound], 'lat', False)[0]}-{mjo.tick_labeller([north_bound], 'lat', False)[0]}.nc"
+# # )
+# # loaded_propagation_budget = xr.load_dataset(loaded_propagation_budget_filename)
+# # # print(f"    → Propagation budget loaded from:\n{loaded_propagation_budget_filename}")
+# # # print(f"{'':{'='}^{50}}")
+
+# # grand_max = np.max(
+# #     (
+# #         loaded_propagation_budget['propagation'][starting_frame:ending_frame],
+# #         loaded_propagation_budget['omega'][starting_frame:ending_frame],
+# #         loaded_propagation_budget['u'][starting_frame:ending_frame],
+# #         loaded_propagation_budget['v'][starting_frame:ending_frame],
+# #         loaded_propagation_budget['Qr'][starting_frame:ending_frame],
+# #         # loaded_propagation_budget['D'][starting_frame:ending_frame],
+# #         loaded_propagation_budget['residual'][starting_frame:ending_frame],
+# #     )
+# # )
+# # grand_min = np.min(
+# #     (
+# #         loaded_propagation_budget['propagation'][starting_frame:ending_frame],
+# #         loaded_propagation_budget['omega'][starting_frame:ending_frame],
+# #         loaded_propagation_budget['u'][starting_frame:ending_frame],
+# #         loaded_propagation_budget['v'][starting_frame:ending_frame],
+# #         loaded_propagation_budget['Qr'][starting_frame:ending_frame],
+# #         # loaded_propagation_budget['D'][starting_frame:ending_frame],
+# #         loaded_propagation_budget['residual'][starting_frame:ending_frame],
+# #     )
+# # )
+
+# # bar_labels = [
+# #     r'Propagation',
+# #     r'ω$_1$mM$_s$',
+# #     r'σ$_x$u$_1$',
+# #     r'-σ$_y$yv$_1$', 
+# #     r'$\langle$Q$_r$$\rangle$',
+# #     # r'$\mathcal{D}\nabla^{2} \langle$h$\rangle$', 
+# #     r'residual'
+# # ]
+# # bar_colors = [
+# #     '#ffa500',
+# #     '#1cf91a',
+# #     '#0533ff',
+# #     '#ff40ff',
+# #     '#4e2d8c',
+# #     # 'red',
+# #     '#bcbcbc'
+# # ]
+
+# # plt.style.use('default')
+# # plt.rcParams.update({'font.size':22})
+# # [fig, ax] = plt.subplots(1, 1, figsize=(16.5, 6.4))
+
+
+# # def update(t):
+# #     bar_values = [
+# #         loaded_propagation_budget['propagation'][t],
+# #         loaded_propagation_budget['omega'][t],
+# #         loaded_propagation_budget['u'][t],
+# #         loaded_propagation_budget['v'][t],
+# #         loaded_propagation_budget['Qr'][t],
+# #         # loaded_propagation_budget['D'][t],
+# #         loaded_propagation_budget['residual'][t],
+# #         ]
+
+# #     plt.cla()
+# #     ax.set_title(
+# #         f"Propagation budget, day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}, " 
+# #         + f"{mjo.tick_labeller([south_bound], 'lat')[0]}-{mjo.tick_labeller([north_bound], 'lat')[0]}", 
+# #         pad=10
+# # )
+# #     ax.bar(bar_labels, bar_values, color=bar_colors, edgecolor='gray', linewidth=3)
+# #     ax.axhline(y=0, color='gray', lw=3, alpha=0.75)
+# #     ax.set_ylabel(r'hr$^{-1}$', labelpad=20, rotation=0, va='center')
+# #     ax.set_ylim(1.1*round_out(grand_min, 'tenths'), 1.1*round_out(grand_max, 'tenths'))
+
+# # # Run the animation
+# # anim = FuncAnimation(
+# #     fig, 
+# #     update, 
+# #     frames=tqdm(
+# #         np.arange(starting_frame, ending_frame, frame_interval), 
+# #         ncols=100, 
+# #         position=0, 
+# #         leave=True
+# #     ), interval=300
+# # )
+
+# # anim.save(
+# #     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
+# #     + f"{specified_initial_condition_name}"
+# #     + f"_propagation-budget_animation"
+# #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
+# #     + f".mp4", 
+# #     dpi=300
+# # )
+# # print(f"    → MSE Propagation budget animated")
+# # # print("MSE Growth and Propagation budgets done")
+# # print(f"{'':{'='}^{50}}")
+
+# # ## Horizontal structure of budget terms
+
+# # ### Calculate horizontal structure of advection fields
+
+# # In[456]:
+
+# # print(f"{'MSE & MSE Tendency Horizontal Structures':^50}")
+# # print(f"{'':{'='}^{50}}")
+# # print(f"    → Calculating MSE and advection fields...")
+
+# # # Calculate the column MSE : <h> = <T> + <q>
+# # column_MSE = np.copy(output_column_temperature + output_column_moisture)
+
+# # # Calculate the MSE tendency directly from the variable
+# # MSE_tendency = np.gradient(column_MSE, downsampled_timepoints, axis=0)
+
+# # #### Zonal advection field
+# # zonal_advection_field = ZONAL_MOISTENING_PARAMETER*output_zonal_velocity
+
+# # #### Meridional advection field
+# # print(f"    → Mean Moisture Profile: {mean_moisture_profile}")
+# # meridional_advection_field = -MERIDIONAL_MOISTENING_PARAMETER*(
+# #     (
+# #         ( # Quadratic base state σ_y * y * v_1
+# #             output_meridional_gridpoints
+# #             if mean_moisture_profile == 'quadratic' else np.ones_like(output_meridional_gridpoints)
+# #         )
+# #         * ( # Exponential base state σ_y * y * e^(-y^2) * v_1
+# #             (output_meridional_gridpoints*np.exp(-(output_meridional_gridpoints/gaussian_length_scale)**2))
+# #             if mean_moisture_profile == 'gaussian' else np.ones_like(output_meridional_gridpoints)
+# #         )
+# #         * ( # Offset gaussian base state σ_y * y * e^(-(y-δ)^2/σ^2) * v_1
+# #             (
+# #                 (output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)*np.exp(
+# #                     -((output_meridional_gridpoints-MERIDIONAL_OFFSET_PARAMETER)/gaussian_length_scale)**2
+# #                 )
+# #             )
+# #             if mean_moisture_profile == 'asymmetric-gaussian' else np.ones_like(output_meridional_gridpoints)
+# #         )
+# #     )[None, :, None]
+# #     * output_meridional_velocity 
+# # )
+
+# # #### Vertical advection field
+# # ## Compute the divergence of the velocity field to get vertical velocity
+# # # dudx
+# # output_ux_fft = fft(output_zonal_velocity, axis=2)
+# # output_dudx_fft = np.einsum(
+# #     'i, kji -> kji',
+# #     (1j*zonal_wavenumber),
+# #     output_ux_fft
+# # )
+# # output_dudx = np.real(ifft(output_dudx_fft, axis=2))
+
+# # # dvdy
+# # output_vy_fft = fft(output_meridional_velocity, axis=1)
+# # output_dvdy_fft = np.einsum(
+# #     'j, kji -> kji',
+# #     (1j*meridional_wavenumber),
+# #     output_vy_fft
+# # )
+# # output_dvdy = np.real(ifft(output_dvdy_fft, axis=1))
+
+# # # ω = -(dudx + dvdy)
+# # divergence = output_dudx + output_dvdy
+# # vertical_velocity = -divergence
+
+# # vertical_advection_field = (
+# #     (GROSS_DRY_STABILITY - gross_moisture_stratification)/GROSS_DRY_STABILITY
+# #     * GROSS_DRY_STABILITY
+# #     * vertical_velocity
+# # )
+
+# # # # Calculate column convective heating <Q_c> = ε_q<q> -ε_t<T> 
+# # moisture_sensitivity_array = MOISTURE_SENSITIVITY * (
+# #     (
+# #         np.exp(-(output_meridional_gridpoints/length_scale)**2)
+# #         if moisture_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
+# #     )
+# #     *(
+# #     (
+# #         1-fringe_region_damping_function(
+# #             output_meridional_gridpoints/METERS_PER_DEGREE, 
+# #             -sensitivity_limit, 
+# #             sensitivity_limit, 
+# #             sensitivity_width, 
+# #             1
+# #         )
+# #     )
+# #         if  moisture_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
+# #     )
+# # )[None, :, None]
+
+# # temperature_sensitivity_array = TEMPERATURE_SENSITIVITY * (
+# #     (
+# #         np.exp(-(output_meridional_gridpoints/length_scale)**2)
+# #         if temperature_sensitivity_structure == '-exp-y' else np.ones_like(output_meridional_gridpoints)
+# #     )
+# #     *(
+# #     (
+# #         1-fringe_region_damping_function(
+# #             output_meridional_gridpoints/METERS_PER_DEGREE, 
+# #             -sensitivity_limit, 
+# #             sensitivity_limit, 
+# #             sensitivity_width, 
+# #             1
+# #         )
+# #     )
+# #         if  temperature_sensitivity_structure == '-step-y' else np.ones_like(output_meridional_gridpoints)
+# #     )
+# # )[None, :, None]
+
+# # column_convective_heating = (
+# #     moisture_sensitivity_array * output_column_moisture
+# #     - temperature_sensitivity_array * output_column_temperature
+# # ) 
+
+# # # Calculate column radiative heating <Q_r> = r<Q_c>
+# # column_radiative_heating = CLOUD_RADIATIVE_PARAMETER*column_convective_heating
+
+# # print(f"    → MSE and advection fields calculated")
+
+# # ### Plot MSE structure and advection fields
+
+# # In[ ]:
+
+
+# # bar_colors = [
+# #     '#ffa500', 
+# #     '#1cf91a',
+# #     '#0533ff', 
+# #     '#ff40ff', 
+# #     '#4e2d8c', 
+# #     'red', 
+# #     '#bcbcbc'
+# # ]
+
+# # #### Animation
+
+# # In[ ]:
+# # print("    → Animating MSE and advection fields...")
+
+# # plt.style.use('default')
+# # plt.rcParams.update({'font.size':16})
+# # fig = plt.figure(figsize=(16.5, 6.5))
+# # gs_main = gs.GridSpec(2, 1, height_ratios = [30,1], figure=fig)
+# # gs_main.update(left=0.05, right=0.95, top=0.9, bottom=0.05, hspace=0.25)
+
+# # gs_maps = gs.GridSpecFromSubplotSpec(1, 2, wspace=0.05, subplot_spec=gs_main[0])
+# # gs_cbar = gs.GridSpecFromSubplotSpec(1, 30, subplot_spec=gs_main[1])
+
+# # ax = []
+# # # Add an axis for the initial condition
+# # ax.append(fig.add_subplot(gs_maps[0]))
+# # ax.append(fig.add_subplot(gs_maps[1]))
+
+# # cbar_ax = fig.add_subplot(gs_cbar[:, 1:-1])
+
+# # starting_frame = day_to_index(0)
+# # ending_frame = day_to_index(360)
+# # frame_interval = day_to_index(5)
+# # plt.suptitle(f"Day {downsampled_timepoints[starting_frame]/SECONDS_PER_DAY :0.1f}", y=0.995, fontsize=20)
+
+# # def update(t):
+# #     plt.suptitle(f"Day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}", y=0.995, fontsize=20)
+    
+# #     #### First plot
+# #     ax[0].clear()
+# #     ax[0].set_title(r'(a) MSE, -σ$_y$yv$_1$, and σ$_x$u$_1$')
+# #     CF_MSE = ax[0].contourf(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         column_MSE[t]/COLUMN_AVERAGE_MASS,
+# #         cmap=Ahmed_cmap,
+# #         norm=mcolors.CenteredNorm(vcenter=0),
+# #         levels=21,
+# #         # alpha=0.75
+# #     )
+    
+# #     CS_v = ax[0].contour(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         meridional_advection_field[t],
+# #         colors=bar_colors[3],
+# #         levels=np.delete(np.linspace(np.min(meridional_advection_field[t]), np.max(meridional_advection_field[t]), 11), [5])
+# #     )
+    
+# #     CS_u = ax[0].contour(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         zonal_advection_field[t],
+# #         colors=bar_colors[2],
+# #         levels=np.delete(np.linspace(np.min(zonal_advection_field[t]), np.max(zonal_advection_field[t]), 11), [5])
+# #     )
+    
+# #     longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
+# #     longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
+# #     ax[0].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
+# #     latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
+# #     latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
+# #     ax[0].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
+# #     ax[0].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
+# #     ax[0].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
+# #     ax[0].set_aspect('auto')
+# #     cbar = plt.colorbar(CF_MSE, cax=cbar_ax, orientation='horizontal')
+# #     cbar.set_label('K', rotation=0, va='center', labelpad=20)
+    
+# #     #### Second Plot
+# #     ax[1].clear()
+# #     ax[1].set_title(r'(b) MSE, $\langle$Q$_r$$\rangle$, and ω$_1$mM$_s$')
+# #     ax[1].contourf(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         column_MSE[t]/COLUMN_AVERAGE_MASS,
+# #         cmap=Ahmed_cmap,
+# #         norm=mcolors.CenteredNorm(vcenter=0),
+# #         levels=21,
+# #         # alpha=0.75
+# #     )
+    
+# #     CS_Qr = ax[1].contour(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         column_radiative_heating[t],
+# #         colors=bar_colors[4],
+# #         levels=np.delete(np.linspace(np.min(column_radiative_heating[t]), np.max(column_radiative_heating[t]), 11), [5])
+# #     )
+    
+# #     CS_omega = ax[1].contour(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         vertical_advection_field[t],
+# #         colors=bar_colors[1],
+# #         levels=np.delete(np.linspace(np.min(vertical_advection_field[t]), np.max(vertical_advection_field[t]), 11), [5])
+# #     )
+
+# #     longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
+# #     longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
+# #     ax[1].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
+# #     latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
+# #     latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
+# #     ax[1].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
+# #     ax[1].set_yticklabels('')
+# #     ax[1].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
+# #     ax[1].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
+# #     ax[1].set_aspect('auto')
+
+# # # Run the animation
+# # anim = FuncAnimation(
+# #     fig, 
+# #     update, 
+# #     frames=tqdm(
+# #         np.arange(starting_frame, ending_frame, frame_interval), 
+# #         ncols=100, 
+# #         position=0, 
+# #         leave=True
+# #     ), interval=300
+# # )
+
+# # anim.save(
+# #     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
+# #     + f"{specified_initial_condition_name}"
+# #     + f"_MSE-structure_animation"
+# #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
+# #     + f".mp4", 
+# #     dpi=150
+# # )
+# # print("    → MSE and advection fields animated")
+
+
+# # ### Plot MSE Tendency structure and advection fields
+
+# # #### Animation
+
+# # In[168]:
+
+# # print("    → Animating MSE tendency and advection fields...")
+# # bar_colors = ['#ffa500', '#1cf91a', '#0533ff', '#ff40ff', '#4e2d8c']
+# # xlims = (-180/k, 180/k)
+# # ylims = (-35, 35)
+
+# # plt.style.use('default')
+# # plt.rcParams.update({'font.size':16})
+# # fig = plt.figure(figsize=(16.5, 6.5))
+# # # gs_main = gs.GridSpec(2, 1, height_ratios = [30,1], figure=fig)
+# # gs_main = gs.GridSpec(1, 1, figure=fig)
+# # gs_main.update(left=0.05, right=0.95, top=0.9, bottom=0.05, hspace=0.25)
+
+# # gs_maps = gs.GridSpecFromSubplotSpec(1, 2, wspace=0.05, subplot_spec=gs_main[0])
+# # # gs_cbar = gs.GridSpecFromSubplotSpec(1, 30, subplot_spec=gs_main[1])
+
+# # ax = []
+# # # Add an axis for the initial condition
+# # ax.append(fig.add_subplot(gs_maps[0]))
+# # ax.append(fig.add_subplot(gs_maps[1]))
+
+# # # cbar_ax = fig.add_subplot(gs_cbar[:, 1:-1])
+
+# # starting_frame = day_to_index(0)
+# # ending_frame = day_to_index(360)
+# # frame_interval = day_to_index(5)
+# # plt.suptitle(f"Day {downsampled_timepoints[starting_frame]/SECONDS_PER_DAY :0.1f}", y=0.995, fontsize=20)
+
+# # def update(t):
+# #     plt.suptitle(f"Day {downsampled_timepoints[t]/SECONDS_PER_DAY :0.1f}", y=0.995, fontsize=20)
+    
+# #     #### First plot
+# #     ax[0].clear()
+# #     ax[0].set_title(r'(a) $\frac{dMSE}{dt}$, -σ$_y$yv$_1$, and σ$_x$u$_1$')
+# #     CF_MSE = ax[0].contourf(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         MSE_tendency[t]/COLUMN_AVERAGE_MASS,
+# #         cmap=Ahmed_cmap,
+# #         norm=mcolors.CenteredNorm(vcenter=0),
+# #         levels=21,
+# #         # alpha=0.75
+# #     )
+    
+# #     CS_v = ax[0].contour(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         meridional_advection_field[t],
+# #         colors=bar_colors[3],
+# #         levels=np.delete(np.linspace(np.min(meridional_advection_field[t]), np.max(meridional_advection_field[t]), 11), [5])
+# #     )
+    
+# #     CS_u = ax[0].contour(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         zonal_advection_field[t],
+# #         colors=bar_colors[2],
+# #         levels=np.delete(np.linspace(np.min(zonal_advection_field[t]), np.max(zonal_advection_field[t]), 11), [5])
+# #     )
+    
+# #     longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
+# #     longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
+# #     ax[0].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
+# #     latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
+# #     latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
+# #     ax[0].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
+# #     ax[0].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
+# #     ax[0].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
+# #     ax[0].set_aspect('auto')
+# #     # cbar = plt.colorbar(CF_MSE, cax=cbar_ax, orientation='horizontal')
+# #     # cbar.set_label('K/s', rotation=0, va='center', labelpad=20)
+    
+# #     #### Second Plot
+# #     ax[1].clear()
+# #     ax[1].set_title(r'(b) $\frac{dMSE}{dt}$, $\langle$Q$_r$$\rangle$, and ω$_1$mM$_s$')
+# #     ax[1].contourf(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         MSE_tendency[t]/COLUMN_AVERAGE_MASS,
+# #         cmap=Ahmed_cmap,
+# #         norm=mcolors.CenteredNorm(vcenter=0),
+# #         levels=21,
+# #         # alpha=0.75
+# #     )
+    
+# #     CS_Qr = ax[1].contour(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         column_radiative_heating[t],
+# #         colors=bar_colors[4],
+# #         levels=np.delete(np.linspace(np.min(column_radiative_heating[t]), np.max(column_radiative_heating[t]), 11), [5])
+# #     )
+    
+# #     CS_omega = ax[1].contour(
+# #         output_zonal_gridpoints*grid_scaling,
+# #         output_meridional_gridpoints*grid_scaling,
+# #         vertical_advection_field[t],
+# #         colors=bar_colors[1],
+# #         levels=np.delete(np.linspace(np.min(vertical_advection_field[t]), np.max(vertical_advection_field[t]), 11), [5])
+# #     )
+
+# #     longitude_ticks = np.arange(xlims[0]+xlims[1]/3, xlims[1]+xlims[1]/3, xlims[1]/3)
+# #     longitude_labels = mjo.tick_labeller(longitude_ticks, direction='lon')
+# #     ax[1].set_xticks(longitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=longitude_labels)
+# #     latitude_ticks = np.arange(ylims[0], ylims[1]+ylims[1]/3, ylims[1]/3)
+# #     latitude_labels = mjo.tick_labeller(latitude_ticks, direction='lat')
+# #     ax[1].set_yticks(latitude_ticks*METERS_PER_DEGREE*grid_scaling, labels=latitude_labels)
+# #     ax[1].set_yticklabels('')
+# #     ax[1].set_xlim(xlims[0]*METERS_PER_DEGREE*grid_scaling,(xlims[1]-1)*METERS_PER_DEGREE*grid_scaling)
+# #     ax[1].set_ylim(ylims[0]*METERS_PER_DEGREE*grid_scaling,ylims[1]*METERS_PER_DEGREE*grid_scaling)
+# #     ax[1].set_aspect('auto')
+
+# # # Run the animation
+# # anim = FuncAnimation(
+# #     fig, 
+# #     update, 
+# #     frames=tqdm(
+# #         np.arange(starting_frame, ending_frame, frame_interval), 
+# #         ncols=100, 
+# #         position=0, 
+# #         leave=True
+# #     ), interval=300
+# # )
+
+# # anim.save(
+# #     f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
+# #     + f"{specified_initial_condition_name}"
+# #     + f"_MSE-tendency-structure_animation"
+# #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
+# #     + f".mp4", 
+# #     dpi=150
+# # )
+# # print("    → MSE tendency and advection fields animated")
+# # print(f"{'':{'='}^{50}}")
+
+# # print(f"{'Relative anomaly magnitudes':^50}")
+# # print(f"{'':{'='}^{50}}")
+# # # # Relative anomaly magnitudes
+# # # ## Scatter plot of all latitudes
+
+# # print(f"    → Plotting scatter plots...")
+# # t = day_to_index(360)
+# # column_MSE = np.copy(output_column_temperature + output_column_moisture)
+
+# # plt.style.use('bmh')
+# # plt.rcParams.update({'font.size':11})
+# # fig = plt.figure(figsize=(8+2,4+2))
+# # fig.suptitle(t=f"k = {k}", x=0.5, y=0.85, fontsize=20)
+# # gs_main = gs.GridSpec(1, 2, figure=fig)
+# # gs_main.update(bottom=0.125, top=0.875, left=0.15, right=0.85, wspace=0.1)
+# # ax = []
+# # ax.append(fig.add_subplot(gs_main[0,0]))
+# # ax.append(fig.add_subplot(gs_main[0,1]))
+
+
+# # # print(specified_lat_index)
+# # scaled_column_moisture = (output_column_moisture[t]/np.max(output_column_moisture[t])).flatten()
+# # scaled_column_temperature = (output_column_temperature[t]/np.max(output_column_moisture[t])).flatten()
+# # scaled_column_MSE = (column_MSE[t]/np.max(output_column_moisture[t])).flatten()
+
+# # ax[0].scatter(
+# #     scaled_column_MSE,
+# #     scaled_column_moisture,
+    
+# # )
+
+# # slope, intercept, r_value, p_value, std_err = sp.stats.linregress(
+# #     scaled_column_MSE,
+# #     scaled_column_moisture, 
+# # )
+
+# # ax[0].plot(
+# #     scaled_column_MSE, 
+# #     (slope*scaled_column_MSE+intercept),
+# #     color='red'
+# # )
+
+# # ax[0].plot(
+# #     [-1.5,1.5],
+# #     [-1.5,1.5],
+# #     ls=':',
+# #     color='k',
+# #     alpha=0.25
+# # )
+
+# # ax[0].set_yticks(np.arange(-1,2,0.5))
+# # ax[0].set_xlim(-1.5,1.5)
+# # ax[0].set_ylim(-1.5,1.5)
+# # ax[0].text(
+# #     -1.35, 1.25, 
+# #     f"m={slope:0.2f}",
+# #     bbox=dict(facecolor='#eeeeee', edgecolor='#bcbcbc', boxstyle='round'), 
+# #     ha='left', 
+# #     va='center',
+# #     fontsize=16
+# # )
+# # ax[0].set_ylabel(r'$\langle$q$\rangle$', rotation=0, va='center', labelpad=15)
+# # ax[0].set_aspect('equal')
+
+# # #### Column Temperature
+# # ax[1].scatter(
+# #     scaled_column_MSE,
+# #     scaled_column_temperature,
+    
+# # )
+# # slope, intercept, r_value, p_value, std_err = sp.stats.linregress(
+# #     scaled_column_MSE,
+# #     scaled_column_temperature, 
+# # )
+# # ax[1].plot(
+# #     scaled_column_MSE, 
+# #     (slope*scaled_column_MSE+intercept),
+# #     color='red'
+# # )
+# # ax[1].plot(
+# #     [-1.5,1.5],
+# #     [-1.5,1.5],
+# #     ls=':',
+# #     color='k',
+# #     alpha=0.25
+# # )
+
+# # ax[1].set_yticks(np.arange(-1,2,0.5))
+# # ax[1].set_xlim(-1.5,1.5)
+# # ax[1].set_ylim(-1.5,1.5)
+
+# # ax[1].text(
+# #     -1.35, 1.25, 
+# #     f"m={slope:0.2f}",
+# #     bbox=dict(facecolor='#eeeeee', edgecolor='#bcbcbc', boxstyle='round'), 
+# #     ha='left', 
+# #     va='center',
+# #     fontsize=16
+# # )
+
+# # ax[1].yaxis.set_label_position("right")
+# # ax[1].yaxis.tick_right()
+# # ax[1].set_ylabel(r'$\langle$T$\rangle$', rotation=0, va='center', labelpad=15)
+# # ax[1].set_aspect('equal')
+
+# # ax[-1].set_xticks(np.arange(-1.5,2,0.5))
+# # ax[-2].set_xticks(np.arange(-1.5,2,0.5))
+# # ax[-1].set_xlabel(r'$\langle$MSE$\rangle$')
+# # ax[-2].set_xlabel(r'$\langle$MSE$\rangle$')
+
+
+# # # plt.show()
+# # plt.savefig(
+# #       f"{specified_output_file_directory}/{initial_condition_type}_initial-condition/figures/"
+# #     + f"{specified_initial_condition_name}_relative-anomaly-slopes_all-latitudes"
+# #     + f"_{downsampled_timepoints[t]/SECONDS_PER_DAY:0.1f}-days"
+# #     + (f"_{time.strftime('%Y%m%d-%H%M')}" if save_timestamp else '')
+# #     + f".png", 
+# #     bbox_inches='tight'
+# # )
+# # print("    → Scatter plots plotted")
+# # print(f"{'':{'='}^{50}}")
+# # print(f"k = {k} analysis complete")
+# # print("\n")
+   
+print(f"{'':{'='}^{50}}")
+print("All analysis complete")
+print(f"{'':{'='}^{50}}")
+    
