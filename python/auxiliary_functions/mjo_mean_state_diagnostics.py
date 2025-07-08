@@ -10,6 +10,7 @@ Created on Thu Jun 25 10:26:07 2020
 Load Packages that are necessary for the analysis
 """
 import numpy as np
+import scipy
 
 """
 0. Technical problems:
