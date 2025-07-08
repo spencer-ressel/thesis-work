@@ -5,3 +5,5 @@
 .nfs*
 *.mat
 __pycache__/
+/output/
+/graphics/
