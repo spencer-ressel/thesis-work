@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, "/glade/u/home/sressel/auxiliary_functions/")
+sys.path.insert(0, "/glade/u/home/sressel/thesis-work/python/auxiliary_functions/")
 import mjo_mean_state_diagnostics as mjo
 import matplotlib.colors as mcolors
 import cftime
