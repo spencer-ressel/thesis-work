@@ -167,6 +167,41 @@ def mjo_filter_data(
     wavenumber_bounds
 ):
 
+    """
+    Apply an MJO (Madden-Julian Oscillation) spectral filter to a time-longitude gridded variable.
+
+    This function transforms input data to Fourier space using `xrft.fft`, filters it for
+    eastward-propagating signals in a specified zonal wavenumber range, and returns the
+    inverse-transformed result in physical space. The output is a reconstruction of the
+    input variable with only MJO-relevant scales preserved.
+
+    Parameters
+    ----------
+    variable_time_filtered : xarray.DataArray
+        A 2D or higher-dimensional DataArray with at least 'time' and 'lon' dimensions.
+        This variable is assumed to be pre-filtered in the frequency domain (e.g., bandpass
+        filtered for the 20–100 day range).
+
+    wavenumber_bounds : slice
+        A Python `slice` object indicating the zonal wavenumber bounds to retain.
+        For example, `slice(1, 4)` keeps zonal wavenumbers 1 through 4, corresponding
+        to planetary-scale features.
+
+    Returns
+    -------
+    variable_mjo_filtered : xarray.DataArray
+        The input variable reconstructed from only the retained MJO spectral components.
+        The output has the same shape and metadata as the input, with additional attributes:
+        - "mjo-filtered": "True"
+        - "wavenumber-bounds": (start, stop)
+
+    Notes
+    -----
+    - Only eastward-propagating waves (negative phase speed) are retained.
+    - Wavenumber filtering is done by comparing absolute zonal wavenumber in cycles per degree.
+    - Uses `xrft` for fast Fourier transforms with amplitude/phase preservation.
+    """
+
     import xrft
     import xarray as xr
     import numpy as np
