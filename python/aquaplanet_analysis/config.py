@@ -4,6 +4,7 @@ import mjo_mean_state_diagnostics as mjo
 import matplotlib.colors as mcolors
 import cftime
 import xarray as xr
+import string
 
 data_directory = rf"/glade/campaign/univ/uwas0152/post_processed_data"
 aquaplanet_output_directory = f"/glade/u/home/sressel/thesis-work/python/aquaplanet_analysis/output/"
