@@ -1,4 +1,4 @@
-def tick_labeller(ticks, direction, degree_symbol=True, precision=1):
+def tick_labeller(ticks, direction, degree_symbol=True, precision=0):
     """
     This function takes in a numpy array of tick locations and formats the list as latitude or longitude points.
 
