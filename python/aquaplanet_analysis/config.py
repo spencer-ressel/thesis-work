@@ -117,6 +117,11 @@ experiments_array = xr.DataArray(
     }
 )
 
+latitude_bounds = {}
+latitude_bounds['-4K'] = (-5,5)
+latitude_bounds['0K'] = (-10,10)
+latitude_bounds['4K'] = (-15,15)
+
 # Specify parameters
 # Physical constants
 # Seconds per day
