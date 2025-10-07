@@ -1,0 +1,12 @@
+{
+    "experiment_name": "correction_noise_test_3",
+    "description": "This test uses the 2.8 deg model and 24-hr timesteps with random noise added to the initial condition at each time step",
+    "model_name": "../neuralgcm/neuralgcm/checkpoints/deterministic_2_8_deg.pkl",
+    "demo_start_time": "2000-01-15",
+    "inner_steps": 24,
+    "outer_steps": 1,
+    "timedelta": "24 hours",
+    "n_days": 60,
+    "random_key": 37,
+    "noise_amplitude": "1e-11"
+}
