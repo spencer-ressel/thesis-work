@@ -1,9 +1,0 @@
-{
-    "experiment_name": "stochastic_model_test_1",
-    "description": "This test uses the stochastic precipitation 2.8 deg model and 1-hr timesteps along with the model.advance function.",
-    "model_name": "../neuralgcm/neuralgcm/checkpoints/models_v1_precip_stochastic_precip_2_8_deg.pkl",
-    "demo_start_time": "2000-01-15",
-    "n_timesteps": 48,
-    "random_key": 37,
-    "noise_amplitude": "1e-14"
-}
