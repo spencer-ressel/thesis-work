@@ -7,27 +7,28 @@
 
 Nens = 1
 #Nens = 30 # number of ensemble members
-ndays = 14 # length of full forecast optimization window in days
-niters = 10 # number of optimization iterations
+ndays = 2 # length of full forecast optimization window in days
+niters = 2 # number of optimization iterations
 #niters = 100 # number of optimization iterations
 vvars = ['temperature','geopotential','u_component_of_wind','v_component_of_wind']
 learn_rate = 1e-5
 #sdate = '2011-04-08T00' # starting date (optimize the initial condition at this time)
 #sdate = '2021-03-30T00'; exp_name = 'march2021'
-#sdate = '2014-03-15T00'; exp_name = 'march2014'
-sdate = '2014-03-15T00'; exp_name = 'march2014_long'
+sdate = '2014-03-15T00'; exp_name = 'march2014'
+#sdate = '2014-03-15T00'; exp_name = 'march2014_long'
 
 #
 # choose a model:
 #
-model_name = 'tl63_stochastic_mini.pkl'
-#model_name = 'neural_gcm_dynamic_forcing_deterministic_2_8_deg.pkl'
+#model_name = 'tl63_stochastic_mini.pkl'
+model_name = 'neural_gcm_dynamic_forcing_deterministic_2_8_deg.pkl'
 #model_name = 'neural_gcm_dynamic_forcing_deterministic_1_4_deg.pkl'
 #model_name = 'neural_gcm_dynamic_forcing_stochastic_1_4_deg.pkl'
 
 # paths to data
 path_input = '/glade/work/hakim/data/ai-models/neuralgcm/input/'+exp_name+'/'
-path_output =  '/glade/work/hakim/data/ai-models/neuralgcm/output/'
+# path_output =  '/glade/work/hakim/data/ai-models/neuralgcm/output/'
+path_output = '/glade/campaign/univ/uwas0152/neuralGCM_data/optimizations/'
 path_model = '/glade/work/hakim/data/ai-models/neuralgcm/models/'
 
 import jax
@@ -48,13 +49,13 @@ def add_one_day(date_str):
     # Parse the input string into a datetime object
     date_format = '%Y-%m-%dT%H'
     date_obj = datetime.strptime(date_str, date_format)
-    
+
     # Add one day to the date
     new_date_obj = date_obj + timedelta(days=1)
-    
+
     # Format the new date back into a string
     new_date_str = new_date_obj.strftime(date_format)
-    
+
     return new_date_str
 
 # save forecast dictionary to h5py file
@@ -111,14 +112,14 @@ def get_logger():
 @jax.jit
 def forecast_partial(model,input_encoded,forcings):
     steps = 2 # number of days for inner loop: must match compute_loss_traj
-    dt = np.timedelta64(24, 'h')  # save outputs once per day    
+    dt = np.timedelta64(24, 'h')  # save outputs once per day
     output_encoded,output_decoded = model.unroll(input_encoded,forcings,steps=steps,timedelta=dt)
     return output_encoded,output_decoded
 
 @jax.jit
 def compute_loss_traj(model,inputs_state,inputs,all_forcings,rng,verif,max_norm):
     substep = 2 # number of days for inner loop: must match forecast_partial!
-    steps = verif[list(verif.keys())[0]].shape[0] # total number of days 
+    steps = verif[list(verif.keys())[0]].shape[0] # total number of days
     # make sure we have an integer multiple of the substep
     assert(np.allclose(steps/substep,int(steps/substep)))
     nsubsteps = int(steps/substep)
@@ -141,7 +142,7 @@ def compute_loss_traj(model,inputs_state,inputs,all_forcings,rng,verif,max_norm)
             # NH
             #J = J + jnp.nanmean(((verif[k][sind:eind,14:,:,31:63] - f_decoded[k][:,14:,:,31:63])/max_norm[v][14:])**2)
             # PNW (remember lat and lon are reversed in this model: (lev,lon,lat)!)
-            #J = J + jnp.nanmean(((verif[k][sind:eind,14:,82:89,47:53] - f_decoded[k][:,14:,82:89,47:53])/max_norm[v][14:])**2)            
+            #J = J + jnp.nanmean(((verif[k][sind:eind,14:,82:89,47:53] - f_decoded[k][:,14:,82:89,47:53])/max_norm[v][14:])**2)
         sind = sind+substep
     return J
 
@@ -179,22 +180,22 @@ for d in range(ndays):
     for v in vvars:
         verif_traj[v][d,:,:,:] = ds_v[v]
     ds_v.close()
-    
+
 # compute normalizing factors for each variable and each level, using the value value at the first time
 max_norm = {}
 for v in vvars:
     # GH 11/17/2024: I commented this out since it is set in the block above; not tested!
     #verif_traj[v][d,:,:,:] = ds_v[v]
-    std_values = verif_traj[v][0,:,:,:].std(axis=(1,2), keepdims=True)    
+    std_values = verif_traj[v][0,:,:,:].std(axis=(1,2), keepdims=True)
     max_norm[v] = std_values
-    
+
 #---------------------------------------------------
 #---- START MAIN: optimize ensemble members one at a time
 #---------------------------------------------------
 for emem in range(Nens):
     logger.info('encoding initial condition for member'+str(emem))
     input_encoded = model.encode(inputs_h,forcings_h,jax.random.key(emem))
-    
+
     # initialize
     optimizer = optax.adam(learn_rate)  # dry variables only
     opt_model = model
@@ -204,7 +205,7 @@ for emem in range(Nens):
     loss_min = 1e19
     #-----------------------------------------
     # trajectory optimization
-    #-----------------------------------------    
+    #-----------------------------------------
     for i in range(niters):
         loss, grads = jax.value_and_grad(compute_loss_traj,argnums=1)(opt_model,params,input_encoded,all_forcings,jax.random.key(emem),verif_traj,max_norm)
         lsave_heatwave.append(loss)
@@ -224,7 +225,7 @@ for emem in range(Nens):
         logger.info(f'{i=}, {loss=}')
 
     #-----------------------------------------
-    # make control and optimal forecasts 
+    # make control and optimal forecasts
     #-----------------------------------------
     dt = np.timedelta64(24, 'h')  # save outputs once per day
 

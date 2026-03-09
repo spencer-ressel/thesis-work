@@ -1,0 +1,253 @@
+/var/spool/pbs/mom_priv/jobs/5161780.desched1.SC: line 10: /glade/u/home/sressel/miniconda3/etc/profile.d/conda.sh: No such file or directory
+usage: conda [-h] [-v] [--no-plugins] [-V] COMMAND ...
+conda: error: argument COMMAND: invalid choice: 'activate' (choose from 'clean', 'compare', 'config', 'create', 'info', 'init', 'install', 'list', 'notices', 'package', 'remove', 'uninstall', 'rename', 'run', 'search', 'update', 'upgrade', 'doctor', 'repoquery', 'env')
+GPU-59b17753-8a24-1f79-722e-c945072d6adf
+Fri Feb 20 14:59:56 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.65.06              Driver Version: 580.65.06      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:41:00.0 Off |                    0 |
+| N/A   28C    P0             49W /  400W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+/glade/u/apps/jupyterhub/jh-23.11/bin/python
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/neuralGCM_analysis/ngcm_optimal.py", line 34, in <module>
+    import jax
+ModuleNotFoundError: No module named 'jax'
+/var/spool/pbs/mom_priv/jobs/5161946.desched1.SC: line 10: /glade/u/home/sressel/miniconda3/etc/profile.d/conda.sh: No such file or directory
+usage: conda [-h] [-v] [--no-plugins] [-V] COMMAND ...
+conda: error: argument COMMAND: invalid choice: 'activate' (choose from 'clean', 'compare', 'config', 'create', 'info', 'init', 'install', 'list', 'notices', 'package', 'remove', 'uninstall', 'rename', 'run', 'search', 'update', 'upgrade', 'doctor', 'repoquery', 'env')
+GPU-59b17753-8a24-1f79-722e-c945072d6adf
+Fri Feb 20 15:07:58 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.65.06              Driver Version: 580.65.06      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:41:00.0 Off |                    0 |
+| N/A   28C    P0             50W /  400W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+/glade/u/apps/jupyterhub/jh-23.11/bin/python
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/neuralGCM_analysis/ngcm_optimal.py", line 34, in <module>
+    import jax
+ModuleNotFoundError: No module named 'jax'
+/var/spool/pbs/mom_priv/jobs/5162276.desched1.SC: line 10: /glade/u/home/sressel/miniconda3/etc/profile.d/conda.sh: No such file or directory
+
+The following have been reloaded with a version change:
+  1) cuda/12.3.2 => cuda/12.8.0
+
+GPU-e45d33c7-fb0b-a6eb-7a32-1781baee20ce
+Fri Feb 20 15:20:28 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.65.06              Driver Version: 580.65.06      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:41:00.0 Off |                    0 |
+| N/A   28C    P0             50W /  400W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+/glade/u/home/sressel/.conda/envs/neural_gcm/bin/python
+2026-02-20 15:20:36,490 - INFO - reading model checkpoint...
+INFO:2026-02-20 15:20:36,592:jax._src.xla_bridge:752: Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: libtpu.so: cannot open shared object file: No such file or directory
+2026-02-20 15:20:36,592 - INFO - Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: libtpu.so: cannot open shared object file: No such file or directory
+WARNING:2026-02-20 15:20:36,592:jax._src.xla_bridge:794: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+2026-02-20 15:20:36,592 - WARNING - An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+2026-02-20 15:20:36,899 - INFO - reading heatwave initial confition...
+2026-02-20 15:20:37,024 - INFO - reading verification data...
+0 /glade/work/hakim/data/ai-models/neuralgcm/input/march2014/2014-03-16T00.nc
+<xarray.DataArray 'time' (time: 1)> Size: 8B
+array(['2014-03-16T00:00:00.000000000'], dtype='datetime64[ns]')
+Coordinates:
+  * time     (time) datetime64[ns] 8B 2014-03-16
+1 /glade/work/hakim/data/ai-models/neuralgcm/input/march2014/2014-03-17T00.nc
+<xarray.DataArray 'time' (time: 1)> Size: 8B
+array(['2014-03-17T00:00:00.000000000'], dtype='datetime64[ns]')
+Coordinates:
+  * time     (time) datetime64[ns] 8B 2014-03-17
+2026-02-20 15:20:37,150 - INFO - encoding initial condition for member0
+2026-02-20 15:20:37,367 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:38,201 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:20:38,432 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:38,644 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:38,659 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 15:20:38,719 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:39,536 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:20:39,767 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:39,974 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:39,989 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 15:20:48,338 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:49,149 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:20:49,381 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:49,587 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:49,602 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 15:20:49,639 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:50,451 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:20:50,681 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:50,887 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:50,902 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 15:20:52,676 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:53,493 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:20:53,724 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:53,931 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:53,946 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 15:20:53,983 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:54,912 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:20:55,146 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:55,355 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:20:55,370 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+/var/spool/pbs/mom_priv/jobs/5162276.desched1.SC: line 21: 16081 Killed                  python3 ngcm_optimal.py
+Cgroup mem limit exceeded: oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=5162276.desched1,mems_allowed=0-3,oom_memcg=/pbs_jobs.service/jobid/5162276.desched1,task_memcg=/pbs_jobs.service/jobid/5162276.desched1,task=python3,pid=16081,uid=44031
+
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) ncarenv/24.12
+/var/spool/pbs/mom_priv/jobs/5162525.desched1.SC: line 13: /glade/u/home/sressel/miniconda3/etc/profile.d/conda.sh: No such file or directory
+Lmod has detected the following error: The following module(s) are unknown:
+"cuda/12.9.86"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "cuda/12.9.86"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+Lmod has detected the following error: The following module(s) are unknown:
+"cudnn/9.19.0.56"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "cudnn/9.19.0.56"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+<string>:1: DeprecationWarning: jax.lib.xla_bridge.get_backend is deprecated; use jax.extend.backend.get_backend.
+0.6.2
+gpu
+LD_LIBRARY_PATH:
+
+CUDA_VISIBLE_DEVICES:
+GPU-9a96828d-26f8-71fc-c91b-745f98352a1d
+2026-02-20 15:58:03,876 - INFO - reading model checkpoint...
+INFO:2026-02-20 15:58:04,197:jax._src.xla_bridge:752: Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: libtpu.so: cannot open shared object file: No such file or directory
+2026-02-20 15:58:04,197 - INFO - Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: libtpu.so: cannot open shared object file: No such file or directory
+2026-02-20 15:58:04,792 - INFO - reading heatwave initial confition...
+2026-02-20 15:58:04,919 - INFO - reading verification data...
+0 /glade/work/hakim/data/ai-models/neuralgcm/input/march2014/2014-03-16T00.nc
+<xarray.DataArray 'time' (time: 1)> Size: 8B
+array(['2014-03-16T00:00:00.000000000'], dtype='datetime64[ns]')
+Coordinates:
+  * time     (time) datetime64[ns] 8B 2014-03-16
+1 /glade/work/hakim/data/ai-models/neuralgcm/input/march2014/2014-03-17T00.nc
+<xarray.DataArray 'time' (time: 1)> Size: 8B
+array(['2014-03-17T00:00:00.000000000'], dtype='datetime64[ns]')
+Coordinates:
+  * time     (time) datetime64[ns] 8B 2014-03-17
+2026-02-20 15:58:05,011 - INFO - encoding initial condition for member0
+2026-02-20 15:58:05,407 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:06,214 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:58:06,439 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:06,652 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:06,666 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 15:58:06,725 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:07,517 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:58:07,746 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:07,948 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:07,962 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 15:58:27,591 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:28,379 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:58:28,604 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:28,954 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:28,969 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 15:58:29,004 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:29,791 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:58:30,016 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:30,218 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:30,233 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 15:58:32,034 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:32,821 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:58:33,044 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:33,243 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:33,257 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 15:58:33,292 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:34,076 - INFO - [NGCM] Initializing NoRandomField
+2026-02-20 15:58:34,298 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:34,497 - INFO - [NGCM] Initializing ZerosRandomField
+2026-02-20 15:58:34,512 - INFO - [NGCM] Initializing DynamicDataForcing with dt_tolerance='1 year'
+2026-02-20 16:00:08.885495: W external/xla/xla/hlo/transforms/simplifiers/hlo_rematerialization.cc:3023] Can't reduce memory use below 28.09GiB (30161689220 bytes) by rematerialization; only reduced to 83.66GiB (89832863487 bytes), down from 83.92GiB (90109622839 bytes) originally
+2026-02-20 16:02:06.512218: E external/xla/xla/service/slow_operation_alarm.cc:73] 
+********************************
+[Compiling module jit_compute_loss_traj] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+2026-02-20 16:04:18.369125: E external/xla/xla/service/slow_operation_alarm.cc:140] The operation took 4m11.857008953s
+
+********************************
+[Compiling module jit_compute_loss_traj] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+2026-02-20 16:04:31.269576: W external/xla/xla/tsl/framework/bfc_allocator.cc:501] Allocator (GPU_0_bfc) ran out of memory trying to allocate 83.79GiB (rounded to 89964237824)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+2026-02-20 16:04:31.269873: W external/xla/xla/tsl/framework/bfc_allocator.cc:512] *___________________________________________________________________________________________________
+E0220 16:04:31.269943  126244 pjrt_stream_executor_client.cc:2916] Execution of replica 0 failed: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 89964237704 bytes. [tf-allocator-allocation-error='']
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/neuralGCM_analysis/ngcm_optimal.py", line 210, in <module>
+    loss, grads = jax.value_and_grad(compute_loss_traj,argnums=1)(opt_model,params,input_encoded,all_forcings,jax.random.key(emem),verif_traj,max_norm)
+jax._src.source_info_util.JaxStackTraceBeforeTransformation: jaxlib._jax.XlaRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 89964237704 bytes.
+
+The preceding stack trace is the source of the JAX operation that, once transformed by JAX, triggered the following exception.
+
+--------------------
+
+The above exception was the direct cause of the following exception:
+
+jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/neuralGCM_analysis/ngcm_optimal.py", line 210, in <module>
+    loss, grads = jax.value_and_grad(compute_loss_traj,argnums=1)(opt_model,params,input_encoded,all_forcings,jax.random.key(emem),verif_traj,max_norm)
+jaxlib._jax.XlaRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 89964237704 bytes.
