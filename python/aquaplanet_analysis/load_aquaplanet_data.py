@@ -433,58 +433,58 @@ def load_aquaplanet_data(variables_to_load, experiment, pressure_subset_bounds=s
         variables_loaded.append(net_longwave_flux)
         print(rf"{'✔':>1}")
 
+    if 'Cloud Ice Water Content' in variables_to_load:
+        print(f"{'Cloud Ice Water Content':<{str_width-1}}")
+
+        print(f"{'→ Data...':<{str_width-1}}", end="")
+        cloud_ice_water_content = xr.open_dataset(
+            f"{input_data_directory}/SST_AQP3_Qobs_27_{experiment}_1D_20y_CLDICE.nc"
+        )["CLDICE"].transpose("time", "lat", "lon", "plev")
+        print(rf"{'✔':>1}")
+
+        print(f"{'→ Attributes...':<{str_width-1}}", end="")
+        cloud_ice_water_content.name = "Cloud Ice Water Content"
+        cloud_ice_water_content.attrs["description"] = "Cloud Ice Water Content"
+        cloud_ice_water_content.attrs["units"] = r"kg kg$^{-1}$"
+        cloud_ice_water_content.attrs["file_id"] = "CLDICE"
+        cloud_ice_water_content.attrs["short_name"] = "CLDICE"
+        variables_loaded.append(cloud_ice_water_content)
+        print(rf"{'✔':>1}")
+
     if 'Cloud Liquid Water Content' in variables_to_load:
         print(f"{'Cloud Liquid Water Content':<{str_width-1}}")
 
         print(f"{'→ Data...':<{str_width-1}}", end="")
-        toa_shortwave_flux = xr.open_dataset(
-            f"{input_data_directory}/SST_AQP3_Qobs_27_{experiment}_1D_20y_FSNT.nc"
-        )["CLDLIQ"]
+        cloud_liquid_water_content = xr.open_dataset(
+            f"{input_data_directory}/SST_AQP3_Qobs_27_{experiment}_1D_20y_CLDLIQ.nc"
+        )["CLDLIQ"].transpose("time", "lat", "lon", "plev")
         print(rf"{'✔':>1}")
 
         print(f"{'→ Attributes...':<{str_width-1}}", end="")
-        toa_shortwave_flux.name = "Cloud Liquid Water Content"
-        toa_shortwave_flux.attrs["description"] = "Cloud Liquid Water Content"
-        toa_shortwave_flux.attrs["units"] = r"kg kg$^{-1}$"
-        toa_shortwave_flux.attrs["file_id"] = "CLDLIQ"
-        toa_shortwave_flux.attrs["short_name"] = "FSNT"
-        variables_loaded.append(toa_shortwave_flux)
+        cloud_liquid_water_content.name = "Cloud Liquid Water Content"
+        cloud_liquid_water_content.attrs["description"] = "Cloud Liquid Water Content"
+        cloud_liquid_water_content.attrs["units"] = r"kg kg$^{-1}$"
+        cloud_liquid_water_content.attrs["file_id"] = "CLDLIQ"
+        cloud_liquid_water_content.attrs["short_name"] = "CLDLIQ"
+        variables_loaded.append(cloud_liquid_water_content)
         print(rf"{'✔':>1}")
 
-    if 'TOA Shortwave Flux' in variables_to_load:
-        print(f"{'TOA Shortwave Flux':<{str_width-1}}")
+    if 'Cloud Fraction' in variables_to_load:
+        print(f"{'Cloud Fraction':<{str_width-1}}")
 
         print(f"{'→ Data...':<{str_width-1}}", end="")
-        toa_shortwave_flux = xr.open_dataset(
-            f"{input_data_directory}/SST_AQP3_Qobs_27_{experiment}_1D_20y_FSNT.nc"
-        )["FSNT"]
+        cloud_fraction = xr.open_dataset(
+            f"{input_data_directory}/SST_AQP3_Qobs_27_{experiment}_1D_20y_CLOUD.nc"
+        )["CLOUD"].transpose("time", "lat", "lon", "plev")
         print(rf"{'✔':>1}")
 
         print(f"{'→ Attributes...':<{str_width-1}}", end="")
-        toa_shortwave_flux.name = "TOA Shortwave Flux"
-        toa_shortwave_flux.attrs["description"] = "Top of Atmosphere Shortwave Radiative Flux"
-        toa_shortwave_flux.attrs["units"] = r"W m$^{-2}$"
-        toa_shortwave_flux.attrs["file_id"] = "FSNT"
-        toa_shortwave_flux.attrs["short_name"] = "FSNT"
-        variables_loaded.append(toa_shortwave_flux)
-        print(rf"{'✔':>1}")
-
-    if 'TOA Shortwave Flux' in variables_to_load:
-        print(f"{'TOA Shortwave Flux':<{str_width-1}}")
-
-        print(f"{'→ Data...':<{str_width-1}}", end="")
-        toa_shortwave_flux = xr.open_dataset(
-            f"{input_data_directory}/SST_AQP3_Qobs_27_{experiment}_1D_20y_FSNT.nc"
-        )["FSNT"]
-        print(rf"{'✔':>1}")
-
-        print(f"{'→ Attributes...':<{str_width-1}}", end="")
-        toa_shortwave_flux.name = "TOA Shortwave Flux"
-        toa_shortwave_flux.attrs["description"] = "Top of Atmosphere Shortwave Radiative Flux"
-        toa_shortwave_flux.attrs["units"] = r"W m$^{-2}$"
-        toa_shortwave_flux.attrs["file_id"] = "FSNT"
-        toa_shortwave_flux.attrs["short_name"] = "FSNT"
-        variables_loaded.append(toa_shortwave_flux)
+        cloud_fraction.name = "Cloud Fraction"
+        cloud_fraction.attrs["description"] = "Cloud Fraction"
+        cloud_fraction.attrs["units"] = r""
+        cloud_fraction.attrs["file_id"] = "CLOUD"
+        cloud_fraction.attrs["short_name"] = "CLOUD"
+        variables_loaded.append(cloud_fraction)
         print(rf"{'✔':>1}")
 
     # Zonal Moisture Advection
