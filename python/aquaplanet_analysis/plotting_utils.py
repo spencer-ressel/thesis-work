@@ -1,10 +1,10 @@
 import matplotlib.colors as mcolors
 
 import sys
-sys.path.insert(0, "/glade/u/home/sressel/thesis-work/python/auxiliary_functions/")
+# sys.path.insert(0, "/glade/u/home/sressel/thesis-work/python/auxiliary_functions/")
 from config import PLOTTING_ATTRIBUTES, EXPERIMENT_DISPLAY_NAMES
 import coords
-from mjo_mean_state_diagnostics import modified_colormap
+from auxiliary_functions.plotting_utils import modified_colormap
 
 def get_plotting_attributes(varname):
     """Return a dict of plotting attributes with colormaps constructed."""
