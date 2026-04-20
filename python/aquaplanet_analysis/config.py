@@ -1,130 +1,17 @@
-import sys
-sys.path.insert(0, "/glade/u/home/sressel/thesis-work/python/auxiliary_functions/")
-import mjo_mean_state_diagnostics as mjo
-import matplotlib.colors as mcolors
-import cftime
-import xarray as xr
-import string
-
-data_directory = rf"/glade/campaign/univ/uwas0152/post_processed_data"
-aquaplanet_output_directory = f"/glade/u/home/sressel/thesis-work/python/aquaplanet_analysis/output/"
-
-plotting_attributes = {
-    'Precipitation': dict(
-        cmap='YlGnBu',
-        # d_cmap='BrBG'
-        d_cmap=mjo.modified_colormap("BrBG", "white", 0.05, 0.05)
-    ),
-    'Outgoing Longwave Radiation': dict(d_cmap='gray_r'),
-    'Zonal Wind': dict(
-        cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05),
-        norm=mcolors.CenteredNorm(vcenter=0),
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-    'Meridional Wind': dict(
-        cmap='coolwarm',
-        norm=mcolors.CenteredNorm(vcenter=0),
-        d_cmap='coolwarm'
-    ),
-    'Vertical Wind': dict(
-        cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05),
-        norm=mcolors.CenteredNorm(vcenter=0),
-        d_cmap='coolwarm'
-    ),
-    'Temperature': dict(
-        cmap='YlOrRd',
-        d_cmap='RdYlBu_r'
-    ),
-    'Moisture': dict(
-        cmap='YlGnBu',
-        d_cmap='BrBG'
-    ),
-    'Moist Static Energy': dict(
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-    'Geopotential Height': dict(
-        cmap='YlOrBr',
-        d_cmap='PuOr'
-    ),
-    'Longwave Heating Rate': dict(
-        cmap='YlGnBu_r',
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-    'Shortwave Heating Rate': dict(
-        cmap='YlOrRd',
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-    'Latent Heat Flux': dict(
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-    'Sensible Heat Flux': dict(
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-    'Column Temperature': dict(
-        cmap='YlOrRd',
-        d_cmap='RdYlBu_r'
-    ),
-    'Column Water Vapor': dict(
-        cmap='YlGnBu',
-        d_cmap='BrBG'
-    ),
-    'Column Longwave Heating': dict(
-        cmap='YlGnBu_r',
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-    'Column Shortwave Heating': dict(
-        cmap='YlOrRd',
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-    'Column Moist Static Energy': dict(
-        cmap='coolwarm',
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-    'Potential Temperature': dict(
-        cmap='YlOrRd',
-        d_cmap='RdYlBu_r'
-    ),
-    'Saturation Specific Humidity': dict(
-        cmap='YlGnBu',
-        d_cmap='BrBG'
-    ),
-    'Column Relative Humidity': dict(
-        cmap='YlGnBu',
-        d_cmap='BrBG'
-    ),
-    'Chikira alpha': dict(
-        cmap='coolwarm',
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05),
-        norm=mcolors.CenteredNorm(vcenter=1)
-    ),
-    'Net Longwave Flux': dict(
-        cmap='YlGnBu_r',
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-    'Net Shortwave Flux': dict(
-        cmap='YlOrRd',
-        d_cmap=mjo.modified_colormap("coolwarm", "white", 0.05, 0.05)
-    ),
-}
-
-experiments_list = ['-4K', '0K', '4K']
-experiments_array = xr.DataArray(
-    data=experiments_list,
-    dims=["experiment"],
-    coords={
-        'experiment': experiments_list,
-        'name': ('experiment', ['−4K', 'CTRL', '+4K'])
-    }
+# ============================
+# File paths
+# ============================
+DATA_DIRECTORY = "/glade/campaign/univ/uwas0152/post_processed_data"
+AQUAPLANET_OUTPUT_DIRECTORY = (
+    "/glade/u/home/sressel/thesis-work/python/aquaplanet_analysis/output/"
 )
 
-latitude_bounds = {}
-latitude_bounds['-4K'] = (-5,5)
-latitude_bounds['0K'] = (-10,10)
-latitude_bounds['4K'] = (-15,15)
+# Used for plotting separater lines
+SEP_WIDTH = 40
 
-# Specify parameters
+# ============================
 # Physical constants
-# Seconds per day
+# ============================
 SECONDS_PER_DAY = 24 * 3600
 EARTH_RADIUS = 6378137               # m
 GRAVITY = 9.81                       # m s^-2
@@ -135,19 +22,103 @@ DRY_AIR_GAS_CONSTANT = 287           # J kg^-1 K^-1
 WATER_VAPOR_GAS_CONSTANT = 461       # J kg^-1 K^-1
 LIQUID_WATER_DENSITY = 1000          # kg m^-3
 
-# Print statement string width
-str_width = 40
+# ============================
+# Plotting metadata (parameters only)
+# ============================
+PLOTTING_ATTRIBUTES = {
+    "Precipitation": {
+        "cmap": "YlGnBu",
+        "d_cmap_params": ("BrBG", "white", 0.05, 0.05),
+    },
+    "Outgoing Longwave Radiation": {"d_cmap": "gray_r"},
+    "Zonal Wind": {
+        "cmap_params": ("coolwarm", "white", 0.05, 0.05),
+        "norm_center": 0,
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05),
+    },
+    "Meridional Wind": {
+        "cmap": "coolwarm",
+        "norm_center": 0,
+        "d_cmap": "coolwarm",
+    },
+    "Vertical Wind": {
+        "cmap_params": ("coolwarm", "white", 0.05, 0.05),
+        "norm_center": 0,
+        "d_cmap": "coolwarm",
+    },
+    "Temperature": {"cmap": "YlOrRd", "d_cmap": "RdYlBu_r"},
+    "Moisture": {"cmap": "YlGnBu", "d_cmap": "BrBG"},
+    "Moist Static Energy": {
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05)
+    },
+    "Geopotential Height": {"cmap": "YlOrBr", "d_cmap": "PuOr"},
+    "Longwave Heating Rate": {
+        "cmap": "YlGnBu_r",
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05),
+    },
+    "Shortwave Heating Rate": {
+        "cmap": "YlOrRd",
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05),
+    },
+    "Latent Heat Flux": {
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05)
+    },
+    "Sensible Heat Flux": {
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05)
+    },
+    "Column Temperature": {"cmap": "YlOrRd", "d_cmap": "RdYlBu_r"},
+    "Column Water Vapor": {"cmap": "YlGnBu", "d_cmap": "BrBG"},
+    "Column Longwave Heating": {
+        "cmap": "YlGnBu_r",
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05),
+    },
+    "Column Shortwave Heating": {
+        "cmap": "YlOrRd",
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05),
+    },
+    "Column Moist Static Energy": {
+        "cmap": "coolwarm",
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05),
+    },
+    "Potential Temperature": {"cmap": "YlOrRd", "d_cmap": "RdYlBu_r"},
+    "Saturation Specific Humidity": {"cmap": "YlGnBu", "d_cmap": "BrBG"},
+    "Column Relative Humidity": {"cmap": "YlGnBu", "d_cmap": "BrBG"},
+    "Chikira alpha": {
+        "cmap": "coolwarm",
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05),
+        "norm_center": 1,
+    },
+    "Net Longwave Flux": {
+        "cmap": "YlGnBu_r",
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05),
+    },
+    "Net Shortwave Flux": {
+        "cmap": "YlOrRd",
+        "d_cmap_params": ("coolwarm", "white", 0.05, 0.05),
+    },
+}
 
-# Standard plotting grid kwargs
-grid_kwargs = {"linewidth": 1, "linestyle": (0, (5, 10)), "color": "gray"}
+# ============================
+# Subset bounds (constants only)
+# ============================
+LATITUDE_SOUTH = -30
+LATITUDE_NORTH = 30
+CENTRAL_LONGITUDE = 0
+LONGITUDE_MIN = 0
+LONGITUDE_MAX = 360
 
-# Identify the days that are missing data
-from datetime import timedelta
-missing_days = [
-    cftime.DatetimeNoLeap(7, 2, 4, 0, 0, 0, 0, has_year_zero=True),
-    cftime.DatetimeNoLeap(7, 2, 5, 0, 0, 0, 0, has_year_zero=True),
-    cftime.DatetimeNoLeap(7, 2, 6, 0, 0, 0, 0, has_year_zero=True),
-    cftime.DatetimeNoLeap(7, 2, 7, 0, 0, 0, 0, has_year_zero=True),
-    cftime.DatetimeNoLeap(7, 2, 8, 0, 0, 0, 0, has_year_zero=True),
-]
-missing_timesteps = [missing_days[0] + timedelta(hours=x) for x in range(0, 24*3, 3)]
+INTRASEASONAL_LOWCUT = 100
+INTRASEASONAL_HIGHCUT = 20
+
+LARGE_SCALE_CUTOFF = 1
+SMALL_SCALE_CUTOFF = 3
+
+LOWER_LEVEL_PRESSURE = 950
+UPPER_LEVEL_PRESSURE = 0
+
+# ============================
+# Experiment metadata
+# ============================
+EXPERIMENTS = ["-4K", "0K", "4K"]
+EXPERIMENT_DISPLAY_NAMES = {"-4K": "−4K", "0K": "CTRL", "4K": "+4K"}
+EXPERIMENT_CMAPS = {"-4K": "Blues", "0K": "Reds", "4K": "Purples"}
