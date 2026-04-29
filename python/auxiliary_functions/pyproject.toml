@@ -3,7 +3,7 @@ name = "auxiliary_functions"
 version = "0.1.0"
 description = "Shared utility functions for my scientific workflows"
 authors = [
-    { name = "Spencer" }
+    { name = "Spencer Ressel" }
 ]
 readme = "README.md"
 requires-python = ">=3.9"
