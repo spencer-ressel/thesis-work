@@ -2,7 +2,7 @@ from cartopy.util import add_cyclic_point
 import xarray as xr
 import numpy as np
 
-def add_cyclic_xarray(dataarray, dim='longitude'):
+def add_cyclic_point(dataarray, dim='longitude'):
     """
     Add a cyclic (wrap-around) point to an xarray.DataArray along a given dimension.
 
