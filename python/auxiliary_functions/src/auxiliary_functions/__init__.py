@@ -8,7 +8,7 @@ from .plotting_utils import (
 )
 
 from .xarray_utils import (
-    add_cyclic_xarray,
+    add_cyclic_point,
     # xarray_histogram,
     # standardize_data
 )
