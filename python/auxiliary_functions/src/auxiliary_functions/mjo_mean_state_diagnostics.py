@@ -10,6 +10,7 @@ Created on Thu Jun 25 10:26:07 2020
 Load Packages that are necessary for the analysis
 """
 import numpy as np
+import xarray as xr
 import scipy
 
 """
@@ -470,6 +471,55 @@ def remove_annual_cycle_matrix(x, time, lev=None, lat=None, lon=None):
         x_ano = x - xcycle
     return x_ano, xcycle
 
+def remove_annual_cycle(data, nharmonics=3):
+    """
+    Remove the mean + first `nharmonics` annual harmonics from an xarray DataArray.
+    Works for any number of spatial dimensions.
+
+    Parameters
+    ----------
+    data : xr.DataArray
+        Input data with a time dimension.
+    time_dim : str
+        Name of the time dimension (default: "time").
+    nharmonics : int
+        Number of harmonics to remove (default: 3).
+
+    Returns
+    -------
+    x_ano : xr.DataArray
+        Anomaly with annual cycle removed.
+    x_cycle : xr.DataArray
+        The reconstructed annual cycle that was removed.
+    """
+
+    # Extract time coordinate as integer index (1..N)
+    t = xr.DataArray(
+        np.arange(len(data.time)) + 1,
+        dims='time',
+        coords={'time': data.time},
+    )
+
+    # Build harmonic basis: constant + cos/sin pairs
+    harmonics = [xr.ones_like(t)]  # mean term
+
+    for k in range(1, nharmonics + 1):
+        w = 2 * np.pi * k / 365
+        harmonics.append(np.cos(w * t))
+        harmonics.append(np.sin(w * t))
+
+    harmonics_array = xr.concat(harmonics, dim="harmonic")  # shape: (harmonic, time)
+
+    # Compute regression coefficients C(harmonic, ...)
+    regression_coefficients = (harmonics_array * data).mean(dim='time')
+
+    # Reconstruct annual cycle
+    annual_cycle = (harmonics_array * regression_coefficients).sum("harmonic")
+
+    # Remove cycle
+    data_deannualized = data - annual_cycle
+
+    return data_deannualized, annual_cycle
 
 def mean_var(x, x_ano, x_f):  # caution: assume time in the 0th direction
     # Calculate mean of original data, variance of anomaly/filtered data
