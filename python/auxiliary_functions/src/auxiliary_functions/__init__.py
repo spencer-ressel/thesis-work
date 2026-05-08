@@ -9,6 +9,6 @@ from .plotting_utils import (
 
 from .xarray_utils import (
     add_cyclic_xarray,
-    xarray_histogram,
-    standardize_data
+    # xarray_histogram,
+    # standardize_data
 )

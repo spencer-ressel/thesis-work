@@ -1,0 +1,17 @@
+2026-05-06 12:11:38,042 [INFO] Start calculating CAPE for :4K,0003,8
+2026-05-06 12:11:46,574 [INFO] T loaded
+2026-05-06 12:11:46,669 [INFO] Q loaded
+2026-05-06 12:11:54,241 [INFO] RH calculated
+/glade/u/home/sressel/thesis-work/python/aquaplanet_analysis/cape_calculation.py:93: UserWarning: Relative humidity >120%, ensure proper units.
+  Td = dewpoint_from_relative_humidity(T_C, RH_r)
+/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/metpy/calc/thermo.py:1403: RuntimeWarning: divide by zero encountered in log
+  val = np.log(vapor_pressure / mpconsts.nounit.sat_pressure_0c)
+/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/metpy/calc/thermo.py:1404: RuntimeWarning: invalid value encountered in divide
+  return mpconsts.nounit.zero_degc + 243.5 * val / (17.67 - val)
+2026-05-06 12:12:01,419 [INFO] Dewpoint calculated
+2026-05-06 12:12:01,449 [INFO] Computing parcel temperatures...
+2026-05-06 12:31:14,125 [INFO] Day 5.0/365
+2026-05-06 12:50:53,554 [INFO] Day 10.0/365
+2026-05-06 13:10:13,881 [INFO] Day 15.0/365
+2026-05-06 13:29:22,422 [INFO] Day 20.0/365
+=>> PBS: job killed: walltime 5508 exceeded limit 5400

@@ -39,7 +39,7 @@ def add_cyclic_xarray(dataarray, dim='longitude'):
         name=dataarray.name
     )
 
-def xarray_histogram(da, dims, bins=50, range=None):
+def histogram(da, dims, bins=50, range=None):
     """
     Compute a histogram over multiple xarray dimensions using np.histogram.
     
@@ -88,6 +88,150 @@ def xarray_histogram(da, dims, bins=50, range=None):
     edges_da = xr.DataArray(edges, dims=["bin_edge"], name="bin_edges")
 
     return xr.Dataset({"counts": counts_da, "bin_edges": edges_da})
+
+@xr.register_dataset_accessor("stats")
+class StatsAccessorDataset:
+    """
+    Statistical operations for xarray.Dataset objects.
+    Provides n-dimensional histogram computation for all data variables.
+    """
+
+    def __init__(self, xarray_obj):
+        self._obj = xarray_obj
+
+    def standardize(self, dim="time", unit_variance=False):
+        """
+        Standardize every variable in a Dataset along a given dimension.
+
+        Parameters
+        ----------
+        dim : str
+            Dimension over which to compute mean/std.
+        unit_variance : bool
+            If True, divide by standard deviation; otherwise only remove mean.
+        """
+        data = self._obj
+
+        # Compute mean along the requested dimension for each variable
+        mean = data.mean(dim=dim)
+
+        if unit_variance:
+            # Compute std only if needed
+            std = data.std(dim=dim)
+            return (data - mean) / std
+        else:
+            # Mean removal only
+            return data - mean
+
+# Register a DataArray accessor named `.stats`
+# After this module is imported, any DataArray will have:  da.stats.standardize()
+@xr.register_dataarray_accessor("stats")
+class StatsAccessor:
+    def __init__(self, xarray_obj):
+        # Store the underlying DataArray
+        self._obj = xarray_obj
+
+    def standardize(self, dim="time", unit_variance=False):
+        """
+        Standardize a DataArray along a given dimension.
+
+        Parameters
+        ----------
+        dim : str
+            Dimension over which to compute mean/std.
+        unit_variance : bool
+            If True, divide by standard deviation; otherwise only remove mean.
+        """
+        data = self._obj
+
+        # Compute mean along the requested dimension
+        mean = data.mean(dim=dim)
+
+        if unit_variance:
+            # Compute std only if needed
+            std = data.std(dim=dim)
+            return (data - mean) / std
+        else:
+            # Mean removal only
+            return data - mean
+        
+    def histogram(self, dims, bins=50, range=None):
+        """
+        Compute a histogram over multiple xarray dimensions using np.histogram.
+        
+        Parameters
+        ----------
+        da : xr.DataArray
+            Input data.
+        dims : list or tuple of str
+            Dimensions to reduce (histogram over).
+        bins : int or array-like
+            Number of bins or explicit bin edges.
+        range : tuple, optional
+            Range passed to np.histogram.
+        
+        Returns
+        -------
+        xr.Dataset with:
+            - counts: histogram counts with remaining dims + 'bin'
+            - bin_edges: 1D array of bin edges
+        """
+
+        da = self._obj
+
+        # Stack the reduction dims into a single axis
+        stacked = da.stack(stacked_dim=dims)
+
+        # Apply histogram along the stacked dimension
+        def _hist(x):
+            counts, edges = np.histogram(x, bins=bins, range=range)
+            return counts
+
+        # Apply along the last axis
+        counts = np.apply_along_axis(_hist, -1, stacked.values)
+
+        # Remaining dims (e.g., "experiment")
+        remaining_dims = [d for d in stacked.dims if d != "stacked_dim"]
+        remaining_coords = {d: stacked.coords[d] for d in remaining_dims}
+
+        # Build DataArray for counts
+        counts_da = xr.DataArray(
+            counts,
+            dims=remaining_dims + ["bin"],
+            coords={**remaining_coords, "bin": np.arange(bins)},
+            name="counts"
+        )
+
+        # Compute bin edges once
+        _, edges = np.histogram(da.values.ravel(), bins=bins, range=range)
+        edges_da = xr.DataArray(edges, dims=["bin_edge"], name="bin_edges")
+
+        return xr.Dataset({"counts": counts_da, "bin_edges": edges_da})
+            
+# Register a DataArray accessor named `.stats`
+# After this module is imported, any DataArray will have:  da.stats.standardize()
+@xr.register_dataarray_accessor("units")
+class UnitsAccessor:
+    def __init__(self, xarray_obj):
+        # Store the underlying DataArray
+        self._obj = xarray_obj
+
+    def to_energy_units(self):
+        """
+        Specifically converts Precipitation from units of mm day^-1 to units of W m^-2
+        """
+
+        data = self._obj
+
+        if data.name != 'Precipitation':
+            raise KeyError(f"Variable must be 'Precipitation', current variable is '{data.name}'")
+        
+        if data.attrs['units'] != 'mm day$^{-1}$':
+            raise TypeError(rf"Units must be 'mm day$^{{-1}}$', current units are '{data.attrs['units']}'")
+        data = (2.26*10**6/86400)*data
+        data.attrs['units'] = 'W m$^{-2}$'
+        return data
+
 
 def standardize_data(data, dim="time", axis=-1, unit_variance=True):
     """
