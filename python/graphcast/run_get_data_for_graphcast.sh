@@ -7,15 +7,15 @@
 #PBS -q main
 #PBS -j oe
 
-CODNA_ENV="modified-npl"
+CONDA_ENV="modified-npl"
 
 module load conda 2>/dev/null || true
 conda activate "${CONDA_ENV}"
 
-REPO_ROOT="${PBS_O_WORKDIR}"
+# REPO_ROOT="${PBS_O_WORKDIR}"
 
 # Run IC optimization from repo root.
-cd "${REPO_ROOT}"
+# cd "${REPO_ROOT}"
 start_time=$(date +%s)
 
 python3 -u get_data_for_graphcast.py
