@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 import xesmf as xe
+from auxiliary_functions.time_utils import datetime64_to_yyyymmdd, string_to_yyyymm, convert_time_to_ns, convert_ns_to_datetime, extract_years_months
 
 # ------------------------------------------------------------
 # External APIs / data access
@@ -47,12 +48,12 @@ sys.excepthook = log_exception
 
 
 logger.info("Starting data download script")
-def surface_level_preprocess(ds):
+def surface_level_preprocess(ds: xr.Dataset) -> xr.Dataset:
     # Subset to a specific region and keep only one variable
     subset_data = ds.sel(
         # level=pressure_levels,
         time=ds.time.where(ds['time'].dt.hour.isin([0, 6, 12, 18]), drop=True)
-    )#.assign_coords({'level': pressure_levels.astype(np.int32)})
+    )
 
     target_grid = xr.Dataset(
         {
@@ -60,11 +61,11 @@ def surface_level_preprocess(ds):
             "lon": (["lon"], np.arange(0, 360, 1.0)),
         }
     )
-    regridder = xe.Regridder(subset_data, target_grid, "bilinear", reuse_weights=False)
+    regridder = xe.Regridder(subset_data, target_grid, "bilinear", reuse_weights=False) 
 
-    return regridder(subset_data)
+    return regridder(subset_data) # type: ignore
 
-def pressure_level_preprocess(ds):
+def pressure_level_preprocess(ds: xr.Dataset) -> xr.Dataset:
     # Subset to a specific region and keep only one variable
     subset_data = ds.sel(
         level=pressure_levels,
@@ -77,67 +78,9 @@ def pressure_level_preprocess(ds):
             "lon": (["lon"], np.arange(0, 360, 1.0)),
         }
     )
-    regridder = xe.Regridder(subset_data, target_grid, "bilinear", reuse_weights=False)
+    regridder = xe.Regridder(subset_data, target_grid, "bilinear", reuse_weights=False) 
 
-    return regridder(subset_data)
-
-def datetime64_to_yyyymmdd(dt):
-    """Convert a datetime64-like value to YYYYMMDD for filenames."""
-    date = np.datetime64(dt).astype("datetime64[D]")
-    return str(date).replace("-", "")
-
-def string_to_yyyymm(dt):
-    """
-    Convert a datetime or ISO-format datetime string into 'YYYYMM'.
-    """
-    if isinstance(dt, str):
-        dt = datetime.fromisoformat(dt)
-    return f"{dt.year}{dt.month:02d}"
-
-def convert_time_to_ns(ds):
-    # Original datetime64 coordinate
-    datetime = ds["time"]
-
-    # Compute nanoseconds since first timestep
-    t0 = datetime.values[0]
-    time_ns = (datetime.values - t0).astype("timedelta64[ns]").astype("timedelta64[ns]")
-
-    new_datetime = datetime.expand_dims('batch').assign_coords(
-        datetime=("time", datetime.values),   # secondary coordinate
-        time=("time", time_ns)                # replace primary coordinate
-    )
-
-    # Assign new coordinates
-    ds = ds.expand_dims('batch').assign_coords(
-        datetime=new_datetime,
-        time=("time", time_ns)
-    )
-
-    return ds
-
-def extract_years_months(start, end):
-    """
-    Given start and end datetimes (strings or datetime objects),
-    return sorted lists of unique years and months needed for a CDS request.
-    """
-    if isinstance(start, str):
-        start = datetime.fromisoformat(start)
-    if isinstance(end, str):
-        end = datetime.fromisoformat(end)
-
-    # Normalize to first day of month
-    cursor = start.replace(day=1)
-    end_month = end.replace(day=1)
-
-    years = set()
-    months = set()
-
-    while cursor <= end_month:
-        years.add(f"{cursor.year}")
-        months.add(f"{cursor.month:02d}")
-        cursor += relativedelta(months=1)
-
-    return sorted(years), sorted(months)
+    return regridder(subset_data) # type: ignore
 
 start_date = '1992-08-14T00:00:00.000000000'
 end_date = '1992-11-12T00:00:00.000000000'
@@ -157,143 +100,143 @@ logger.info(f"Graphcast data directory: {graphcast_data_directory}")
 
 years, months = extract_years_months(start_date, end_date)
 
-# # Surface level variables
-# logger.info("Surface level variables")
-# surface_base = "/gdex/data/d633000/e5.oper.an.sfc"
+# Surface level variables
+logger.info("Surface level variables")
+surface_base = "/gdex/data/d633000/e5.oper.an.sfc"
 
-# surface_variables = {
-#     "2m_temperature": "2t",
-#     "mean_sea_level_pressure": "msl",
-#     "10m_u_component_of_wind": "10u",
-#     "10m_v_component_of_wind": "10v"
-# }
+surface_variables = {
+    "2m_temperature": "2t",
+    "mean_sea_level_pressure": "msl",
+    "10m_u_component_of_wind": "10u",
+    "10m_v_component_of_wind": "10v"
+}
 
-# surface_variables_old_names = {
-#     "2m_temperature": "VAR_2T",
-#     "mean_sea_level_pressure": "MSL",
-#     "10m_u_component_of_wind": "VAR_10U",
-#     "10m_v_component_of_wind": "VAR_10V"
-# }
+surface_variables_old_names = {
+    "2m_temperature": "VAR_2T",
+    "mean_sea_level_pressure": "MSL",
+    "10m_u_component_of_wind": "VAR_10U",
+    "10m_v_component_of_wind": "VAR_10V"
+}
 
-# for variable in surface_variables.keys():
-#     files_list = []
+for variable in surface_variables.keys():
+    files_list = []
 
-#     logger.info(f"  {variable}")
-#     for ym in yyyymm_strings:
-#         pattern = f"{surface_base}/{ym}/e5.oper.an.sfc.*_{surface_variables[variable]}.*.nc"
-#         files_list.extend(glob.glob(pattern))
+    logger.info(f"  {variable}")
+    for ym in yyyymm_strings:
+        pattern = f"{surface_base}/{ym}/e5.oper.an.sfc.*_{surface_variables[variable]}.*.nc"
+        files_list.extend(glob.glob(pattern))
 
-#     if not files_list:
-#         print(f"No files found for variable {variable} in month {ym}")
-#     else:
-#         logger.info(f"    Loading files...")
-#         surface_data = convert_time_to_ns(xr.open_mfdataset(files_list, preprocess=surface_level_preprocess).load())
-#         surface_data = surface_data.rename({surface_variables_old_names[variable]: variable})
+    if not files_list:
+        print(f"No files found for variable {variable} in month {ym}")
+    else:
+        logger.info(f"    Loading files...")
+        surface_data = convert_time_to_ns(xr.open_mfdataset(files_list, preprocess=surface_level_preprocess).load())
+        surface_data = surface_data.rename({surface_variables_old_names[variable]: variable})
 
-#     # logger.info(surface_data)
-#     logger.info(f"    Output directory: {graphcast_data_directory}")
-#     logger.info(f"    Saving data...")
-#     surface_data.to_netcdf(f"{graphcast_data_directory}/{variable}.nc")
-#     surface_data.close()
-#     del surface_data
-#     gc.collect()
+    # logger.info(surface_data)
+    logger.info(f"    Output directory: {graphcast_data_directory}")
+    logger.info(f"    Saving data...")
+    surface_data.to_netcdf(f"{graphcast_data_directory}/{variable}.nc")
+    surface_data.close()
+    del surface_data
+    gc.collect()
 
-# logger.info("Finished")
+logger.info("Finished")
 
-# # Pressure levle variables
-# logger.info("Pressure Level Data")
-# pressure_level_base = "/gdex/data/d633000/e5.oper.an.pl"
+# Pressure levle variables
+logger.info("Pressure Level Data")
+pressure_level_base = "/gdex/data/d633000/e5.oper.an.pl"
 
-# pressure_levels = xr.DataArray(
-#     data = [50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000],
-#     dims=['level'],
-#     coords={'level': [50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000]}
-# )
+pressure_levels = xr.DataArray(
+    data = [50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000],
+    dims=['level'],
+    coords={'level': [50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000]}
+)
 
-# pressure_level_variables = {
-#     "geopotential": "z",
-#     "temperature": "t",
-#     "u_component_of_wind": "u",
-#     "v_component_of_wind": "v",
-#     "specific_humidity": "q",
-#     "vertical_velocity": "w",
-# }
+pressure_level_variables = {
+    "geopotential": "z",
+    "temperature": "t",
+    "u_component_of_wind": "u",
+    "v_component_of_wind": "v",
+    "specific_humidity": "q",
+    "vertical_velocity": "w",
+}
 
-# pressure_level_variables_old_names = {
-#     "geopotential": "Z",
-#     "temperature": "T",
-#     "u_component_of_wind": "U",
-#     "v_component_of_wind": "V",
-#     "specific_humidity": "Q",
-#     "vertical_velocity": "W",
-# }
+pressure_level_variables_old_names = {
+    "geopotential": "Z",
+    "temperature": "T",
+    "u_component_of_wind": "U",
+    "v_component_of_wind": "V",
+    "specific_humidity": "Q",
+    "vertical_velocity": "W",
+}
 
-# for variable in pressure_level_variables.keys():
-#     files_list = []
+for variable in pressure_level_variables.keys():
+    files_list = []
 
-#     logger.info(f"  {variable}")
-#     for ym in yyyymm_strings:
-#         pattern = f"{pressure_level_base}/{ym}/e5.oper.an.pl.*_{pressure_level_variables[variable]}.*.nc"
-#         files_list.extend(glob.glob(pattern))
+    logger.info(f"  {variable}")
+    for ym in yyyymm_strings:
+        pattern = f"{pressure_level_base}/{ym}/e5.oper.an.pl.*_{pressure_level_variables[variable]}.*.nc"
+        files_list.extend(glob.glob(pattern))
 
-#     if not files_list:
-#         logger.info(f"No files found for variable {variable} in month {ym}")
-#     else:
-#         logger.info(f"    Loading files...")
-#         pressure_level_data = convert_time_to_ns(xr.open_mfdataset(files_list, preprocess=pressure_level_preprocess).load())
-#         pressure_level_data = pressure_level_data.rename({pressure_level_variables_old_names[variable]: variable})
+    if not files_list:
+        logger.info(f"No files found for variable {variable} in month {ym}")
+    else:
+        logger.info(f"    Loading files...")
+        pressure_level_data = convert_time_to_ns(xr.open_mfdataset(files_list, preprocess=pressure_level_preprocess).load())
+        pressure_level_data = pressure_level_data.rename({pressure_level_variables_old_names[variable]: variable})
 
-#     # logger.info(pressure_level_data)
-#     logger.info(f"    Output directory: {graphcast_data_directory}")
-#     logger.info(f"    Saving data...")
-#     pressure_level_data.to_netcdf(f"{graphcast_data_directory}/{variable}.nc")
-#     pressure_level_data.close()
-#     del pressure_level_data
-#     gc.collect()
+    # logger.info(pressure_level_data)
+    logger.info(f"    Output directory: {graphcast_data_directory}")
+    logger.info(f"    Saving data...")
+    pressure_level_data.to_netcdf(f"{graphcast_data_directory}/{variable}.nc")
+    pressure_level_data.close()
+    del pressure_level_data
+    gc.collect()
 
-# logger.info("Finished")
+logger.info("Finished")
 
-# # Precipitation
-# logger.info("Precipitation")
-# target = f"{graphcast_data_directory}/total_precipitation_6hr.nc"
-# dataset = "reanalysis-era5-single-levels"
-# request = {
-#     "product_type": ["reanalysis"],
-#     "variable": [
-#         "total_precipitation",
-#     ],
-#     "year": years,
-#     "month": months,
-#     "day": [
-#         "01", "02", "03",
-#         "04", "05", "06",
-#         "07", "08", "09",
-#         "10", "11", "12",
-#         "13", "14", "15",
-#         "16", "17", "18",
-#         "19", "20", "21",
-#         "22", "23", "24",
-#         "25", "26", "27",
-#         "28", "29", "30",
-#         "31"
-#     ],
-#     "time": [
-#         "00:00", "01:00", "02:00",
-#         "03:00", "04:00", "05:00",
-#         "06:00", "07:00", "08:00",
-#         "09:00", "10:00", "11:00",
-#         "12:00", "13:00", "14:00",
-#         "15:00", "16:00", "17:00",
-#         "18:00", "19:00", "20:00",
-#         "21:00", "22:00", "23:00"
-#     ],
-#     "data_format": "netcdf",
-#     "download_format": "unarchived"
-# }
+# Precipitation
+logger.info("Precipitation")
+target = f"{graphcast_data_directory}/total_precipitation_6hr.nc"
+dataset = "reanalysis-era5-single-levels"
+request = {
+    "product_type": ["reanalysis"],
+    "variable": [
+        "total_precipitation",
+    ],
+    "year": years,
+    "month": months,
+    "day": [
+        "01", "02", "03",
+        "04", "05", "06",
+        "07", "08", "09",
+        "10", "11", "12",
+        "13", "14", "15",
+        "16", "17", "18",
+        "19", "20", "21",
+        "22", "23", "24",
+        "25", "26", "27",
+        "28", "29", "30",
+        "31"
+    ],
+    "time": [
+        "00:00", "01:00", "02:00",
+        "03:00", "04:00", "05:00",
+        "06:00", "07:00", "08:00",
+        "09:00", "10:00", "11:00",
+        "12:00", "13:00", "14:00",
+        "15:00", "16:00", "17:00",
+        "18:00", "19:00", "20:00",
+        "21:00", "22:00", "23:00"
+    ],
+    "data_format": "netcdf",
+    "download_format": "unarchived"
+}
 
-# client = cdsapi.Client()
-# logger.info("    Downloading data...")
-# client.retrieve(dataset, request, target)
+client = cdsapi.Client()
+logger.info("    Downloading data...")
+client.retrieve(dataset, request, target)
 
 logger.info("    Regridding data...")
 raw_precipitation_files = sorted(glob.glob(f"{graphcast_data_directory}/total_precipitation_6hr.nc"))
