@@ -130,7 +130,7 @@ for variable in surface_variables.keys():
         print(f"No files found for variable {variable} in month {ym}")
     else:
         logger.info(f"    Loading files...")
-        surface_data = convert_time_to_ns(xr.open_mfdataset(files_list, preprocess=surface_level_preprocess).load())
+        surface_data = convert_time_to_ns(xr.open_mfdataset(sorted(files_list), preprocess=surface_level_preprocess).load())
         surface_data = surface_data.rename({surface_variables_old_names[variable]: variable})
 
     # logger.info(surface_data)
@@ -183,7 +183,7 @@ for variable in pressure_level_variables.keys():
         logger.info(f"No files found for variable {variable} in month {ym}")
     else:
         logger.info(f"    Loading files...")
-        pressure_level_data = convert_time_to_ns(xr.open_mfdataset(files_list, preprocess=pressure_level_preprocess).load())
+        pressure_level_data = convert_time_to_ns(xr.open_mfdataset(sorted(files_list), preprocess=pressure_level_preprocess).load())
         pressure_level_data = pressure_level_data.rename({pressure_level_variables_old_names[variable]: variable})
 
     # logger.info(pressure_level_data)
