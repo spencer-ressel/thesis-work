@@ -1,0 +1,284 @@
+2026-05-18 11:25:56,432 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 11:25:56,432 [INFO] Output output_directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 11:25:56,433 [INFO] Surface level variables
+2026-05-18 11:25:56,433 [INFO]     Regridding data...
+2026-05-18 11:30:52,623 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 11:30:52,623 [INFO] Output output_directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 11:30:52,624 [INFO] Surface level variables
+2026-05-18 11:30:52,624 [INFO]     Regridding data...
+2026-05-18 11:32:07,831 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 11:32:07,831 [INFO]     Saving data...
+2026-05-18 11:32:07,958 [INFO] Finished
+2026-05-18 11:32:07,959 [INFO] TOA Solar Radiation
+2026-05-18 11:32:08,824 [INFO] [2026-05-14T00:00:00Z] Upcoming essential maintenance sessions on Data Stores underlying infrastructure on 19 May. Service disruption expected. For further details, please [visit our forum announcement](https://forum.ecmwf.int/t/upcoming-essential-maintenance-sessions-on-data-stores-underlying-infrastructure/14954).
+2026-05-18 11:32:08,825 [INFO]     Downloading data...
+2026-05-18 11:32:09,720 [INFO] [2025-12-11T00:00:00] Please note that a dedicated catalogue entry for this dataset, post-processed and stored in Analysis Ready Cloud Optimized (ARCO) format (Zarr), is available for optimised time-series retrievals (i.e. for retrieving data from selected variables for a single point over an extended period of time in an efficient way). You can discover it [here](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-timeseries?tab=overview)
+2026-05-18 11:32:09,721 [INFO] Request ID is 6b31fc7c-c3ac-4309-ab91-fa632b790faa
+2026-05-18 11:32:09,878 [INFO] status has been updated to accepted
+2026-05-18 11:33:00,463 [INFO] status has been updated to running
+2026-05-18 11:34:04,873 [INFO] status has been updated to successful
+2026-05-18 11:34:05,354 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-3/2026-05-18/78da7090d0b244acacc5c25889679d7b.nc
+2026-05-18 11:34:36,041 [INFO]     Regridding data...
+2026-05-18 13:28:30,098 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 13:28:30,100 [INFO] Output output_directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:28:30,100 [INFO] Surface level variables
+2026-05-18 13:28:30,100 [INFO]     Regridding data...
+2026-05-18 13:29:02,673 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:29:02,674 [INFO]     Saving data...
+2026-05-18 13:29:02,928 [INFO] Load all data into a single dataset
+2026-05-18 13:34:40,948 [INFO] Starting data download script
+2026-05-18 13:34:40,949 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 13:34:40,949 [INFO] Output output_directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:34:40,949 [INFO] Surface level variables
+2026-05-18 13:34:40,949 [INFO]     Regridding data...
+2026-05-18 13:34:42,169 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataset.py", line 1512, in _construct_dataarray
+    variable = self._variables[name]
+               ~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'tisr'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataset.py", line 1611, in __getitem__
+    return self._construct_dataarray(key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataset.py", line 1514, in _construct_dataarray
+    _, name, variable = _get_virtual_variable(self._variables, name, self.sizes)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataset.py", line 221, in _get_virtual_variable
+    raise KeyError(key)
+KeyError: 'tisr'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 335, in <module>
+    toa_incident_solar_radiation_data = xr.open_mfdataset(target)['tisr'].rename({'valid_time': 'time'}).load()
+                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataset.py", line 1617, in __getitem__
+    raise KeyError(message) from e
+KeyError: "No variable named 'tisr'. Variables on the dataset include ['number', 'expver', 'lat', 'lon', 'time', 'datetime', 'toa_incident_solar_radiation']"
+2026-05-18 13:40:00,782 [INFO] Starting data download script
+2026-05-18 13:40:00,784 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 13:40:00,784 [INFO] Output output_directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:40:00,784 [INFO] Surface level variables
+2026-05-18 13:40:00,784 [INFO]     Regridding data...
+2026-05-18 13:40:03,771 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 345, in <module>
+    regridded_toa_incident_solar_radiation = convert_time_to_ns(regridded_toa_incident_solar_radiation)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 97, in convert_time_to_ns
+    ds = ds.expand_dims('batch').assign_coords(
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataarray.py", line 2724, in expand_dims
+    ds = self._to_temp_dataset().expand_dims(
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataset.py", line 4843, in expand_dims
+    raise ValueError(f"Dimension {d} already exists.")
+ValueError: Dimension batch already exists.
+2026-05-18 13:41:06,053 [INFO] Starting data download script
+2026-05-18 13:41:06,054 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 13:41:06,054 [INFO] Output output_directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:41:06,054 [INFO] Surface level variables
+2026-05-18 13:41:06,887 [INFO] [2026-05-14T00:00:00Z] Upcoming essential maintenance sessions on Data Stores underlying infrastructure on 19 May. Service disruption expected. For further details, please [visit our forum announcement](https://forum.ecmwf.int/t/upcoming-essential-maintenance-sessions-on-data-stores-underlying-infrastructure/14954).
+2026-05-18 13:41:06,888 [INFO]     Downloading data...
+2026-05-18 13:41:08,240 [INFO] [2025-12-11T00:00:00] Please note that a dedicated catalogue entry for this dataset, post-processed and stored in Analysis Ready Cloud Optimized (ARCO) format (Zarr), is available for optimised time-series retrievals (i.e. for retrieving data from selected variables for a single point over an extended period of time in an efficient way). You can discover it [here](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-timeseries?tab=overview)
+2026-05-18 13:41:08,240 [INFO] Request ID is c2e17b66-7f05-4353-b581-c0c4ae23abb6
+2026-05-18 13:41:08,402 [INFO] status has been updated to accepted
+2026-05-18 13:41:41,727 [INFO] status has been updated to running
+2026-05-18 13:41:58,975 [INFO] status has been updated to successful
+2026-05-18 13:41:59,286 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-3/2026-05-18/78da7090d0b244acacc5c25889679d7b.nc
+2026-05-18 13:44:54,366 [INFO] Starting data download script
+2026-05-18 13:44:54,367 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 13:44:54,368 [INFO] Output output_directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:44:54,368 [INFO]     Regridding data...
+2026-05-18 13:44:55,776 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 335, in <module>
+    toa_incident_solar_radiation_data = xr.open_mfdataset(target)['tisr'].rename({'valid_name':'name'}).load()
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataarray.py", line 2558, in rename
+    dataset = self._to_temp_dataset()._rename(name_dict)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataset.py", line 4422, in _rename
+    raise ValueError(
+ValueError: cannot rename 'valid_name' because it is not a variable or dimension in this dataset
+2026-05-18 13:46:37,838 [INFO] Starting data download script
+2026-05-18 13:46:37,839 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 13:46:37,839 [INFO] Output output_directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:46:37,840 [INFO]     Regridding data...
+2026-05-18 13:46:49,862 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataarray.py", line 892, in _getitem_coord
+    var = self._coords[key]
+          ~~~~~~~~~~~~^^^^^
+KeyError: 'time'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 345, in <module>
+    regridded_toa_incident_solar_radiation = convert_time_to_ns(regridded_toa_incident_solar_radiation)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 85, in convert_time_to_ns
+    datetime = ds["time"]
+               ~~^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataarray.py", line 901, in __getitem__
+    return self._getitem_coord(key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataarray.py", line 895, in _getitem_coord
+    _, key, var = _get_virtual_variable(self._coords, key, dim_sizes)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/dataset.py", line 221, in _get_virtual_variable
+    raise KeyError(key)
+KeyError: 'time'
+2026-05-18 13:48:54,367 [INFO] Starting data download script
+2026-05-18 13:48:54,369 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 13:48:54,369 [INFO] Output output_directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:48:54,369 [INFO] TOA Solar Radiation
+2026-05-18 13:48:54,859 [INFO] [2026-05-14T00:00:00Z] Upcoming essential maintenance sessions on Data Stores underlying infrastructure on 19 May. Service disruption expected. For further details, please [visit our forum announcement](https://forum.ecmwf.int/t/upcoming-essential-maintenance-sessions-on-data-stores-underlying-infrastructure/14954).
+2026-05-18 13:48:54,860 [INFO]     Downloading data...
+2026-05-18 13:48:58,938 [INFO] Starting data download script
+2026-05-18 13:48:58,939 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 13:48:58,939 [INFO] Output output_directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:48:58,939 [INFO] TOA Solar Radiation
+2026-05-18 13:48:59,554 [INFO] [2026-05-14T00:00:00Z] Upcoming essential maintenance sessions on Data Stores underlying infrastructure on 19 May. Service disruption expected. For further details, please [visit our forum announcement](https://forum.ecmwf.int/t/upcoming-essential-maintenance-sessions-on-data-stores-underlying-infrastructure/14954).
+2026-05-18 13:48:59,555 [INFO]     Downloading data...
+2026-05-18 13:49:00,147 [INFO] [2025-12-11T00:00:00] Please note that a dedicated catalogue entry for this dataset, post-processed and stored in Analysis Ready Cloud Optimized (ARCO) format (Zarr), is available for optimised time-series retrievals (i.e. for retrieving data from selected variables for a single point over an extended period of time in an efficient way). You can discover it [here](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-timeseries?tab=overview)
+2026-05-18 13:49:00,148 [INFO] Request ID is be2ceadb-ad06-4df2-a6f0-f40f7dba2072
+2026-05-18 13:49:00,346 [INFO] status has been updated to accepted
+2026-05-18 13:49:33,709 [INFO] status has been updated to successful
+2026-05-18 13:49:34,034 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-3/2026-05-18/78da7090d0b244acacc5c25889679d7b.nc
+2026-05-18 13:50:15,067 [INFO]     Regridding data...
+2026-05-18 13:50:27,243 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:50:27,243 [INFO]     Saving data...
+2026-05-18 13:55:14,132 [INFO] Starting data download script
+2026-05-18 13:55:14,133 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 13:55:14,133 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 13:55:14,153 [INFO] Load all data into a single dataset
+2026-05-18 13:55:16,290 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 363, in <module>
+    all_data = xr.open_mfdataset(f"{graphcast_data_directory}/*.nc")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/backends/api.py", line 1639, in open_mfdataset
+    combined = combine_by_coords(
+               ^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/combine.py", line 986, in combine_by_coords
+    return merge(
+           ^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/merge.py", line 976, in merge
+    merge_result = merge_core(
+                   ^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/merge.py", line 701, in merge_core
+    variables, out_indexes = merge_collected(
+                             ^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/merge.py", line 290, in merge_collected
+    merged_vars[name] = unique_variable(
+                        ^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/merge.py", line 144, in unique_variable
+    raise MergeError(
+xarray.core.merge.MergeError: conflicting values for variable 'datetime' on objects to be combined. You can skip this check by specifying compat='override'.
+2026-05-18 14:13:23,473 [INFO] Starting data download script
+2026-05-18 14:13:23,479 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 14:13:23,482 [INFO] Creating output directory...
+2026-05-18 14:13:23,484 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 14:13:23,484 [INFO] Surface level variables
+2026-05-18 14:13:23,484 [INFO]   2m_temperature
+2026-05-18 14:13:23,487 [INFO]     Loading files...
+2026-05-18 14:16:53,145 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 14:16:53,145 [INFO]     Saving data...
+2026-05-18 14:16:53,470 [INFO]   mean_sea_level_pressure
+2026-05-18 14:16:53,473 [INFO]     Loading files...
+2026-05-18 14:20:19,103 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 14:20:19,132 [INFO]     Saving data...
+2026-05-18 14:20:19,444 [INFO]   10m_u_component_of_wind
+2026-05-18 14:20:19,691 [INFO]     Loading files...
+2026-05-18 14:24:10,565 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 14:24:10,566 [INFO]     Saving data...
+2026-05-18 14:24:10,832 [INFO]   10m_v_component_of_wind
+2026-05-18 14:24:10,834 [INFO]     Loading files...
+2026-05-18 14:28:06,525 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 14:28:06,526 [INFO]     Saving data...
+2026-05-18 14:28:06,773 [INFO] Finished
+2026-05-18 14:28:06,773 [INFO] Pressure Level Data
+2026-05-18 14:28:06,774 [INFO]   geopotential
+2026-05-18 14:28:06,795 [INFO]     Loading files...
+2026-05-18 14:44:36,767 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 14:44:36,767 [INFO]     Saving data...
+2026-05-18 14:44:38,538 [INFO]   temperature
+2026-05-18 14:44:38,546 [INFO]     Loading files...
+2026-05-18 15:01:18,917 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 15:01:18,917 [INFO]     Saving data...
+2026-05-18 15:01:20,593 [INFO]   u_component_of_wind
+2026-05-18 15:01:20,598 [INFO]     Loading files...
+2026-05-18 15:18:26,941 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 15:18:26,942 [INFO]     Saving data...
+2026-05-18 15:18:28,763 [INFO]   v_component_of_wind
+2026-05-18 15:18:28,767 [INFO]     Loading files...
+2026-05-18 15:36:01,981 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 15:36:01,982 [INFO]     Saving data...
+2026-05-18 15:36:03,561 [INFO]   specific_humidity
+2026-05-18 15:36:03,566 [INFO]     Loading files...
+2026-05-18 15:52:24,813 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 15:52:24,814 [INFO]     Saving data...
+2026-05-18 15:52:26,588 [INFO]   vertical_velocity
+2026-05-18 15:52:26,593 [INFO]     Loading files...
+2026-05-18 16:09:17,119 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 16:09:17,153 [INFO]     Saving data...
+2026-05-18 16:09:18,925 [INFO] Finished
+2026-05-18 16:09:18,926 [INFO] Precipitation
+2026-05-18 16:09:19,554 [INFO] [2026-05-14T00:00:00Z] Upcoming essential maintenance sessions on Data Stores underlying infrastructure on 19 May. Service disruption expected. For further details, please [visit our forum announcement](https://forum.ecmwf.int/t/upcoming-essential-maintenance-sessions-on-data-stores-underlying-infrastructure/14954).
+2026-05-18 16:09:19,554 [INFO]     Downloading data...
+2026-05-18 16:09:22,096 [INFO] [2025-12-11T00:00:00] Please note that a dedicated catalogue entry for this dataset, post-processed and stored in Analysis Ready Cloud Optimized (ARCO) format (Zarr), is available for optimised time-series retrievals (i.e. for retrieving data from selected variables for a single point over an extended period of time in an efficient way). You can discover it [here](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-timeseries?tab=overview)
+2026-05-18 16:09:22,096 [INFO] Request ID is 7eb7bc6a-5e5c-4238-a43f-92d8e39a5ff1
+2026-05-18 16:09:22,260 [INFO] status has been updated to accepted
+2026-05-18 16:09:55,996 [INFO] status has been updated to successful
+2026-05-18 16:09:56,329 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-2/2026-05-18/98aecf03762ed574a7701a83a22a81e5.nc
+2026-05-18 16:14:25,379 [INFO]     Regridding data...
+2026-05-18 16:14:25,413 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 300, in <module>
+    precipitation_data = xr.open_mfdataset(raw_precipitation_files)['tp'].rename({'valid_time': 'time'}).load()
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/backends/api.py", line 1573, in open_mfdataset
+    raise OSError("no files to open")
+OSError: no files to open
+2026-05-18 16:16:27,708 [INFO] Starting data download script
+2026-05-18 16:16:27,711 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 16:16:27,711 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 16:16:27,711 [INFO]     Regridding data...
+2026-05-18 16:16:27,712 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 300, in <module>
+    precipitation_data = xr.open_mfdataset(raw_precipitation_files)['tp'].rename({'valid_time': 'time'}).load()
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/backends/api.py", line 1573, in open_mfdataset
+    raise OSError("no files to open")
+OSError: no files to open
+2026-05-18 16:16:44,405 [INFO] Starting data download script
+2026-05-18 16:16:44,408 [INFO] Dates: 1992-08-14T00 : 1992-11-12T00
+2026-05-18 16:16:44,409 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 16:16:44,409 [INFO]     Regridding data...
+2026-05-18 16:17:39,740 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 16:17:39,740 [INFO]     Saving data...
+2026-05-18 16:17:40,613 [INFO] Finished
+2026-05-18 16:17:40,613 [INFO] TOA Solar Radiation
+2026-05-18 16:17:41,063 [INFO] [2026-05-14T00:00:00Z] Upcoming essential maintenance sessions on Data Stores underlying infrastructure on 19 May. Service disruption expected. For further details, please [visit our forum announcement](https://forum.ecmwf.int/t/upcoming-essential-maintenance-sessions-on-data-stores-underlying-infrastructure/14954).
+2026-05-18 16:17:41,064 [INFO]     Downloading data...
+2026-05-18 16:17:41,630 [INFO] [2025-12-11T00:00:00] Please note that a dedicated catalogue entry for this dataset, post-processed and stored in Analysis Ready Cloud Optimized (ARCO) format (Zarr), is available for optimised time-series retrievals (i.e. for retrieving data from selected variables for a single point over an extended period of time in an efficient way). You can discover it [here](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-timeseries?tab=overview)
+2026-05-18 16:17:41,631 [INFO] Request ID is 13ec74f9-5303-499d-b6cc-3b93a8c35faf
+2026-05-18 16:17:41,797 [INFO] status has been updated to accepted
+2026-05-18 16:18:16,984 [INFO] status has been updated to successful
+2026-05-18 16:18:17,306 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-3/2026-05-18/78da7090d0b244acacc5c25889679d7b.nc
+2026-05-18 16:18:31,990 [INFO]     Regridding data...
+2026-05-18 16:18:42,032 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/199208_199211
+2026-05-18 16:18:42,033 [INFO]     Saving data...
+2026-05-18 16:18:42,340 [INFO] Geopotential at Surface
+2026-05-18 16:18:42,368 [INFO] Land Sea Mask
+2026-05-18 16:18:42,398 [INFO] Load all data into a single dataset
+2026-05-18 16:18:42,980 [INFO]     Saving data...
+2026-05-18 16:18:59,375 [INFO] All Finished
