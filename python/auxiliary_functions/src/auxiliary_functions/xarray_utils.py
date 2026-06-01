@@ -1,4 +1,4 @@
-from cartopy.util import add_cyclic_point
+from cartopy import util
 import xarray as xr
 import numpy as np
 
@@ -24,7 +24,7 @@ def add_cyclic_point(dataarray, dim='longitude'):
     """
 
     # Add cyclic point and get updated coordinate
-    data, new_coord = add_cyclic_point(dataarray.values, coord=dataarray[dim].values)
+    data, new_coord = util.add_cyclic_point(dataarray.values, coord=dataarray[dim].values)
 
     # Copy coordinates and update the chosen one
     new_coords = dict(dataarray.coords)
