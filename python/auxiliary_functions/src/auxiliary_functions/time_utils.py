@@ -1,5 +1,5 @@
 import numpy as np
-import datetime
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pandas as pd
 
@@ -15,6 +15,7 @@ def string_to_yyyymm(dt):
     if isinstance(dt, str):
         dt = datetime.fromisoformat(dt) # type: ignore
     return f"{dt.year}{dt.month:02d}"
+    # return datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y%m")
 
 def convert_time_to_ns(ds):
     # Original datetime64 coordinate

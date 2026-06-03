@@ -282,3 +282,150 @@ OSError: no files to open
 2026-05-18 16:18:42,398 [INFO] Load all data into a single dataset
 2026-05-18 16:18:42,980 [INFO]     Saving data...
 2026-05-18 16:18:59,375 [INFO] All Finished
+2026-06-02 13:16:08,368 [INFO] Start date: 2022-03-01T00:00:00.000000000
+2026-06-02 13:16:08,371 [INFO] End date: 2022-04-30T00:00:00.000000000
+2026-06-02 13:16:08,372 [INFO] Starting data download script
+2026-06-02 13:16:08,379 [INFO] Dates: 2022-03-01T00 : 2022-04-30T00
+2026-06-02 13:16:08,379 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 97, in <module>
+    graphcast_data_directory = f"/glade/u/home/sressel/spencer-scratch/graphcast_input_data/{string_to_yyyymm(start_date)}_{string_to_yyyymm(end_date)}"
+                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/u/home/sressel/thesis-work/python/auxiliary_functions/src/auxiliary_functions/time_utils.py", line 16, in string_to_yyyymm
+    dt = datetime.fromisoformat(dt) # type: ignore
+         ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'datetime' has no attribute 'fromisoformat'
+2026-06-02 13:17:48,537 [INFO] Start date: 2022-03-01T00:00:00.000000000
+2026-06-02 13:17:48,537 [INFO] End date: 2022-04-30T00:00:00.000000000
+2026-06-02 13:17:48,537 [INFO] Starting data download script
+2026-06-02 13:17:48,540 [INFO] Dates: 2022-03-01T00 : 2022-04-30T00
+2026-06-02 13:17:48,540 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 97, in <module>
+    graphcast_data_directory = f"/glade/u/home/sressel/spencer-scratch/graphcast_input_data/{string_to_yyyymm(start_date)}_{string_to_yyyymm(end_date)}"
+                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/u/home/sressel/thesis-work/python/auxiliary_functions/src/auxiliary_functions/time_utils.py", line 16, in string_to_yyyymm
+    dt = datetime.time.fromisoformat(dt) # type: ignore
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Invalid isoformat string: '2022-03-01T00:00:00.000000000'
+2026-06-02 13:18:38,637 [INFO] Start date: 2022-03-01
+2026-06-02 13:18:38,637 [INFO] End date: 2022-04-30
+2026-06-02 13:18:38,637 [INFO] Starting data download script
+2026-06-02 13:18:38,641 [INFO] Dates: 2022-03-01T00 : 2022-04-30T00
+2026-06-02 13:18:38,641 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 97, in <module>
+    graphcast_data_directory = f"/glade/u/home/sressel/spencer-scratch/graphcast_input_data/{string_to_yyyymm(start_date)}_{string_to_yyyymm(end_date)}"
+                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/u/home/sressel/thesis-work/python/auxiliary_functions/src/auxiliary_functions/time_utils.py", line 16, in string_to_yyyymm
+    dt = datetime.time.fromisoformat(dt) # type: ignore
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Invalid isoformat string: '2022-03-01'
+2026-06-02 13:24:45,987 [INFO] Start date: 2022-03-01
+2026-06-02 13:24:45,987 [INFO] End date: 2022-04-30
+2026-06-02 13:24:45,988 [INFO] Starting data download script
+2026-06-02 13:24:45,990 [INFO] Dates: 2022-03-01T00 : 2022-04-30T00
+2026-06-02 13:24:45,991 [INFO] Creating output directory...
+2026-06-02 13:24:45,994 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202203_202204
+2026-06-02 13:24:45,994 [INFO] Surface level variables
+2026-06-02 13:24:45,994 [INFO]   2m_temperature
+2026-06-02 13:24:46,054 [INFO]     Loading files...
+2026-06-02 15:32:20,068 [INFO] Start date: 2020-12-29T00:00:00.000000000
+2026-06-02 15:32:20,070 [INFO] End date: 2021-02-27T00:00:00.000000000
+2026-06-02 15:32:20,070 [INFO] Starting data download script
+2026-06-02 15:32:20,076 [INFO] Dates: 2020-12-29T00 : 2021-02-27T00
+2026-06-02 15:32:20,077 [INFO] Creating output directory...
+2026-06-02 15:32:20,079 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 15:32:20,080 [INFO] Surface level variables
+2026-06-02 15:32:20,080 [INFO]   2m_temperature
+2026-06-02 15:32:20,101 [INFO]     Loading files...
+2026-06-02 15:35:02,369 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 15:35:02,383 [INFO]     Saving data...
+2026-06-02 15:35:02,629 [INFO]   mean_sea_level_pressure
+2026-06-02 15:35:02,630 [INFO]     Loading files...
+2026-06-02 15:37:32,002 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 15:37:32,003 [INFO]     Saving data...
+2026-06-02 15:37:32,238 [INFO]   10m_u_component_of_wind
+2026-06-02 15:37:32,240 [INFO]     Loading files...
+2026-06-02 15:40:19,042 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 15:40:19,043 [INFO]     Saving data...
+2026-06-02 15:40:19,269 [INFO]   10m_v_component_of_wind
+2026-06-02 15:40:19,271 [INFO]     Loading files...
+2026-06-02 15:43:01,722 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 15:43:01,722 [INFO]     Saving data...
+2026-06-02 15:43:01,943 [INFO] Finished
+2026-06-02 15:43:01,943 [INFO] Pressure Level Data
+2026-06-02 15:43:01,944 [INFO]   geopotential
+2026-06-02 15:43:01,955 [INFO]     Loading files...
+2026-06-02 15:56:25,836 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 15:56:25,837 [INFO]     Saving data...
+2026-06-02 15:56:27,203 [INFO]   temperature
+2026-06-02 15:56:27,207 [INFO]     Loading files...
+2026-06-02 16:10:18,093 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 16:10:18,099 [INFO]     Saving data...
+2026-06-02 16:10:19,701 [INFO]   u_component_of_wind
+2026-06-02 16:10:19,704 [INFO]     Loading files...
+2026-06-02 16:23:27,659 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 16:23:27,660 [INFO]     Saving data...
+2026-06-02 16:23:29,017 [INFO]   v_component_of_wind
+2026-06-02 16:23:29,021 [INFO]     Loading files...
+2026-06-02 16:36:15,853 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 16:36:15,854 [INFO]     Saving data...
+2026-06-02 16:36:17,121 [INFO]   specific_humidity
+2026-06-02 16:36:17,124 [INFO]     Loading files...
+2026-06-02 16:48:28,474 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 16:48:28,475 [INFO]     Saving data...
+2026-06-02 16:48:29,743 [INFO]   vertical_velocity
+2026-06-02 16:48:29,747 [INFO]     Loading files...
+2026-06-02 17:03:04,235 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 17:03:04,236 [INFO]     Saving data...
+2026-06-02 17:03:05,828 [INFO] Finished
+2026-06-02 17:03:05,828 [INFO] Precipitation
+2026-06-02 17:03:07,277 [INFO]     Downloading data...
+2026-06-02 17:03:07,865 [INFO] [2025-12-11T00:00:00] Please note that a dedicated catalogue entry for this dataset, post-processed and stored in Analysis Ready Cloud Optimized (ARCO) format (Zarr), is available for optimised time-series retrievals (i.e. for retrieving data from selected variables for a single point over an extended period of time in an efficient way). You can discover it [here](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-timeseries?tab=overview)
+2026-06-02 17:03:07,866 [INFO] Request ID is ed9fbb95-15aa-4a4c-83c8-76ae53592f43
+2026-06-02 17:03:08,029 [INFO] status has been updated to accepted
+2026-06-02 17:03:26,124 [INFO] status has been updated to running
+2026-06-02 17:15:37,431 [INFO] status has been updated to successful
+2026-06-02 17:15:37,852 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-1/2026-06-02/35b58501833132adaf526b927744d511.nc
+2026-06-02 17:19:06,410 [INFO]     Regridding data...
+2026-06-02 17:20:40,264 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 17:20:40,265 [INFO]     Saving data...
+2026-06-02 17:20:42,605 [INFO] Finished
+2026-06-02 17:20:42,606 [INFO] TOA Solar Radiation
+2026-06-02 17:20:43,219 [INFO]     Downloading data...
+2026-06-02 17:20:44,434 [INFO] [2025-12-11T00:00:00] Please note that a dedicated catalogue entry for this dataset, post-processed and stored in Analysis Ready Cloud Optimized (ARCO) format (Zarr), is available for optimised time-series retrievals (i.e. for retrieving data from selected variables for a single point over an extended period of time in an efficient way). You can discover it [here](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-timeseries?tab=overview)
+2026-06-02 17:20:44,436 [INFO] Request ID is d115ea5b-1e53-4a15-a4a8-459cb442c828
+2026-06-02 17:20:44,707 [INFO] status has been updated to accepted
+2026-06-02 17:21:06,499 [INFO] status has been updated to running
+2026-06-02 17:23:38,324 [INFO] status has been updated to successful
+2026-06-02 17:23:38,660 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-3/2026-06-02/f1ea9720e65e872812e014f2c8907b0b.nc
+2026-06-02 17:24:31,842 [INFO]     Regridding data...
+2026-06-02 17:24:45,240 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/202012_202102
+2026-06-02 17:24:45,241 [INFO]     Saving data...
+2026-06-02 17:24:46,012 [INFO] Geopotential at Surface
+2026-06-02 17:24:46,050 [INFO] Land Sea Mask
+2026-06-02 17:24:46,087 [INFO] Load all data into a single dataset
+2026-06-02 17:24:47,632 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 340, in <module>
+    all_data = xr.open_mfdataset(f"{graphcast_data_directory}/*.nc")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/backends/api.py", line 1639, in open_mfdataset
+    combined = combine_by_coords(
+               ^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/combine.py", line 986, in combine_by_coords
+    return merge(
+           ^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/merge.py", line 976, in merge
+    merge_result = merge_core(
+                   ^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/merge.py", line 701, in merge_core
+    variables, out_indexes = merge_collected(
+                             ^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/merge.py", line 290, in merge_collected
+    merged_vars[name] = unique_variable(
+                        ^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/xarray/core/merge.py", line 144, in unique_variable
+    raise MergeError(
+xarray.core.merge.MergeError: conflicting values for variable 'datetime' on objects to be combined. You can skip this check by specifying compat='override'.

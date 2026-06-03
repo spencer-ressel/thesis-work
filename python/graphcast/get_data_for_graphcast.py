@@ -46,6 +46,10 @@ def log_exception(exc_type, exc_value, exc_traceback):
 
 sys.excepthook = log_exception
 
+start_date = sys.argv[1]
+end_date = sys.argv[2]
+logger.info(f"Start date: {start_date}")
+logger.info(f"End date: {end_date}")
 
 logger.info("Starting data download script")
 def surface_level_preprocess(ds: xr.Dataset) -> xr.Dataset:
@@ -82,8 +86,6 @@ def pressure_level_preprocess(ds: xr.Dataset) -> xr.Dataset:
 
     return regridder(subset_data) # type: ignore
 
-start_date = '1992-08-14T00:00:00.000000000'
-end_date = '1992-11-12T00:00:00.000000000'
 yyyymm_strings = pd.date_range(
     pd.to_datetime(start_date).to_period("M").to_timestamp(),
     pd.to_datetime(end_date).to_period("M").to_timestamp(),

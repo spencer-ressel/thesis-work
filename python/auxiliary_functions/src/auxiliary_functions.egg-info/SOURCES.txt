@@ -6,6 +6,7 @@ src/auxiliary_functions/one_two_one_filter.py
 src/auxiliary_functions/plotting_utils.py
 src/auxiliary_functions/rounding_functions.py
 src/auxiliary_functions/space_time_filter.py
+src/auxiliary_functions/time_utils.py
 src/auxiliary_functions/xarray_utils.py
 src/auxiliary_functions.egg-info/PKG-INFO
 src/auxiliary_functions.egg-info/SOURCES.txt

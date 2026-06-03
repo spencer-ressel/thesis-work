@@ -1,24 +1,17 @@
 #!/bin/bash -l
 
-#PBS -N get_data_for_graphcast
-#PBS -A uwas0152
-#PBS -l select=1:ncpus=4:ngpus=0:mem=256GB
-#PBS -l walltime=04:00:00
-#PBS -q main
-#PBS -j oe
-
 CONDA_ENV="modified-npl"
 
 module load conda 2>/dev/null || true
 conda activate "${CONDA_ENV}"
 
-# REPO_ROOT="${PBS_O_WORKDIR}"
+START_DATE="2020-12-29T00:00:00.000000000"
+END_DATE="2021-02-27T00:00:00.000000000"
 
-# Run IC optimization from repo root.
-# cd "${REPO_ROOT}"
 start_time=$(date +%s)
 
-python3 -u get_data_for_graphcast.py
+export PYTHONPATH=/glade/u/home/sressel/thesis-work/python/auxiliary_functions/src:$PYTHONPATH
+python3 get_data_for_graphcast.py "$START_DATE" "$END_DATE"
 
 end_time=$(date +%s)
 time_diff=$((end_time - start_time))
