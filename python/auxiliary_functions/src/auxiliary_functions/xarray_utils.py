@@ -89,6 +89,8 @@ def histogram(da, dims, bins=50, range=None):
 
     return xr.Dataset({"counts": counts_da, "bin_edges": edges_da})
 
+
+
 @xr.register_dataset_accessor("stats")
 class StatsAccessorDataset:
     """
@@ -284,3 +286,76 @@ def standardize_data(data, dim="time", axis=-1, unit_variance=True):
         raise TypeError("Input data must instance of xr.DataArray, xr.Dataset, or np.ndarray")
 
     return standardized_data
+
+@xr.register_dataarray_accessor("coord_funcs")
+class CoordsAccessor:
+    def __init__(self, xarray_obj):
+        # Store the underlying DataArray
+        self._obj = xarray_obj
+
+    def lon_to_360(self, dim='lon'):
+        
+        data = self._obj
+            
+        # Shift negative longitudes by +360
+        new_lon = xr.where(data[dim] < 0, data[dim] + 360, data[dim])
+
+        # Assign new longitude coordinate
+        new_data = data.assign_coords({dim: new_lon})
+
+        # Sort so longitudes go 0 → 360
+        new_data = new_data.sortby(dim)
+
+        return new_data
+
+@xr.register_dataset_accessor("coord_funcs")
+class CoordsAccessorDataset:
+    """
+    Coordinate operations for xarray.Dataset objects.
+    """
+
+    def __init__(self, xarray_obj):
+        self._obj = xarray_obj
+
+    def lon_to_360(self, dim='lon'):
+
+        data = self._obj
+            
+        # Shift negative longitudes by +360
+        new_lon = xr.where(data[dim] < 0, data[dim] + 360, data[dim])
+
+        # Assign new longitude coordinate
+        new_data = data.assign_coords({dim: new_lon})
+
+        # Sort so longitudes go 0 → 360
+        new_data = new_data.sortby(dim)
+
+        return new_data
+
+def lon_to_360(data, dim="lon"):
+    """
+    Convert longitude coordinates from [-180, 180] to [0, 360].
+
+    Parameters
+    ----------
+    da : xr.DataArray or xr.Dataset
+        Input object with longitude in [-180, 180].
+    lon_name : str
+        Name of the longitude coordinate.
+
+    Returns
+    -------
+    xr.DataArray or xr.Dataset
+        Same object with longitude in [0, 360], sorted ascending.
+    """
+
+    # Shift negative longitudes by +360
+    new_lon = xr.where(data[dim] < 0, data[dim] + 360, data[dim])
+
+    # Assign new longitude coordinate
+    new_data = data.assign_coords({dim: new_lon})
+
+    # Sort so longitudes go 0 → 360
+    new_data = new_data.sortby(dim)
+
+    return new_data
