@@ -191,6 +191,7 @@ for variable in pressure_level_variables.keys():
     # logger.info(pressure_level_data)
     logger.info(f"    Output directory: {graphcast_data_directory}")
     logger.info(f"    Saving data...")
+    datetimes = pressure_level_data.datetime
     pressure_level_data.to_netcdf(f"{graphcast_data_directory}/{variable}.nc")
     pressure_level_data.close()
     del pressure_level_data
@@ -254,7 +255,7 @@ target_grid = xr.Dataset(
     )
 regridder = xe.Regridder(six_hour_accumulated_precipitation, target_grid, "bilinear", reuse_weights=False)
 regridded_precipitation = regridder(six_hour_accumulated_precipitation)
-regridded_precipitation = convert_time_to_ns(regridded_precipitation)
+regridded_precipitation = convert_time_to_ns(regridded_precipitation.sel(time=datetimes.sel(batch=0).values))
 
 regridded_precipitation.name = 'total_precipitation_6hr'
 resave_data = True
@@ -314,7 +315,7 @@ target_grid = xr.Dataset(
     )
 regridder = xe.Regridder(toa_incident_solar_radiation_data, target_grid, "bilinear", reuse_weights=False)
 regridded_toa_incident_solar_radiation = regridder(toa_incident_solar_radiation_data)
-regridded_toa_incident_solar_radiation = convert_time_to_ns(regridded_toa_incident_solar_radiation)
+regridded_toa_incident_solar_radiation = convert_time_to_ns(regridded_toa_incident_solar_radiation.sel(time=datetimes.sel(batch=0).values))
 regridded_toa_incident_solar_radiation.name = 'toa_incident_solar_radiation'
 
 resave_data = True
