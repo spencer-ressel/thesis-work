@@ -307,6 +307,50 @@ class CoordsAccessor:
         new_data = new_data.sortby(dim)
 
         return new_data
+    
+    def sel(self, *args, **kwargs):
+        """
+        Safe selector that only applies selections for coordinates/dimensions
+        that exist on the DataArray. For example:
+
+            da.coord_funcs.sel(level=850)
+
+        will return `da.sel(level=850)` if `level` is a coordinate or dimension,
+        otherwise it returns the original DataArray unchanged.
+
+        This accepts the same basic calling pattern as `xarray.DataArray.sel`:
+        either a single positional `indexers` dict, and/or keyword indexers,
+        plus the usual keyword options like `method`, `tolerance`, and `drop`.
+        """
+        da = self._obj
+
+        # xarray allows .sel(indexers_dict, method=..., tolerance=..., drop=...)
+        # Collect an indexers dict from the first positional arg (if any)
+        indexer = {}
+        special = {"method", "tolerance", "drop", "fill_value"}
+        forward_kwargs = {}
+
+        if args:
+            try:
+                indexer = dict(args[0])
+            except Exception:
+                indexer = {}
+
+        # Separate indexer keys from special kwargs
+        for k, v in kwargs.items():
+            if k in special:
+                forward_kwargs[k] = v
+            else:
+                indexer[k] = v
+
+        # Keep only indexers that exist on the DataArray
+        valid_indexer = {k: v for k, v in indexer.items() if k in da.dims or k in da.coords}
+
+        if not valid_indexer:
+            return da
+
+        return da.sel(valid_indexer, **forward_kwargs)
+
 
 @xr.register_dataset_accessor("coord_funcs")
 class CoordsAccessorDataset:
@@ -331,6 +375,37 @@ class CoordsAccessorDataset:
         new_data = new_data.sortby(dim)
 
         return new_data
+    
+    def sel(self, *args, **kwargs):
+        """
+        Dataset-level safe selector. Mirrors the DataArray `coord_funcs.sel`
+        behaviour: only forwards indexers that exist as dims or coords on the
+        Dataset. Accepts the same calling pattern as `xr.Dataset.sel`.
+        """
+        ds = self._obj
+
+        indexer = {}
+        special = {"method", "tolerance", "drop", "fill_value"}
+        forward_kwargs = {}
+
+        if args:
+            try:
+                indexer = dict(args[0])
+            except Exception:
+                indexer = {}
+
+        for k, v in kwargs.items():
+            if k in special:
+                forward_kwargs[k] = v
+            else:
+                indexer[k] = v
+
+        valid_indexer = {k: v for k, v in indexer.items() if k in ds.dims or k in ds.coords}
+
+        if not valid_indexer:
+            return ds
+
+        return ds.sel(valid_indexer, **forward_kwargs)
 
 def lon_to_360(data, dim="lon"):
     """
