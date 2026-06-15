@@ -1,12 +1,20 @@
 #!/bin/bash -l
 
+#PBS -N get_graphcast_data
+#PBS -A uwas0172
+#PBS -l select=1:ncpus=1:mem=256GB
+#PBS -l walltime=05:00:00
+#PBS -q main
+#PBS -o data_download
+#PBS -j oe
+
 CONDA_ENV="modified-npl"
 
 module load conda 2>/dev/null || true
 conda activate "${CONDA_ENV}"
 
-START_DATE="2020-12-29T00:00:00.000000000"
-END_DATE="2021-02-27T00:00:00.000000000"
+START_DATE="2020-09-01T00:00:00.000000000"
+END_DATE="2020-10-01T00:00:00.000000000"
 
 start_time=$(date +%s)
 
