@@ -9,7 +9,8 @@ time.tzset()
 # ============================
 INPUT_DATA_DIRECTORY = "/glade/u/home/sressel/spencer-scratch/graphcast_input_data"
 GRAPHCAST_DATA_DIRECTORY = "/glade/u/home/sressel/spencer-scratch/graphcast_output"
-OUTPUT_DIRECTORY = "/glade/u/home/sressel/thesis-work/python/graphcast/output"
+ROOT_DIRECTORY = "/glade/u/home/sressel/thesis-work/python/graphcast"
+OUTPUT_DIRECTORY = f"{ROOT_DIRECTORY}/output"
 
 # ============================
 # Simulation Parameters
