@@ -845,3 +845,28 @@ pandas._libs.tslibs.parsing.DateParseError: day is out of range for month: 2016-
 2026-07-01 18:15:31,783 [INFO] Load all data into a single dataset
 2026-07-01 18:15:32,322 [INFO]     Saving data...
 2026-07-01 18:15:38,598 [INFO] All Finished
+2026-07-03 10:52:18,205 [INFO] Start date: 1979-01-01
+2026-07-03 10:52:18,213 [INFO] End date: 2021-12-31
+2026-07-03 10:52:18,214 [INFO] Starting data download script
+2026-07-03 10:52:18,224 [INFO] Dates: 1979-01-01T00 : 2021-12-31T00
+2026-07-03 10:52:18,225 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/
+2026-07-03 10:52:18,228 [INFO] Pressure Level Data
+2026-07-03 10:52:18,230 [INFO]   u_component_of_wind
+2026-07-03 10:52:20,076 [INFO]     Loading files...
+2026-07-03 10:52:46,174 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/
+2026-07-03 10:52:46,176 [INFO]     Saving data...
+2026-07-03 10:52:46,357 [INFO]   v_component_of_wind
+2026-07-03 10:52:46,659 [INFO]     Loading files...
+2026-07-03 10:53:08,631 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/
+2026-07-03 10:53:08,632 [INFO]     Saving data...
+2026-07-03 10:53:08,806 [INFO] Finished
+2026-07-03 10:56:21,303 [INFO] Start date: 1979-01-01
+2026-07-03 10:56:21,304 [INFO] End date: 2021-12-31
+2026-07-03 10:56:21,305 [INFO] Starting data download script
+2026-07-03 10:56:21,310 [INFO] Dates: 1979-01-01T00 : 2021-12-31T00
+2026-07-03 10:56:21,314 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/
+2026-07-03 10:56:21,319 [INFO] Pressure Level Data
+2026-07-03 10:56:21,321 [INFO]   u_component_of_wind
+2026-07-03 10:56:21,661 [INFO]     Loading files...
+2026-07-03 10:56:41,625 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/
+2026-07-03 10:56:41,626 [INFO]     Saving data...

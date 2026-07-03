@@ -90,73 +90,62 @@ def histogram(da, dims, bins=50, range=None):
     return xr.Dataset({"counts": counts_da, "bin_edges": edges_da})
 
 
-
-@xr.register_dataset_accessor("stats")
-class StatsAccessorDataset:
+class _StatsMixin:
     """
-    Statistical operations for xarray.Dataset objects.
-    Provides n-dimensional histogram computation for all data variables.
+    Shared statistics logic for both DataArray and Dataset `.stats` accessors.
+    Works unchanged on either type since .mean()/.std()/arithmetic broadcasting
+    behave the same way on both.
     """
 
-    def __init__(self, xarray_obj):
-        self._obj = xarray_obj
-
-    def standardize(self, dim="time", unit_variance=False):
+    def standardize(self, dim=None, zero_mean=True, unit_variance=False):
         """
-        Standardize every variable in a Dataset along a given dimension.
+        Standardize data along a given dimension.
 
         Parameters
         ----------
-        dim : str
-            Dimension over which to compute mean/std.
+        dim : str, sequence of str, or None
+            Dimension(s) over which to compute mean/std.
+            If None (default), reduces over all dimensions.
+        zero_mean : bool
+            If True, subtract the mean.
         unit_variance : bool
             If True, divide by standard deviation; otherwise only remove mean.
         """
         data = self._obj
 
-        # Compute mean along the requested dimension for each variable
-        mean = data.mean(dim=dim)
+        if zero_mean:
+            # Compute mean along the requested dimension
+            mean = data.mean(dim=dim)
+        else:
+            mean = 0
 
         if unit_variance:
             # Compute std only if needed
             std = data.std(dim=dim)
-            return (data - mean) / std
         else:
-            # Mean removal only
-            return data - mean
+            std = 1
+
+        return (data - mean) / std
+
+@xr.register_dataset_accessor("stats")
+class StatsAccessorDataset(_StatsMixin):
+    """
+    Statistical operations for xarray.Dataset objects.
+    Provides standardization for all data variables.
+    """
+
+    def __init__(self, xarray_obj):
+        self._obj = xarray_obj
+
 
 # Register a DataArray accessor named `.stats`
 # After this module is imported, any DataArray will have:  da.stats.standardize()
 @xr.register_dataarray_accessor("stats")
-class StatsAccessor:
+class StatsAccessor(_StatsMixin):
     def __init__(self, xarray_obj):
         # Store the underlying DataArray
         self._obj = xarray_obj
 
-    def standardize(self, dim="time", unit_variance=False):
-        """
-        Standardize a DataArray along a given dimension.
-
-        Parameters
-        ----------
-        dim : str
-            Dimension over which to compute mean/std.
-        unit_variance : bool
-            If True, divide by standard deviation; otherwise only remove mean.
-        """
-        data = self._obj
-
-        # Compute mean along the requested dimension
-        mean = data.mean(dim=dim)
-
-        if unit_variance:
-            # Compute std only if needed
-            std = data.std(dim=dim)
-            return (data - mean) / std
-        else:
-            # Mean removal only
-            return data - mean
-        
     def histogram(self, dims, bins=50, range=None):
         """
         Compute a histogram over multiple xarray dimensions using np.histogram.
@@ -209,7 +198,7 @@ class StatsAccessor:
         edges_da = xr.DataArray(edges, dims=["bin_edge"], name="bin_edges")
 
         return xr.Dataset({"counts": counts_da, "bin_edges": edges_da})
-            
+
 # Register a DataArray accessor named `.stats`
 # After this module is imported, any DataArray will have:  da.stats.standardize()
 @xr.register_dataarray_accessor("units")
@@ -287,16 +276,17 @@ def standardize_data(data, dim="time", axis=-1, unit_variance=True):
 
     return standardized_data
 
-@xr.register_dataarray_accessor("coord_funcs")
-class CoordsAccessor:
-    def __init__(self, xarray_obj):
-        # Store the underlying DataArray
-        self._obj = xarray_obj
+
+class _CoordFuncsMixin:
+    """
+    Shared coordinate utilities for both DataArray and Dataset `.coord_funcs`
+    accessors. Works unchanged on either type.
+    """
 
     def lon_to_360(self, dim='lon'):
-        
+
         data = self._obj
-            
+
         # Shift negative longitudes by +360
         new_lon = xr.where(data[dim] < 0, data[dim] + 360, data[dim])
 
@@ -307,22 +297,22 @@ class CoordsAccessor:
         new_data = new_data.sortby(dim)
 
         return new_data
-    
+
     def sel(self, *args, **kwargs):
         """
         Safe selector that only applies selections for coordinates/dimensions
-        that exist on the DataArray. For example:
+        that exist on the object. For example:
 
             da.coord_funcs.sel(level=850)
 
         will return `da.sel(level=850)` if `level` is a coordinate or dimension,
-        otherwise it returns the original DataArray unchanged.
+        otherwise it returns the original object unchanged.
 
-        This accepts the same basic calling pattern as `xarray.DataArray.sel`:
+        This accepts the same basic calling pattern as `xarray`'s `.sel`:
         either a single positional `indexers` dict, and/or keyword indexers,
         plus the usual keyword options like `method`, `tolerance`, and `drop`.
         """
-        da = self._obj
+        obj = self._obj
 
         # xarray allows .sel(indexers_dict, method=..., tolerance=..., drop=...)
         # Collect an indexers dict from the first positional arg (if any)
@@ -343,17 +333,24 @@ class CoordsAccessor:
             else:
                 indexer[k] = v
 
-        # Keep only indexers that exist on the DataArray
-        valid_indexer = {k: v for k, v in indexer.items() if k in da.dims or k in da.coords}
+        # Keep only indexers that exist on the object
+        valid_indexer = {k: v for k, v in indexer.items() if k in obj.dims or k in obj.coords}
 
         if not valid_indexer:
-            return da
+            return obj
 
-        return da.sel(valid_indexer, **forward_kwargs)
+        return obj.sel(valid_indexer, **forward_kwargs)
+
+
+@xr.register_dataarray_accessor("coord_funcs")
+class CoordsAccessor(_CoordFuncsMixin):
+    def __init__(self, xarray_obj):
+        # Store the underlying DataArray
+        self._obj = xarray_obj
 
 
 @xr.register_dataset_accessor("coord_funcs")
-class CoordsAccessorDataset:
+class CoordsAccessorDataset(_CoordFuncsMixin):
     """
     Coordinate operations for xarray.Dataset objects.
     """
@@ -361,51 +358,6 @@ class CoordsAccessorDataset:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
-    def lon_to_360(self, dim='lon'):
-
-        data = self._obj
-            
-        # Shift negative longitudes by +360
-        new_lon = xr.where(data[dim] < 0, data[dim] + 360, data[dim])
-
-        # Assign new longitude coordinate
-        new_data = data.assign_coords({dim: new_lon})
-
-        # Sort so longitudes go 0 → 360
-        new_data = new_data.sortby(dim)
-
-        return new_data
-    
-    def sel(self, *args, **kwargs):
-        """
-        Dataset-level safe selector. Mirrors the DataArray `coord_funcs.sel`
-        behaviour: only forwards indexers that exist as dims or coords on the
-        Dataset. Accepts the same calling pattern as `xr.Dataset.sel`.
-        """
-        ds = self._obj
-
-        indexer = {}
-        special = {"method", "tolerance", "drop", "fill_value"}
-        forward_kwargs = {}
-
-        if args:
-            try:
-                indexer = dict(args[0])
-            except Exception:
-                indexer = {}
-
-        for k, v in kwargs.items():
-            if k in special:
-                forward_kwargs[k] = v
-            else:
-                indexer[k] = v
-
-        valid_indexer = {k: v for k, v in indexer.items() if k in ds.dims or k in ds.coords}
-
-        if not valid_indexer:
-            return ds
-
-        return ds.sel(valid_indexer, **forward_kwargs)
 
 def lon_to_360(data, dim="lon"):
     """
