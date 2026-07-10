@@ -1,52 +1,70 @@
-module load cdo
-
-outdir="/glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology"
-mkdir -p "$outdir"
-
 start_time=$(date +%s)
 
-for year in $(seq 1979 1989); do
-    for month in $(seq -w 1 12); do
-        ym="${year}${month}"
-        echo "$ym"
+module load cdo
+export HDF5_DISABLE_ERROR_STACK=1
 
-        # U
-        files=$(ls /gdex/data/d633000/e5.oper.an.pl/${ym}/e5.oper.an.pl.*_u*uv*.nc 2>/dev/null)
+logfile="data_download_$(date +%Y%m%d_%H%M).log"
+exec > >(tee -a "$logfile") 2>&1
 
-        if [ -z "$files" ]; then
-            echo "No files for $ym"
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $*"
+}
+
+start_year=2001
+end_year=2010   # matches your end_date="2010-01-01" -> years loop covers 2001-2009 in the python range;
+                # extract_years_months likely stops before end_date, adjust if needed
+
+pressure_level_base="/gdex/data/d633000/e5.oper.an.pl"
+outdir="/glade/u/home/sressel/spencer-scratch/graphcast_input_data/daily_climatology"
+target_grid="r360x181"
+
+mkdir -p "$outdir"
+
+declare -A var_short=( [u_component_of_wind]="u" [v_component_of_wind]="v" )
+declare -A var_old_name=( [u_component_of_wind]="U" [v_component_of_wind]="V" )
+
+for year in $(seq $start_year $end_year); do
+    log "$year"
+
+    yeardir="${outdir}/${year}"
+    mkdir -p "$yeardir"
+
+    for variable in u_component_of_wind v_component_of_wind; do
+        short="${var_short[$variable]}"
+        oldname="${var_old_name[$variable]}"
+
+        log "-- $variable"
+
+        outfile="${yeardir}/${variable}.nc"
+        if [ -f "$outfile" ]; then
+            log "---- Skipping $year/$variable (already exists)"
             continue
         fi
 
-        tmpfiles=()
-        for f in $files; do
-            tmp="${outdir}/tmp/tmp_$(basename "$f")"
-            echo $tmp
-            cdo -O -remapbil,grid_1deg.txt -sellevel,200,850 -selhour,0,6,12,18 -selname,U "$f" "$tmp"
-            tmpfiles+=("$tmp")
-        done
-
-        cdo -O -chname,U,u_component_of_wind -mergetime "${tmpfiles[@]}" "${outdir}/u_${ym}.nc"
-        rm -f "${tmpfiles[@]}"
-
-        # V
-        files=$(ls /gdex/data/d633000/e5.oper.an.pl/${ym}/e5.oper.an.pl.*_v*uv*.nc 2>/dev/null)
+        pattern="${pressure_level_base}/${year}*/e5.oper.an.pl.*_${short}.*.nc"
+        files=$(ls $pattern 2>/dev/null)
 
         if [ -z "$files" ]; then
-            echo "No files for $ym"
+            log "No files found for $variable in $year"
             continue
         fi
 
-        tmpfiles=()
+        # v only needs level 200 (matches the python .sel(level=200) for v)
+        if [ "$variable" == "v_component_of_wind" ]; then
+            levels="200"
+        else
+            levels="200,850"
+        fi
+
+        chain=()
         for f in $files; do
-            tmp="${outdir}/tmp/tmp_$(basename "$f")"
-            echo $tmp
-            cdo -O -remapbil,grid_1deg.txt -sellevel,200 -selhour,0,6,12,18 -selname,V "$f" "$tmp"
-            tmpfiles+=("$tmp")
+            chain+=(-remapbil,${target_grid} -sellevel,${levels} -selhour,0 -selname,${oldname} "$f")
         done
 
-        cdo -O -chname,V,v_component_of_wind -mergetime "${tmpfiles[@]}" "${outdir}/v_${ym}.nc"
-        rm -f "${tmpfiles[@]}"
+        t0=$(date +%s)
+        cdo -O -chname,${oldname},${variable} -mergetime "${chain[@]}" "$outfile"
+        t1=$(date +%s)
+        log "Completed $year/$variable in $((t1 - t0))s"
     done
 done
 
@@ -55,4 +73,4 @@ time_diff=$((end_time - start_time))
 hours=$((time_diff / 3600))
 minutes=$(( (time_diff % 3600) / 60 ))
 seconds=$((time_diff % 60))
-echo "Total time: ${hours}h ${minutes}m ${seconds}s"
+log "Total time: ${hours}h ${minutes}m ${seconds}s"

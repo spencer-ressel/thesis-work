@@ -903,3 +903,60 @@ pandas._libs.tslibs.parsing.DateParseError: day is out of range for month: 2016-
 2026-07-06 16:06:48,576 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/202001_202201
 2026-07-06 16:06:48,597 [INFO]     Saving data...
 2026-07-06 16:06:49,937 [INFO] Finished
+2026-07-08 12:40:43,165 [INFO] Start date: 2020-01-01
+2026-07-08 12:40:43,169 [INFO] End date: 2022-01-01
+2026-07-08 12:40:43,170 [INFO] Starting data download script
+2026-07-08 12:40:43,173 [INFO] Dates: 2020-01-01T00 : 2022-01-01T00
+2026-07-08 12:40:43,174 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/202001_202201
+2026-07-08 12:40:43,175 [INFO] Finished
+2026-07-08 12:46:32,057 [INFO]   u_component_of_wind
+2026-07-08 12:46:52,190 [INFO]   u_component_of_wind
+2026-07-08 12:52:42,536 [INFO] Start date: 2001-01-01
+2026-07-08 12:52:42,537 [INFO] End date: 2010-01-01
+2026-07-08 12:52:42,537 [INFO] Starting data download script
+2026-07-08 12:52:42,540 [INFO] Dates: 2001-01-01T00 : 2010-01-01T00
+2026-07-08 12:52:42,540 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/
+2026-07-08 12:52:42,541 [INFO] Pressure Level Data
+2026-07-08 12:52:42,542 [INFO]   u_component_of_wind
+2026-07-08 12:52:42,543 [INFO] {year}
+2026-07-08 12:52:42,595 [INFO]     Loading files...
+2026-07-08 12:53:38,972 [INFO] Start date: 2001-01-01
+2026-07-08 12:53:38,972 [INFO] End date: 2010-01-01
+2026-07-08 12:53:38,973 [INFO] Starting data download script
+2026-07-08 12:53:38,975 [INFO] Dates: 2001-01-01T00 : 2010-01-01T00
+2026-07-08 12:53:38,976 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/
+2026-07-08 12:53:38,977 [INFO] Pressure Level Data
+2026-07-08 12:53:38,978 [INFO]   u_component_of_wind
+2026-07-08 12:53:38,978 [INFO] 2001
+2026-07-08 12:53:38,994 [INFO]       Loading files...
+2026-07-08 12:54:14,209 [INFO] Start date: 2001-01-01
+2026-07-08 12:54:14,211 [INFO] End date: 2010-01-01
+2026-07-08 12:54:14,211 [INFO] Starting data download script
+2026-07-08 12:54:14,214 [INFO] Dates: 2001-01-01T00 : 2010-01-01T00
+2026-07-08 12:54:14,216 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/
+2026-07-08 12:54:14,217 [INFO] Pressure Level Data
+2026-07-08 12:54:14,218 [INFO]   u_component_of_wind
+2026-07-08 12:54:14,219 [INFO]     2001
+2026-07-08 12:54:14,233 [INFO]       Loading files...
+2026-07-08 12:55:40,133 [INFO] Start date: 2001-01-01
+2026-07-08 12:55:40,135 [INFO] End date:   2010-01-01
+2026-07-08 12:55:40,141 [INFO] Dates: 2001-01-01T00 : 2010-01-01T00
+2026-07-08 12:55:40,142 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/
+2026-07-08 12:55:40,143 [INFO] u_component_of_wind
+2026-07-08 12:55:40,148 [INFO] --2001
+2026-07-08 12:55:40,157 [INFO] ----Loading files...
+2026-07-08 12:56:04,182 [INFO] Start date: 2001-01-01
+2026-07-08 12:56:04,186 [INFO] End date:   2010-01-01
+2026-07-08 12:56:04,190 [INFO] Dates: 2001-01-01T00 : 2010-01-01T00
+2026-07-08 12:56:04,191 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology/
+2026-07-08 12:56:04,203 [INFO] u_component_of_wind
+2026-07-08 12:56:04,204 [INFO] -- 2001
+2026-07-08 12:56:04,213 [INFO] ---- Loading files...
+2026-07-08 13:46:16,903 [INFO] ---- Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology//2001
+2026-07-08 13:46:16,906 [INFO] ---- Saving data...
+2026-07-08 13:46:17,965 [INFO] -- 2002
+2026-07-08 13:46:18,008 [INFO] ---- Loading files...
+2026-07-08 14:36:00,085 [INFO] ---- Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/climatology//2002
+2026-07-08 14:36:00,786 [INFO] ---- Saving data...
+2026-07-08 14:36:01,879 [INFO] -- 2003
+2026-07-08 14:36:01,923 [INFO] ---- Loading files...

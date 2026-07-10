@@ -509,14 +509,105 @@ def remove_annual_cycle(data, nharmonics=3):
         harmonics.append(np.sin(w * t))
 
     harmonics_array = xr.concat(harmonics, dim="harmonic")  # shape: (harmonic, time)
+    scale = xr.where(harmonics_array.harmonic == 0, 1.0, 2.0)
 
     # Compute regression coefficients C(harmonic, ...)
-    regression_coefficients = (harmonics_array * data).mean(dim='time')
+    regression_coefficients = scale * (harmonics_array * data).mean(dim='time')
 
     # Reconstruct annual cycle
     annual_cycle = (harmonics_array * regression_coefficients).sum("harmonic")
 
     # Remove cycle
+    data_deannualized = data - annual_cycle
+
+    return data_deannualized, annual_cycle
+
+def fit_annual_cycle(data, nharmonics=3):
+    """
+    Fit the mean + first `nharmonics` annual harmonics to an xarray DataArray
+    via least-squares (harmonic regression), for later reuse on new data.
+
+    Parameters
+    ----------
+    data : xr.DataArray
+        Input training data with a 'time' dimension.
+    nharmonics : int
+        Number of harmonics to fit (default: 3).
+
+    Returns
+    -------
+    regression_coefficients : xr.DataArray
+        Fitted coefficients (dim: 'harmonic', plus any other dims of `data`).
+        Includes the factor-of-2 correction for the cos/sin terms.
+    t0 : np.datetime64
+        Reference date (first timestamp of `data`) that the harmonic phase
+        is anchored to. Must be passed to apply_annual_cycle for both the
+        training data and any new data, so phase stays consistent.
+    """
+    t = xr.DataArray(
+        np.arange(len(data.time)) + 1,
+        dims='time',
+        coords={'time': data.time},
+    )
+
+    harmonics = [xr.ones_like(t)]
+    for k in range(1, nharmonics + 1):
+        w = 2 * np.pi * k / 365
+        harmonics.append(np.cos(w * t))
+        harmonics.append(np.sin(w * t))
+    harmonics_array = xr.concat(harmonics, dim="harmonic")
+    harmonics_array = harmonics_array.assign_coords(harmonic=np.arange(harmonics_array.sizes["harmonic"]))
+
+    # factor of 2 for all cos/sin terms (harmonic index >= 1); mean term (index 0) stays x1
+    scale = xr.where(harmonics_array.harmonic == 0, 1.0, 2.0)
+    regression_coefficients = scale * (harmonics_array * data).mean(dim='time')
+
+    t0 = data.time.values[0]
+    return regression_coefficients, t0
+
+def apply_annual_cycle(data, regression_coefficients, t0, nharmonics=3):
+    """
+    Evaluate a previously-fit annual cycle (from fit_annual_cycle) at the
+    timestamps in `data`, using the same phase reference `t0`, and subtract
+    it off. Works for both the original training data and new data.
+
+    Parameters
+    ----------
+    data : xr.DataArray
+        Data to deannualize (training or new), with a 'time' dimension.
+    regression_coefficients : xr.DataArray
+        Coefficients from fit_annual_cycle (already includes the factor-of-2
+        correction — do not rescale here).
+    t0 : np.datetime64
+        Reference date from fit_annual_cycle, anchoring the harmonic phase.
+    nharmonics : int
+        Must match the value used in fit_annual_cycle.
+
+    Returns
+    -------
+    data_deannualized : xr.DataArray
+        data minus the reconstructed annual cycle.
+    annual_cycle : xr.DataArray
+        The reconstructed annual cycle evaluated at data's timestamps.
+    """
+    days_since_t0 = (data.time.values - np.datetime64(t0)) / np.timedelta64(1, 'D')
+    t = xr.DataArray(
+        days_since_t0 + 1,
+        dims='time',
+        coords={'time': data.time},
+    )
+
+    harmonics = [xr.ones_like(t)]
+    for k in range(1, nharmonics + 1):
+        w = 2 * np.pi * k / 365
+        harmonics.append(np.cos(w * t))
+        harmonics.append(np.sin(w * t))
+    harmonics_array = xr.concat(harmonics, dim="harmonic")
+    harmonics_array = harmonics_array.assign_coords(harmonic=np.arange(harmonics_array.sizes["harmonic"]))
+
+    # basis stays unscaled here — the x2 correction is already baked into
+    # regression_coefficients from fit_annual_cycle, applied exactly once
+    annual_cycle = (harmonics_array * regression_coefficients).sum("harmonic")
     data_deannualized = data - annual_cycle
 
     return data_deannualized, annual_cycle
