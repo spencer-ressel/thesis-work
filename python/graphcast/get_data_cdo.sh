@@ -1,3 +1,13 @@
+#!/bin/bash -l
+
+#PBS -N get_graphcast_data
+#PBS -A uwas0172
+#PBS -l select=1:ncpus=1:mem=256GB
+#PBS -l walltime=06:00:00
+#PBS -q main
+#PBS -o data_download
+#PBS -j oe
+
 start_time=$(date +%s)
 
 module load cdo

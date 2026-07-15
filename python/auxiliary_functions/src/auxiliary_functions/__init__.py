@@ -25,3 +25,8 @@ from .logging_utils import (
     ElapsedFormatter,
     CombinedTimeFormatter
 )
+
+from .calculate_velocity_potential import (
+    calculate_velocity_potential_era5,
+    calculate_velocity_potential_graphcast
+)
