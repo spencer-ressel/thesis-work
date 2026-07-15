@@ -29,7 +29,7 @@ for year in $(seq $start_year $end_year); do
     yeardir="${outdir}/${year}"
     mkdir -p "$yeardir"
 
-    for variable in u_component_of_wind v_component_of_wind; do
+    for variable in u_component_of_wind; do
         short="${var_short[$variable]}"
         oldname="${var_old_name[$variable]}"
 
