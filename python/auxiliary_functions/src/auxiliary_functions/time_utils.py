@@ -10,12 +10,12 @@ def datetime64_to_yyyymmdd(dt):
 
 def string_to_yyyymm(dt):
     """
-    Convert a datetime or ISO-format datetime string into 'YYYYMM'.
+    Convert a datetime or ISO-format datetime string into 'YYYY-MM'.
     """
     if isinstance(dt, str):
         dt = datetime.fromisoformat(dt) # type: ignore
-    return f"{dt.year}{dt.month:02d}"
-    # return datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y%m")
+    return f"{dt.year}-{dt.month:02d}"
+    # return datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y-%m")
 
 def convert_time_to_ns(ds):
     # Original datetime64 coordinate

@@ -40,6 +40,8 @@ def _velocity_potential_from_winds(zonal_wind, meridional_wind):
 
     velocity_potential = xr.zeros_like(zonal_wind)
     velocity_potential[:] = velocity_potential_values.isel(lat=slice(None, None, -1)).values
+    velocity_potential.name = "Velocity Potential"
+    velocity_potential.attrs['units'] = r"m$^{2}$ s$^{-1}$"
 
     return velocity_potential
 
@@ -124,5 +126,7 @@ def calculate_velocity_potential_graphcast(data, batch=0, **selectors):
     # back in at the requested index.
     velocity_potential = xr.zeros_like(zonal_wind)
     velocity_potential[batch] = velocity_potential_batch.values
+    velocity_potential.name = "Velocity Potential"
+    velocity_potential.attrs['units'] = r"m$^{2}$ s$^{-1}$"
 
     return velocity_potential

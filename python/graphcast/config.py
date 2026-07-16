@@ -39,6 +39,7 @@ VARIABLE_SHORTNAMES = {
     "v_component_of_wind": "V",
     "specific_humidity": "q",
     "vertical_velocity": "ω",
+    "velocity_potential": "VP",
 
     # Surface variables
     "2m_temperature": "T2m",
@@ -56,6 +57,7 @@ VARIABLE_LONGNAMES = {
     "v_component_of_wind": "Meridional Wind",
     "specific_humidity": "Specific Humidity",
     "vertical_velocity": "Vertical Wind",
+    "velocity_potential": "Velocity Potential",
 
     # Surface variables
     "2m_temperature": "2m Temperature",
@@ -73,6 +75,7 @@ VARIABLE_UNITS = {
     "v_component_of_wind": r"m s$^{-1}$",
     "specific_humidity":   r"kg kg$^{-1}$",
     "vertical_velocity":   r"Pa s$^{-1}$",
+    "velocity_potential":   r"m$^{2}$ s$^{-1}$",
 
     # Surface variables
     "2m_temperature":          r"K",

@@ -13,8 +13,8 @@ CONDA_ENV="modified-npl"
 module load conda 2>/dev/null || true
 conda activate "${CONDA_ENV}"
 
-START_DATE="1986-10-01T00:00:00.000000000"
-END_DATE="1986-11-30T00:00:00.000000000"
+START_DATE="2020-09-01T00:00:00.000000000"
+END_DATE="2020-11-30T00:00:00.000000000"
 
 start_time=$(date +%s)
 

@@ -30,7 +30,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler("data_download.log", mode="a"),
+        logging.FileHandler("data_download_logs/data_download.log", mode="a"),
         logging.StreamHandler(sys.stdout),
     ]
 )
@@ -90,7 +90,7 @@ yyyymm_strings = pd.date_range(
     pd.to_datetime(start_date).to_period("M").to_timestamp(),
     pd.to_datetime(end_date).to_period("M").to_timestamp(),
     freq="MS"
-).strftime("%Y%m")
+).strftime("%Y-%m")
 
 logger.info(f"Dates: {np.datetime64(start_date).astype('datetime64[h]')} : {np.datetime64(end_date).astype('datetime64[h]')}")
 
