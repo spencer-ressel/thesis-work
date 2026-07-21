@@ -1,4 +1,5 @@
 from cartopy import util
+import builtins
 import xarray as xr
 import numpy as np
 
@@ -126,6 +127,45 @@ class _StatsMixin:
             std = 1
 
         return (data - mean) / std
+
+    def absmax(self, dim=None):
+        """
+        Compute the maximum absolute value along one or more dimensions.
+
+        Parameters
+        ----------
+        dim : str, sequence of str, or None
+            Dimension(s) over which to compute the maximum. If None,
+            reduces over all dimensions.
+
+        Returns
+        -------
+        xarray.DataArray or xarray.Dataset
+            The maximum absolute value, with the reduced dimensions removed.
+        """
+        data = self._obj
+
+        return np.abs(data).max(dim=dim)
+
+    def magnitude(self, dim=None):
+        """
+        Compute the Euclidean magnitude over one or more dimensions.
+
+        Parameters
+        ----------
+        dim : str, sequence of str, or None
+            Dimension(s) over which to compute the magnitude. If None,
+            reduces over all dimensions.
+
+        Returns
+        -------
+        xarray.DataArray or xarray.Dataset
+            The square root of the sum of squared values, with the reduced
+            dimensions removed.
+        """
+        data = self._obj
+
+        return np.sqrt((data ** 2).sum(dim=dim))
 
 @xr.register_dataset_accessor("stats")
 class StatsAccessorDataset(_StatsMixin):
@@ -275,6 +315,62 @@ def standardize_data(data, dim="time", axis=-1, unit_variance=True):
         raise TypeError("Input data must instance of xr.DataArray, xr.Dataset, or np.ndarray")
 
     return standardized_data
+
+
+class _PrintMixin:
+    """Shared value-printing behavior for DataArray and Dataset accessors."""
+
+    def __call__(self, format=None, label=True):
+        """
+        Print the underlying values with optional numeric formatting and label.
+
+        Parameters
+        ----------
+        format : str or None, optional
+            Python format specification applied to each value, as used by
+            f-strings. For example, ``"10.2f"`` or ``"0.3e"``.
+        label : bool or str, optional
+            If True, print the DataArray's xarray name before its values. A
+            string can be supplied to label an unnamed DataArray explicitly.
+            Defaults to False. Dataset variables are labeled by name in either
+            case.
+        """
+        formatter = None
+        if format is not None:
+            formatter = {
+                "all": lambda value: builtins.format(value, format)
+            }
+
+        def format_values(values):
+            return np.array2string(
+                values,
+                formatter=formatter
+            )
+
+        data = self._obj
+
+        if isinstance(data, xr.DataArray):
+            values = format_values(data.values)
+            if label:
+                label_text = data.name if label is True else label
+                print(f"{label_text}: {values}")
+            else:
+                print(values)
+        else:
+            for name, variable in data.data_vars.items():
+                print(f"{name}:\n{format_values(variable.values)}")
+
+
+@xr.register_dataarray_accessor("print")
+class PrintAccessor(_PrintMixin):
+    def __init__(self, xarray_obj):
+        self._obj = xarray_obj
+
+
+@xr.register_dataset_accessor("print")
+class PrintAccessorDataset(_PrintMixin):
+    def __init__(self, xarray_obj):
+        self._obj = xarray_obj
 
 
 class _CoordFuncsMixin:
