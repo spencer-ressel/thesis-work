@@ -7,6 +7,8 @@ import logging
 import os
 import sys
 from datetime import datetime
+import shutil
+import subprocess
 
 # ------------------------------------------------------------
 # Third‑party scientific stack
@@ -26,11 +28,20 @@ from dateutil.relativedelta import relativedelta
 # ------------------------------------------------------------
 # Logging configuration
 # ------------------------------------------------------------
+pbs_job_id = os.environ.get('PBS_JOBID')
+
+if pbs_job_id:
+    # PBS_JOBID often looks like '123456.desktop1' — strip the host part if you just want the number
+    job_id_short = pbs_job_id.split('.')[0]
+    log_filename = f"data_download_logs/data_download_{job_id_short}.log"
+else:
+    log_filename = "data_download_logs/data_download.log"
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler("data_download_logs/data_download.log", mode="a"),
+        logging.FileHandler(log_filename, mode="a"),
         logging.StreamHandler(sys.stdout),
     ]
 )
@@ -121,6 +132,11 @@ surface_variables_old_names = {
 }
 
 for variable in surface_variables.keys():
+
+    if os.path.isfile(f"{graphcast_data_directory}/{variable}.nc"):
+        logger.info(f"{variable} exists, skipping...")
+        continue
+
     files_list = []
 
     logger.info(f"  {variable}")
@@ -174,6 +190,11 @@ pressure_level_variables_old_names = {
 }
 
 for variable in pressure_level_variables.keys():
+
+    if os.path.isfile(f"{graphcast_data_directory}/{variable}.nc"):
+        logger.info(f"{variable} exists, skipping...")
+        continue
+
     files_list = []
 
     logger.info(f"  {variable}")
@@ -202,139 +223,149 @@ logger.info("Finished")
 # Precipitation
 logger.info("Precipitation")
 target = f"{graphcast_data_directory}/total_precipitation_6hr.nc"
-dataset = "reanalysis-era5-single-levels"
-request = {
-    "product_type": ["reanalysis"],
-    "variable": [
-        "total_precipitation",
-    ],
-    "year": years,
-    "month": months,
-    "day": [
-        "01", "02", "03",
-        "04", "05", "06",
-        "07", "08", "09",
-        "10", "11", "12",
-        "13", "14", "15",
-        "16", "17", "18",
-        "19", "20", "21",
-        "22", "23", "24",
-        "25", "26", "27",
-        "28", "29", "30",
-        "31"
-    ],
-    "time": [
-        "00:00", "01:00", "02:00",
-        "03:00", "04:00", "05:00",
-        "06:00", "07:00", "08:00",
-        "09:00", "10:00", "11:00",
-        "12:00", "13:00", "14:00",
-        "15:00", "16:00", "17:00",
-        "18:00", "19:00", "20:00",
-        "21:00", "22:00", "23:00"
-    ],
-    "data_format": "netcdf",
-    "download_format": "unarchived"
-}
 
-client = cdsapi.Client()
-logger.info("    Downloading data...")
-client.retrieve(dataset, request, target)
+if os.path.isfile(f"{graphcast_data_directory}/total_precipitation_6hr.nc"):
+    logger.info("    precipitation file exists, skipping...")
+else:
+    dataset = "reanalysis-era5-single-levels"
+    request = {
+        "product_type": ["reanalysis"],
+        "variable": [
+            "total_precipitation",
+        ],
+        "year": years,
+        "month": months,
+        "day": [
+            "01", "02", "03",
+            "04", "05", "06",
+            "07", "08", "09",
+            "10", "11", "12",
+            "13", "14", "15",
+            "16", "17", "18",
+            "19", "20", "21",
+            "22", "23", "24",
+            "25", "26", "27",
+            "28", "29", "30",
+            "31"
+        ],
+        "time": [
+            "00:00", "01:00", "02:00",
+            "03:00", "04:00", "05:00",
+            "06:00", "07:00", "08:00",
+            "09:00", "10:00", "11:00",
+            "12:00", "13:00", "14:00",
+            "15:00", "16:00", "17:00",
+            "18:00", "19:00", "20:00",
+            "21:00", "22:00", "23:00"
+        ],
+        "data_format": "netcdf",
+        "download_format": "unarchived"
+    }
 
-logger.info("    Regridding data...")
-raw_precipitation_files = sorted(glob.glob(f"{graphcast_data_directory}/total_precipitation_6hr.nc"))
-precipitation_data = xr.open_mfdataset(raw_precipitation_files)['tp'].rename({'valid_time': 'time'}).load()
+    client = cdsapi.Client()
+    logger.info("    Downloading data...")
+    client.retrieve(dataset, request, target)
 
-six_hour_accumulated_precipitation = precipitation_data.resample(time='6h').sum()
+    logger.info("    Regridding data...")
+    raw_precipitation_files = sorted(glob.glob(f"{graphcast_data_directory}/total_precipitation_6hr.nc"))
+    precipitation_data = xr.open_mfdataset(raw_precipitation_files)['tp'].rename({'valid_time': 'time'}).load()
 
-target_grid = xr.Dataset(
-        {
-            "lat": (["lat"], np.arange(-90, 91, 1.0)),
-            "lon": (["lon"], np.arange(0, 360, 1.0)),
-        }
-    )
-regridder = xe.Regridder(six_hour_accumulated_precipitation, target_grid, "bilinear", reuse_weights=False)
-regridded_precipitation = regridder(six_hour_accumulated_precipitation)
-regridded_precipitation = convert_time_to_ns(regridded_precipitation.sel(time=datetimes.sel(batch=0).values))
+    six_hour_accumulated_precipitation = precipitation_data.resample(time='6h').sum()
 
-regridded_precipitation.name = 'total_precipitation_6hr'
-resave_data = True
-if resave_data:
-    logger.info(f"    Output directory: {graphcast_data_directory}")
-    logger.info(f"    Saving data...")
-    regridded_precipitation.to_netcdf(f"{graphcast_data_directory}/total_precipitation_6hr.nc", mode='w')
-    regridded_precipitation.close()
-    del regridded_precipitation
-    gc.collect()
+    target_grid = xr.Dataset(
+            {
+                "lat": (["lat"], np.arange(-90, 91, 1.0)),
+                "lon": (["lon"], np.arange(0, 360, 1.0)),
+            }
+        )
+    regridder = xe.Regridder(six_hour_accumulated_precipitation, target_grid, "bilinear", reuse_weights=False)
+    regridded_precipitation = regridder(six_hour_accumulated_precipitation)
+    regridded_precipitation = convert_time_to_ns(regridded_precipitation.sel(time=datetimes.sel(batch=0).values))
 
-logger.info("Finished")
+    regridded_precipitation.name = 'total_precipitation_6hr'
+    resave_data = True
+    if resave_data:
+        logger.info(f"    Output directory: {graphcast_data_directory}")
+        logger.info(f"    Saving data...")
+        regridded_precipitation.to_netcdf(f"{graphcast_data_directory}/total_precipitation_6hr.nc", mode='w')
+        regridded_precipitation.close()
+        del regridded_precipitation
+        gc.collect()
+
+    logger.info("Finished")
 
 # TOA Solar Radiation
 logger.info("TOA Solar Radiation")
 target = f"{graphcast_data_directory}/toa_incident_solar_radiation.nc"
-dataset = "reanalysis-era5-single-levels"
-request = {
-    "product_type": ["reanalysis"],
-    "variable": [
-        "toa_incident_solar_radiation"
-    ],
-    "year": years,
-    "month": months,
-    "day": [
-        "01", "02", "03",
-        "04", "05", "06",
-        "07", "08", "09",
-        "10", "11", "12",
-        "13", "14", "15",
-        "16", "17", "18",
-        "19", "20", "21",
-        "22", "23", "24",
-        "25", "26", "27",
-        "28", "29", "30",
-        "31"
-    ],
-    "time": [
-        "00:00", "06:00","12:00","18:00"
-    ],
-    "data_format": "netcdf",
-    "download_format": "unarchived"
-}
 
-client = cdsapi.Client()
-logger.info("    Downloading data...")
-client.retrieve(dataset, request, target)
+if os.path.isfile(f"{graphcast_data_directory}/toa_incident_solar_radiation.nc"):
+    logger.info("    toa_incident_solar_radiation file exists, skipping...")
+else:
+    dataset = "reanalysis-era5-single-levels"
+    request = {
+        "product_type": ["reanalysis"],
+        "variable": [
+            "toa_incident_solar_radiation"
+        ],
+        "year": years,
+        "month": months,
+        "day": [
+            "01", "02", "03",
+            "04", "05", "06",
+            "07", "08", "09",
+            "10", "11", "12",
+            "13", "14", "15",
+            "16", "17", "18",
+            "19", "20", "21",
+            "22", "23", "24",
+            "25", "26", "27",
+            "28", "29", "30",
+            "31"
+        ],
+        "time": [
+            "00:00", "06:00","12:00","18:00"
+        ],
+        "data_format": "netcdf",
+        "download_format": "unarchived"
+    }
 
-logger.info("    Regridding data...")
-toa_incident_solar_radiation_data = xr.open_mfdataset(target)['tisr'].rename({'valid_time':'time'}).load()
+    client = cdsapi.Client()
+    logger.info("    Downloading data...")
+    client.retrieve(dataset, request, target)
 
-target_grid = xr.Dataset(
-        {
-            "lat": (["lat"], np.arange(-90, 91, 1.0)),
-            "lon": (["lon"], np.arange(0, 360, 1.0)),
-        }
-    )
-regridder = xe.Regridder(toa_incident_solar_radiation_data, target_grid, "bilinear", reuse_weights=False)
-regridded_toa_incident_solar_radiation = regridder(toa_incident_solar_radiation_data)
-regridded_toa_incident_solar_radiation = convert_time_to_ns(regridded_toa_incident_solar_radiation.sel(time=datetimes.sel(batch=0).values))
-regridded_toa_incident_solar_radiation.name = 'toa_incident_solar_radiation'
+    logger.info("    Regridding data...")
+    toa_incident_solar_radiation_data = xr.open_mfdataset(target)['tisr'].rename({'valid_time':'time'}).load()
 
-resave_data = True
-if resave_data:
-    logger.info(f"    Output directory: {graphcast_data_directory}")
-    logger.info(f"    Saving data...")
-    regridded_toa_incident_solar_radiation.to_netcdf(f"{graphcast_data_directory}/toa_incident_solar_radiation.nc", mode='w')
-    regridded_toa_incident_solar_radiation.close()
-    del regridded_toa_incident_solar_radiation
-    gc.collect()
+    target_grid = xr.Dataset(
+            {
+                "lat": (["lat"], np.arange(-90, 91, 1.0)),
+                "lon": (["lon"], np.arange(0, 360, 1.0)),
+            }
+        )
+    regridder = xe.Regridder(toa_incident_solar_radiation_data, target_grid, "bilinear", reuse_weights=False)
+    regridded_toa_incident_solar_radiation = regridder(toa_incident_solar_radiation_data)
+    regridded_toa_incident_solar_radiation = convert_time_to_ns(regridded_toa_incident_solar_radiation.sel(time=datetimes.sel(batch=0).values))
+    regridded_toa_incident_solar_radiation.name = 'toa_incident_solar_radiation'
+
+    resave_data = True
+    if resave_data:
+        logger.info(f"    Output directory: {graphcast_data_directory}")
+        logger.info(f"    Saving data...")
+        regridded_toa_incident_solar_radiation.to_netcdf(f"{graphcast_data_directory}/toa_incident_solar_radiation.nc", mode='w')
+        regridded_toa_incident_solar_radiation.close()
+        del regridded_toa_incident_solar_radiation
+        gc.collect()
 
 logger.info("Geopotential at Surface")
-os.system(
-    f"cp /glade/u/home/sressel/spencer-scratch/geopotential_at_surface.nc {graphcast_data_directory}/geopotential_at_surface.nc"
+shutil.copy(
+    "/glade/u/home/sressel/spencer-scratch/geopotential_at_surface.nc",
+    f"{graphcast_data_directory}/geopotential_at_surface.nc"
 )
 
 logger.info("Land Sea Mask")
-os.system(
-    f"cp /glade/u/home/sressel/spencer-scratch/land_sea_mask.nc {graphcast_data_directory}/land_sea_mask.nc"
+shutil.copy(
+    "/glade/u/home/sressel/spencer-scratch/land_sea_mask.nc",
+    f"{graphcast_data_directory}/land_sea_mask.nc"
 )
 
 logger.info("Load all data into a single dataset")
