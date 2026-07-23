@@ -1,0 +1,20 @@
+2026-07-23 14:08:02,363 [INFO] Start date: 2003-07-01T00:00:00.000000000
+2026-07-23 14:08:02,363 [INFO] End date: 2003-12-31T00:00:00.000000000
+2026-07-23 14:08:02,369 [INFO] Starting data download script
+2026-07-23 14:08:02,387 [INFO] Dates: 2003-07-01T00 : 2003-12-31T00
+2026-07-23 14:08:02,398 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2003-07_2003-12
+2026-07-23 14:08:02,405 [INFO] Surface level variables
+2026-07-23 14:08:02,416 [INFO] 2m_temperature exists, skipping...
+2026-07-23 14:08:02,424 [INFO] Finished
+2026-07-23 14:08:02,435 [INFO] Pressure Level Data
+2026-07-23 14:08:02,448 [INFO] geopotential exists, skipping...
+2026-07-23 14:08:02,457 [INFO] Finished
+2026-07-23 14:08:02,471 [INFO] Precipitation
+2026-07-23 14:08:02,494 [INFO]     precipitation file exists, skipping...
+2026-07-23 14:08:02,535 [INFO] TOA Solar Radiation
+2026-07-23 14:08:03,767 [INFO]     toa_incident_solar_radiation file exists, skipping...
+2026-07-23 14:08:03,776 [INFO] Geopotential at Surface
+2026-07-23 14:08:03,870 [INFO] Land Sea Mask
+2026-07-23 14:08:03,920 [INFO] Load all data into a single dataset
+2026-07-23 14:08:20,391 [INFO]     Saving data...
+2026-07-23 14:09:19,256 [INFO] All Finished

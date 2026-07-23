@@ -1,0 +1,28 @@
+2026-07-23 14:07:59,904 [INFO] Start date: 2001-06-01T00:00:00.000000000
+2026-07-23 14:07:59,904 [INFO] End date: 2001-12-31T00:00:00.000000000
+2026-07-23 14:07:59,910 [INFO] Starting data download script
+2026-07-23 14:07:59,915 [INFO] Dates: 2001-06-01T00 : 2001-12-31T00
+2026-07-23 14:07:59,920 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2001-06_2001-12
+2026-07-23 14:07:59,920 [INFO] Surface level variables
+2026-07-23 14:07:59,921 [INFO] 2m_temperature exists, skipping...
+2026-07-23 14:07:59,921 [INFO] Finished
+2026-07-23 14:07:59,921 [INFO] Pressure Level Data
+2026-07-23 14:07:59,922 [INFO] geopotential exists, skipping...
+2026-07-23 14:07:59,922 [INFO] Finished
+2026-07-23 14:07:59,922 [INFO] Precipitation
+2026-07-23 14:07:59,923 [INFO]     precipitation file exists, skipping...
+2026-07-23 14:07:59,923 [INFO] TOA Solar Radiation
+2026-07-23 14:08:00,919 [INFO]     Downloading data...
+2026-07-23 14:08:01,792 [INFO] Request ID is d4891c6b-f907-424b-b47b-32870bf610f1
+2026-07-23 14:08:01,958 [INFO] status has been updated to accepted
+2026-07-23 14:08:16,079 [INFO] status has been updated to running
+2026-07-23 14:10:55,367 [INFO] status has been updated to successful
+2026-07-23 14:10:55,713 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-2/2026-07-23/14cfc02c5c011e6fa0c301eda527928d.nc
+2026-07-23 14:11:31,633 [INFO]     Regridding data...
+2026-07-23 14:12:01,839 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2001-06_2001-12
+2026-07-23 14:12:01,846 [INFO]     Saving data...
+2026-07-23 14:12:02,294 [INFO] Geopotential at Surface
+2026-07-23 14:12:02,350 [INFO] Land Sea Mask
+2026-07-23 14:12:02,398 [INFO] Load all data into a single dataset
+2026-07-23 14:12:03,352 [INFO]     Saving data...
+2026-07-23 14:12:42,717 [INFO] All Finished

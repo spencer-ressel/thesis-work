@@ -1,0 +1,37 @@
+2026-07-23 14:11:16,717 [INFO] Start date: 2008-07-01T00:00:00.000000000
+2026-07-23 14:11:16,751 [INFO] End date: 2008-12-31T00:00:00.000000000
+2026-07-23 14:11:16,770 [INFO] Starting data download script
+2026-07-23 14:11:16,773 [INFO] Dates: 2008-07-01T00 : 2008-12-31T00
+2026-07-23 14:11:16,776 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2008-07_2008-12
+2026-07-23 14:11:16,776 [INFO] Surface level variables
+2026-07-23 14:11:16,776 [INFO] 2m_temperature exists, skipping...
+2026-07-23 14:11:16,776 [INFO] Finished
+2026-07-23 14:11:16,776 [INFO] Pressure Level Data
+2026-07-23 14:11:16,777 [INFO] geopotential exists, skipping...
+2026-07-23 14:11:16,777 [INFO] Finished
+2026-07-23 14:11:16,777 [INFO] Precipitation
+2026-07-23 14:11:17,468 [INFO]     Downloading data...
+2026-07-23 14:11:18,869 [INFO] Request ID is 04b7785b-cf19-4a8c-bc7d-e8a506e886c2
+2026-07-23 14:11:19,049 [INFO] status has been updated to accepted
+2026-07-23 14:11:35,329 [INFO] status has been updated to running
+2026-07-23 14:11:43,095 [INFO] status has been updated to successful
+2026-07-23 14:11:46,621 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-2/2026-07-22/ffe7d0fb425136a792a373e9e4efae65.nc
+2026-07-23 14:15:31,901 [INFO]     Regridding data...
+2026-07-23 14:17:01,818 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2008-07_2008-12
+2026-07-23 14:17:01,819 [INFO]     Saving data...
+2026-07-23 14:17:03,130 [INFO] Finished
+2026-07-23 14:17:03,131 [INFO] TOA Solar Radiation
+2026-07-23 14:17:03,565 [INFO]     Downloading data...
+2026-07-23 14:17:04,572 [INFO] Request ID is e714b6aa-c509-4eac-807b-fddc1b8f843c
+2026-07-23 14:17:04,747 [INFO] status has been updated to accepted
+2026-07-23 14:17:16,943 [INFO] status has been updated to running
+2026-07-23 14:17:22,229 [INFO] status has been updated to successful
+2026-07-23 14:17:22,572 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-3/2026-07-23/9f0145438c2bd01928b2795925e4deca.nc
+2026-07-23 14:17:43,354 [INFO]     Regridding data...
+2026-07-23 14:17:55,163 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2008-07_2008-12
+2026-07-23 14:17:56,382 [INFO]     Saving data...
+2026-07-23 14:17:56,803 [INFO] Geopotential at Surface
+2026-07-23 14:17:56,840 [INFO] Land Sea Mask
+2026-07-23 14:17:56,888 [INFO] Load all data into a single dataset
+2026-07-23 14:17:57,682 [INFO]     Saving data...
+2026-07-23 14:18:30,498 [INFO] All Finished

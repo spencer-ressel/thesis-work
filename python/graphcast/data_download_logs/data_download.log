@@ -1436,3 +1436,69 @@ NameError: name 'surface_data' is not defined. Did you mean: 'surface_base'?
 2026-07-21 20:48:16,592 [INFO] status has been updated to successful
 2026-07-21 20:48:17,059 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-2/2026-07-22/ffe7d0fb425136a792a373e9e4efae65.nc
 2026-07-21 20:49:55,356 [INFO] status has been updated to running
+2026-07-23 13:33:40,886 [INFO] Start date: 2002-01-01T00:00:00.000000000
+2026-07-23 13:33:40,889 [INFO] End date: 2002-02-28T00:00:00.000000000
+2026-07-23 13:33:40,892 [INFO] Starting data download script
+2026-07-23 13:33:40,897 [INFO] Dates: 2002-01-01T00 : 2002-02-28T00
+2026-07-23 13:33:40,901 [INFO] Creating output directory...
+2026-07-23 13:33:40,904 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2002-01_2002-02
+2026-07-23 13:33:40,904 [INFO] Surface level variables
+2026-07-23 13:33:40,915 [INFO]   2m_temperature
+2026-07-23 13:33:40,918 [INFO]     Loading files...
+2026-07-23 13:35:18,707 [INFO] Start date: 2002-01-01T00:00:00.000000000
+2026-07-23 13:35:18,707 [INFO] End date: 2002-01-31T00:00:00.000000000
+2026-07-23 13:35:18,711 [INFO] Starting data download script
+2026-07-23 13:35:18,715 [INFO] Dates: 2002-01-01T00 : 2002-01-31T00
+2026-07-23 13:35:18,718 [INFO] Creating output directory...
+2026-07-23 13:35:18,723 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2002-01_2002-01
+2026-07-23 13:35:18,723 [INFO] Surface level variables
+2026-07-23 13:35:18,733 [INFO]   2m_temperature
+2026-07-23 13:35:18,734 [INFO]     Loading files...
+2026-07-23 13:37:00,690 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2002-01_2002-01
+2026-07-23 13:37:00,711 [INFO]     Saving data...
+2026-07-23 13:37:01,504 [INFO]   mean_sea_level_pressure
+2026-07-23 13:37:01,505 [INFO]     Loading files...
+2026-07-23 13:38:38,191 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2002-01_2002-01
+2026-07-23 13:38:38,192 [INFO]     Saving data...
+2026-07-23 13:38:38,668 [INFO]   10m_u_component_of_wind
+2026-07-23 13:38:38,669 [INFO]     Loading files...
+2026-07-23 13:39:49,199 [INFO] Start date: 2002-01-01T00:00:00.000000000
+2026-07-23 13:39:49,199 [INFO] End date: 2002-01-31T00:00:00.000000000
+2026-07-23 13:39:49,202 [INFO] Starting data download script
+2026-07-23 13:39:49,206 [INFO] Dates: 2002-01-01T00 : 2002-01-31T00
+2026-07-23 13:39:49,209 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2002-01_2002-01
+2026-07-23 13:39:49,211 [INFO] Surface level variables
+2026-07-23 13:39:49,215 [INFO] 2m_temperature exists, skipping...
+2026-07-23 13:39:49,215 [INFO] Finished
+2026-07-23 13:39:49,215 [INFO] Pressure Level Data
+2026-07-23 13:39:49,221 [INFO]   geopotential
+2026-07-23 13:39:49,226 [INFO]     Loading files...
+2026-07-23 13:54:23,517 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2002-01_2002-01
+2026-07-23 13:54:23,519 [INFO]     Saving data...
+2026-07-23 13:54:24,540 [INFO] Finished
+2026-07-23 13:54:24,554 [INFO] Precipitation
+2026-07-23 13:54:25,598 [INFO]     Downloading data...
+2026-07-23 13:54:26,223 [INFO] Request ID is 4971d53d-056d-4173-83e5-e2e71a466f93
+2026-07-23 13:54:26,391 [INFO] status has been updated to accepted
+2026-07-23 13:54:40,457 [INFO] status has been updated to running
+2026-07-23 13:54:48,205 [INFO] status has been updated to successful
+2026-07-23 13:54:50,484 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-1/2026-07-21/a5ee8611e09ea6aa2bb3c8839524703c.nc
+2026-07-23 13:55:32,724 [INFO]     Regridding data...
+2026-07-23 13:56:27,389 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2002-01_2002-01
+2026-07-23 13:56:27,389 [INFO]     Saving data...
+2026-07-23 13:56:28,112 [INFO] Finished
+2026-07-23 13:56:28,120 [INFO] TOA Solar Radiation
+2026-07-23 13:56:28,753 [INFO]     Downloading data...
+2026-07-23 13:56:29,587 [INFO] Request ID is 75009967-f685-40e9-97d3-ebbc96e293c6
+2026-07-23 13:56:29,755 [INFO] status has been updated to accepted
+2026-07-23 13:56:43,753 [INFO] status has been updated to running
+2026-07-23 13:57:22,152 [INFO] status has been updated to successful
+2026-07-23 13:57:22,463 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-3/2026-07-23/52f81d324bde1018cf911e05587f6d95.nc
+2026-07-23 13:57:27,635 [INFO]     Regridding data...
+2026-07-23 13:57:38,228 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2002-01_2002-01
+2026-07-23 13:57:38,228 [INFO]     Saving data...
+2026-07-23 13:57:38,533 [INFO] Geopotential at Surface
+2026-07-23 13:57:38,564 [INFO] Land Sea Mask
+2026-07-23 13:57:38,602 [INFO] Load all data into a single dataset
+2026-07-23 13:57:38,995 [INFO]     Saving data...
+2026-07-23 13:57:40,863 [INFO] All Finished

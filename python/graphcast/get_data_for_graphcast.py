@@ -9,6 +9,7 @@ import sys
 from datetime import datetime
 import shutil
 import subprocess
+from functools import partial
 
 # ------------------------------------------------------------
 # Third‑party scientific stack
@@ -23,7 +24,6 @@ from auxiliary_functions.time_utils import datetime64_to_yyyymmdd, string_to_yyy
 # External APIs / data access
 # ------------------------------------------------------------
 import cdsapi
-from dateutil.relativedelta import relativedelta
 
 # ------------------------------------------------------------
 # Logging configuration
@@ -62,13 +62,73 @@ end_date = sys.argv[2]
 logger.info(f"Start date: {start_date}")
 logger.info(f"End date: {end_date}")
 
+datetime_values = np.arange(
+    np.datetime64(start_date),
+    np.datetime64(end_date) + np.timedelta64(1, 'D'),
+    np.timedelta64(6, 'h')
+)
+time_ns = np.arange(
+    0,
+    len(datetime_values) * 6 * 3600 * 10**9,
+    6 * 3600 * 10**9,
+    dtype='timedelta64[ns]'
+)
+datetime_array = xr.DataArray(
+    data=datetime_values,
+    dims=['time'],
+    coords={'time':time_ns}
+)
+datetime_array = datetime_array.assign_coords(
+    datetime=("time", datetime_values),   # secondary coordinate
+    time=("time", time_ns)                # replace primary coordinate
+)
+datetime_array_with_batch = datetime_array.expand_dims('batch')
+
 logger.info("Starting data download script")
-def surface_level_preprocess(ds: xr.Dataset) -> xr.Dataset:
-    # Subset to a specific region and keep only one variable
-    subset_data = ds.sel(
-        # level=pressure_levels,
-        time=ds.time.where(ds['time'].dt.hour.isin([0, 6, 12, 18]), drop=True)
-    )
+# def surface_level_preprocess(ds: xr.Dataset) -> xr.Dataset:
+#     # Subset to a specific region and keep only one variable
+#     subset_data = ds.sel(
+#         # level=pressure_levels,
+#         time=ds.time.where(ds['time'].dt.hour.isin([0, 6, 12, 18]), drop=True)
+#     )
+
+#     target_grid = xr.Dataset(
+#         {
+#             "lat": (["lat"], np.arange(-90, 91, 1.0)),
+#             "lon": (["lon"], np.arange(0, 360, 1.0)),
+#         }
+#     )
+#     regridder = xe.Regridder(subset_data, target_grid, "bilinear", reuse_weights=False) 
+
+#     return regridder(subset_data) # type: ignore
+
+# def pressure_level_preprocess(ds: xr.Dataset) -> xr.Dataset:
+#     # Subset to a specific region and keep only one variable
+#     subset_data = ds.sel(
+#         level=pressure_levels,
+#         time=ds.time.where(ds['time'].dt.hour.isin([0, 6, 12, 18]), drop=True)
+#     ).assign_coords({'level': pressure_levels.astype(np.int32)})
+
+#     target_grid = xr.Dataset(
+#         {
+#             "lat": (["lat"], np.arange(-90, 91, 1.0)),
+#             "lon": (["lon"], np.arange(0, 360, 1.0)),
+#         }
+#     )
+#     regridder = xe.Regridder(subset_data, target_grid, "bilinear", reuse_weights=False) 
+
+#     return regridder(subset_data) # type: ignore
+
+def preprocess(ds: xr.Dataset, pressure_levels: np.ndarray | None = None) -> xr.Dataset:
+    sel_kwargs = {"time": ds.time.where(ds['time'].dt.hour.isin([0, 6, 12, 18]), drop=True)}
+
+    if pressure_levels is not None:
+        sel_kwargs["level"] = pressure_levels
+
+    subset_data = ds.sel(**sel_kwargs)
+
+    if pressure_levels is not None:
+        subset_data = subset_data.assign_coords({'level': pressure_levels.astype(np.int32)})
 
     target_grid = xr.Dataset(
         {
@@ -76,26 +136,9 @@ def surface_level_preprocess(ds: xr.Dataset) -> xr.Dataset:
             "lon": (["lon"], np.arange(0, 360, 1.0)),
         }
     )
-    regridder = xe.Regridder(subset_data, target_grid, "bilinear", reuse_weights=False) 
+    regridder = xe.Regridder(subset_data, target_grid, "bilinear", reuse_weights=False)
 
-    return regridder(subset_data) # type: ignore
-
-def pressure_level_preprocess(ds: xr.Dataset) -> xr.Dataset:
-    # Subset to a specific region and keep only one variable
-    subset_data = ds.sel(
-        level=pressure_levels,
-        time=ds.time.where(ds['time'].dt.hour.isin([0, 6, 12, 18]), drop=True)
-    ).assign_coords({'level': pressure_levels.astype(np.int32)})
-
-    target_grid = xr.Dataset(
-        {
-            "lat": (["lat"], np.arange(-90, 91, 1.0)),
-            "lon": (["lon"], np.arange(0, 360, 1.0)),
-        }
-    )
-    regridder = xe.Regridder(subset_data, target_grid, "bilinear", reuse_weights=False) 
-
-    return regridder(subset_data) # type: ignore
+    return regridder(subset_data)  # type: ignore
 
 yyyymm_strings = pd.date_range(
     pd.to_datetime(start_date).to_period("M").to_timestamp(),
@@ -146,17 +189,31 @@ for variable in surface_variables.keys():
 
     if not files_list:
         print(f"No files found for variable {variable} in month {ym}")
+        continue
+
     else:
         logger.info(f"    Loading files...")
-        surface_data = convert_time_to_ns(xr.open_mfdataset(sorted(files_list), preprocess=surface_level_preprocess).load())
+        # surface_data = convert_time_to_ns(xr.open_mfdataset(sorted(files_list), preprocess=surface_level_preprocess).load())
+
+        # Load and concatenate the data, preprocess to subset to 6-hourly, regrid
+        surface_data = xr.open_mfdataset(sorted(files_list), preprocess=preprocess).load()
         surface_data = surface_data.rename({surface_variables_old_names[variable]: variable})
+
+        # Add a batch dimension to the data
+        surface_data_with_batch = surface_data.expand_dims('batch')
+
+        # Re-write the time coordinates to have time in [ns] and a datetime with batch in datetime64[ns]
+        surface_data_retimed = surface_data_with_batch.assign_coords(
+            datetime=datetime_array_with_batch,
+            time=("time", time_ns)
+        )
 
     # logger.info(surface_data)
     logger.info(f"    Output directory: {graphcast_data_directory}")
     logger.info(f"    Saving data...")
-    surface_data.to_netcdf(f"{graphcast_data_directory}/{variable}.nc")
+    surface_data_retimed.to_netcdf(f"{graphcast_data_directory}/{variable}.nc")
     surface_data.close()
-    del surface_data
+    del surface_data_retimed
     gc.collect()
 
 logger.info("Finished")
@@ -204,18 +261,32 @@ for variable in pressure_level_variables.keys():
 
     if not files_list:
         logger.info(f"No files found for variable {variable} in month {ym}")
+        continue
+
     else:
         logger.info(f"    Loading files...")
-        pressure_level_data = convert_time_to_ns(xr.open_mfdataset(sorted(files_list), preprocess=pressure_level_preprocess).load())
+        # pressure_level_data = convert_time_to_ns(xr.open_mfdataset(sorted(files_list), preprocess=pressure_level_preprocess).load())
+        # pressure_level_data = pressure_level_data.rename({pressure_level_variables_old_names[variable]: variable})
+
+        # Load and concatenate the data, preprocess to subset to 6-hourly, regrid
+        pressure_level_data = xr.open_mfdataset(sorted(files_list), preprocess=partial(preprocess, pressure_levels=pressure_levels)).load()
         pressure_level_data = pressure_level_data.rename({pressure_level_variables_old_names[variable]: variable})
+
+        # Add a batch dimension to the data
+        pressure_level_data_with_batch = pressure_level_data.expand_dims('batch')
+
+        # Re-write the time coordinates to have time in [ns] and a datetime with batch in datetime64[ns]
+        pressure_level_data_retimed = pressure_level_data_with_batch.assign_coords(
+            datetime=datetime_array_with_batch,
+            time=("time", time_ns)
+        )
 
     # logger.info(pressure_level_data)
     logger.info(f"    Output directory: {graphcast_data_directory}")
     logger.info(f"    Saving data...")
-    datetimes = pressure_level_data.datetime
-    pressure_level_data.to_netcdf(f"{graphcast_data_directory}/{variable}.nc")
-    pressure_level_data.close()
-    del pressure_level_data
+    pressure_level_data_retimed.to_netcdf(f"{graphcast_data_directory}/{variable}.nc")
+    pressure_level_data_retimed.close()
+    del pressure_level_data_retimed
     gc.collect()
 
 logger.info("Finished")
@@ -226,6 +297,7 @@ target = f"{graphcast_data_directory}/total_precipitation_6hr.nc"
 
 if os.path.isfile(f"{graphcast_data_directory}/total_precipitation_6hr.nc"):
     logger.info("    precipitation file exists, skipping...")
+
 else:
     dataset = "reanalysis-era5-single-levels"
     request = {
@@ -280,16 +352,26 @@ else:
         )
     regridder = xe.Regridder(six_hour_accumulated_precipitation, target_grid, "bilinear", reuse_weights=False)
     regridded_precipitation = regridder(six_hour_accumulated_precipitation)
-    regridded_precipitation = convert_time_to_ns(regridded_precipitation.sel(time=datetimes.sel(batch=0).values))
+    regridded_precipitation = regridded_precipitation.sel(time=datetime_values)
+    # regridded_precipitation = convert_time_to_ns(regridded_precipitation.sel(time=datetimes.sel(batch=0).values))
 
-    regridded_precipitation.name = 'total_precipitation_6hr'
+    # Add a batch dimension to the data
+    precipitation_with_batch = regridded_precipitation.expand_dims('batch')
+
+    # Re-write the time coordinates to have time in [ns] and a datetime with batch in datetime64[ns]
+    precipitation = precipitation_with_batch.assign_coords(
+        datetime=datetime_array_with_batch,
+        time=("time", time_ns)
+    )
+
+    precipitation.name = 'total_precipitation_6hr'
     resave_data = True
     if resave_data:
         logger.info(f"    Output directory: {graphcast_data_directory}")
         logger.info(f"    Saving data...")
-        regridded_precipitation.to_netcdf(f"{graphcast_data_directory}/total_precipitation_6hr.nc", mode='w')
-        regridded_precipitation.close()
-        del regridded_precipitation
+        precipitation.to_netcdf(f"{graphcast_data_directory}/total_precipitation_6hr.nc", mode='w')
+        precipitation.close()
+        del precipitation
         gc.collect()
 
     logger.info("Finished")
@@ -344,16 +426,27 @@ else:
         )
     regridder = xe.Regridder(toa_incident_solar_radiation_data, target_grid, "bilinear", reuse_weights=False)
     regridded_toa_incident_solar_radiation = regridder(toa_incident_solar_radiation_data)
-    regridded_toa_incident_solar_radiation = convert_time_to_ns(regridded_toa_incident_solar_radiation.sel(time=datetimes.sel(batch=0).values))
-    regridded_toa_incident_solar_radiation.name = 'toa_incident_solar_radiation'
+    regridded_toa_incident_solar_radiation = regridded_toa_incident_solar_radiation.sel(time=datetime_values)
+    # regridded_toa_incident_solar_radiation = convert_time_to_ns(regridded_toa_incident_solar_radiation.sel(time=datetimes.sel(batch=0).values))
+
+    # Add a batch dimension to the data
+    toa_incident_solar_radiation_with_batch = regridded_toa_incident_solar_radiation.expand_dims('batch')
+
+    # Re-write the time coordinates to have time in [ns] and a datetime with batch in datetime64[ns]
+    toa_incident_solar_radiation = toa_incident_solar_radiation_with_batch.assign_coords(
+        datetime=datetime_array_with_batch,
+        time=("time", time_ns)
+    )
+
+    toa_incident_solar_radiation.name = 'toa_incident_solar_radiation'
 
     resave_data = True
     if resave_data:
         logger.info(f"    Output directory: {graphcast_data_directory}")
         logger.info(f"    Saving data...")
-        regridded_toa_incident_solar_radiation.to_netcdf(f"{graphcast_data_directory}/toa_incident_solar_radiation.nc", mode='w')
-        regridded_toa_incident_solar_radiation.close()
-        del regridded_toa_incident_solar_radiation
+        toa_incident_solar_radiation.to_netcdf(f"{graphcast_data_directory}/toa_incident_solar_radiation.nc", mode='w')
+        toa_incident_solar_radiation.close()
+        del toa_incident_solar_radiation
         gc.collect()
 
 logger.info("Geopotential at Surface")
@@ -369,8 +462,13 @@ shutil.copy(
 )
 
 logger.info("Load all data into a single dataset")
-all_data = xr.open_mfdataset(f"{graphcast_data_directory}/*.nc")
-logger.info(f"    Saving data...")
-all_data.to_netcdf(f"{graphcast_data_directory}/era5_data.nc")
+output_path = f"{graphcast_data_directory}/era5_data.nc"
+
+if os.path.isfile(output_path):
+    logger.info("    era5_data.nc exists, skipping merge...")
+else:
+    all_data = xr.open_mfdataset(f"{graphcast_data_directory}/*.nc")
+    logger.info(f"    Saving data...")
+    all_data.to_netcdf(output_path)
 
 logger.info("All Finished")

@@ -17,13 +17,19 @@ def string_to_yyyymm(dt):
     return f"{dt.year}-{dt.month:02d}"
     # return datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S.%f").strftime("%Y-%m")
 
+def datetime64_to_ns(datetime):
+    """Convert a datetime64 coordinate/array to nanoseconds since its first timestep."""
+    t0 = datetime.values[0]
+    time_ns = (datetime.values - t0).astype("timedelta64[ns]")
+    return time_ns
+
 def convert_time_to_ns(ds):
     # Original datetime64 coordinate
     datetime = ds["time"]
 
     # Compute nanoseconds since first timestep
     t0 = datetime.values[0]
-    time_ns = (datetime.values - t0).astype("timedelta64[ns]").astype("timedelta64[ns]")
+    time_ns = (datetime.values - t0).astype("timedelta64[ns]")
 
     new_datetime = datetime.expand_dims('batch').assign_coords(
         datetime=("time", datetime.values),   # secondary coordinate
