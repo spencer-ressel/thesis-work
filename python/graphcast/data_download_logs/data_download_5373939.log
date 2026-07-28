@@ -1,8 +1,0 @@
-2026-07-27 17:29:28,721 [INFO] Start date: 1996-01-01T00:00:00.000000000
-2026-07-27 17:29:28,721 [INFO] End date: 1996-12-31T00:00:00.000000000
-2026-07-27 17:29:28,728 [INFO] Starting data download script
-2026-07-27 17:29:28,732 [INFO] Dates: 1996-01-01T00 : 1996-12-31T00
-2026-07-27 17:29:28,735 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/6hr_climatology
-2026-07-27 17:29:28,736 [INFO] -- u_component_of_wind
-2026-07-27 17:29:28,736 [INFO] ---- 1996
-2026-07-27 17:29:28,777 [INFO] ---- Loading files...

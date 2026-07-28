@@ -1,0 +1,14 @@
+2026-07-28 16:43:31,965 [INFO] Start date: 2019-01-01T00:00:00.000000000
+2026-07-28 16:43:31,965 [INFO] End date: 2019-12-31T00:00:00.000000000
+2026-07-28 16:43:31,968 [INFO] Starting data download script
+2026-07-28 16:43:31,970 [INFO] Dates: 2019-01-01T00 : 2019-12-31T00
+2026-07-28 16:43:31,972 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/6hr_climatology
+2026-07-28 16:43:31,973 [INFO] -- u_component_of_wind
+2026-07-28 16:43:31,973 [INFO] ---- 2019
+2026-07-28 16:43:31,974 [INFO] -- u_component_of_wind exists for 2019, skipping...
+2026-07-28 16:43:31,974 [INFO] -- v_component_of_wind
+2026-07-28 16:43:31,974 [INFO] ---- 2019
+2026-07-28 16:43:32,025 [INFO] ---- Loading files...
+2026-07-28 17:32:50,607 [INFO] ---- Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/6hr_climatology
+2026-07-28 17:32:50,611 [INFO] ---- Saving data...
+2026-07-28 17:32:51,084 [INFO] All Finished

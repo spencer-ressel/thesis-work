@@ -1,0 +1,29 @@
+2026-07-28 17:48:38,503 [INFO] Start date: 203-01-01T00:00:00.000000000
+2026-07-28 17:48:38,504 [INFO] End date: 203-12-31T00:00:00.000000000
+2026-07-28 17:48:38,526 [INFO] Starting data download script
+2026-07-28 17:48:38,615 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "conversion.pyx", line 501, in pandas._libs.tslibs.conversion.convert_datetime_to_tsobject
+OverflowError: Overflow occurred in npy_datetimestruct_to_datetime
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_climatology_for_graphcast.py", line 111, in <module>
+    pd.to_datetime(start_date).to_period("M").to_timestamp(),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/pandas/core/tools/datetimes.py", line 1101, in to_datetime
+    result = convert_listlike(np.array([arg]), format)[0]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/pandas/core/tools/datetimes.py", line 435, in _convert_listlike_datetimes
+    result, tz_parsed = objects_to_datetime64(
+                        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/pandas/core/arrays/datetimes.py", line 2398, in objects_to_datetime64
+    result, tz_parsed = tslib.array_to_datetime(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "tslib.pyx", line 414, in pandas._libs.tslib.array_to_datetime
+  File "tslib.pyx", line 596, in pandas._libs.tslib.array_to_datetime
+  File "tslib.pyx", line 553, in pandas._libs.tslib.array_to_datetime
+  File "conversion.pyx", line 649, in pandas._libs.tslibs.conversion.convert_str_to_tsobject
+  File "conversion.pyx", line 504, in pandas._libs.tslibs.conversion.convert_datetime_to_tsobject
+pandas._libs.tslibs.np_datetime.OutOfBoundsDatetime: Out of bounds nanosecond timestamp, at position 0
