@@ -6,3 +6,9 @@
 2026-07-28 17:48:39,984 [INFO] -- u_component_of_wind
 2026-07-28 17:48:39,984 [INFO] ---- 2004
 2026-07-28 17:48:40,086 [INFO] ---- Loading files...
+2026-07-28 18:39:47,925 [INFO] ---- Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/6hr_climatology
+2026-07-28 18:39:47,928 [INFO] ---- Saving data...
+2026-07-28 18:39:48,782 [INFO] -- v_component_of_wind
+2026-07-28 18:39:48,783 [INFO] ---- 2004
+2026-07-28 18:39:48,788 [INFO] -- v_component_of_wind exists for 2004, skipping...
+2026-07-28 18:39:48,788 [INFO] All Finished

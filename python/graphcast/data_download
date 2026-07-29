@@ -1640,3 +1640,41 @@ Total time: 0h 0m 38s
 2026-07-28 17:48:39,984 [INFO] ---- 2004
 2026-07-28 17:48:40,081 [INFO] ---- Loading files...
 2026-07-28 17:48:40,086 [INFO] ---- Loading files...
+2026-07-28 18:38:14,220 [INFO] ---- Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/6hr_climatology
+2026-07-28 18:38:14,240 [INFO] ---- Saving data...
+2026-07-28 18:38:15,385 [INFO] -- v_component_of_wind
+2026-07-28 18:38:15,385 [INFO] ---- 2003
+2026-07-28 18:38:15,387 [INFO] -- v_component_of_wind exists for 2003, skipping...
+2026-07-28 18:38:15,387 [INFO] All Finished
+Total time: 0h 49m 50s
+2026-07-28 18:39:34,997 [INFO] ---- Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/6hr_climatology
+2026-07-28 18:39:35,020 [INFO] ---- Saving data...
+2026-07-28 18:39:35,898 [INFO] -- v_component_of_wind
+2026-07-28 18:39:35,899 [INFO] ---- 2005
+2026-07-28 18:39:35,903 [INFO] -- v_component_of_wind exists for 2005, skipping...
+2026-07-28 18:39:35,903 [INFO] All Finished
+Total time: 0h 51m 0s
+2026-07-28 18:39:47,925 [INFO] ---- Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/6hr_climatology
+2026-07-28 18:39:47,928 [INFO] ---- Saving data...
+2026-07-28 18:39:48,782 [INFO] -- v_component_of_wind
+2026-07-28 18:39:48,783 [INFO] ---- 2004
+2026-07-28 18:39:48,788 [INFO] -- v_component_of_wind exists for 2004, skipping...
+2026-07-28 18:39:48,788 [INFO] All Finished
+Total time: 0h 51m 17s
+/glade/u/home/sressel/thesis-work/python/auxiliary_functions/src/auxiliary_functions/__init__.py:49: UserWarning: Could not import from calculate_velocity_potential (likely missing 'windspharm'): No module named 'windspharm'
+  warnings.warn(f"Could not import from calculate_velocity_potential (likely missing 'windspharm'): {e}")
+2026-07-29 12:24:04,110 [INFO] Start date: 2001-01-01T00:00:00.000000000
+2026-07-29 12:24:04,110 [INFO] End date: 2001-12-31T00:00:00.000000000
+2026-07-29 12:24:04,116 [INFO] Starting data download script
+2026-07-29 12:24:04,121 [INFO] Dates: 2001-01-01T00 : 2001-12-31T00
+2026-07-29 12:24:04,150 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/6hr_climatology
+2026-07-29 12:24:04,151 [INFO] -- u_component_of_wind
+2026-07-29 12:24:04,151 [INFO] ---- 2001
+2026-07-29 12:24:04,154 [INFO] -- u_component_of_wind exists for 2001, skipping...
+2026-07-29 12:24:04,154 [INFO] -- v_component_of_wind
+2026-07-29 12:24:04,154 [INFO] ---- 2001
+2026-07-29 12:24:04,259 [INFO] ---- Loading files...
+2026-07-29 13:12:08,782 [INFO] ---- Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/6hr_climatology
+2026-07-29 13:12:08,786 [INFO] ---- Saving data...
+2026-07-29 13:12:09,275 [INFO] All Finished
+Total time: 0h 48m 21s
