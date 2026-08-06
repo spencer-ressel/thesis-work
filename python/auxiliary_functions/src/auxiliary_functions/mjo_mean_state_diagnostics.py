@@ -472,206 +472,36 @@ def remove_annual_cycle_matrix(x, time, lev=None, lat=None, lon=None):
         x_ano = x - xcycle
     return x_ano, xcycle
 
-def remove_annual_cycle(data, nharmonics=3):
-    """
-    Remove the mean + first `nharmonics` annual harmonics from an xarray DataArray.
-    Works for any number of spatial dimensions.
-
-    Parameters
-    ----------
-    data : xr.DataArray
-        Input data with a time dimension.
-    time_dim : str
-        Name of the time dimension (default: "time").
-    nharmonics : int
-        Number of harmonics to remove (default: 3).
-
-    Returns
-    -------
-    x_ano : xr.DataArray
-        Anomaly with annual cycle removed.
-    x_cycle : xr.DataArray
-        The reconstructed annual cycle that was removed.
-    """
-
-    # Extract time coordinate as integer index (1..N)
-    t = xr.DataArray(
-        np.arange(len(data.time)) + 1,
-        dims='time',
-        coords={'time': data.time},
+import warnings
+def fit_annual_cycle(*args, **kwargs):
+    from auxiliary_functions.annual_cycle_functions import fit_annual_cycle as _fit_annual_cycle
+    warnings.warn(
+        "'fit_annual_cycle' has moved to 'auxiliary_functions.annual_cycle_functions'. "
+        "Please update your import.",
+        DeprecationWarning,
+        stacklevel=2
     )
+    return _fit_annual_cycle(*args, **kwargs)
 
-    # Build harmonic basis: constant + cos/sin pairs
-    harmonics = [xr.ones_like(t)]  # mean term
+def remove_annual_cycle(*args, **kwargs):
+    from auxiliary_functions.annual_cycle_functions import remove_annual_cycle as _remove_annual_cycle
+    warnings.warn(
+        "'remove_annual_cycle' has moved to 'auxiliary_functions.annual_cycle_functions'. "
+        "Please update your import.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    return _remove_annual_cycle(*args, **kwargs)
 
-    for k in range(1, nharmonics + 1):
-        w = 2 * np.pi * k / 365
-        harmonics.append(np.cos(w * t))
-        harmonics.append(np.sin(w * t))
-
-    harmonics_array = xr.concat(harmonics, dim="harmonic")  # shape: (harmonic, time)
-    scale = xr.where(harmonics_array.harmonic == 0, 1.0, 2.0)
-
-    # Compute regression coefficients C(harmonic, ...)
-    regression_coefficients = scale * (harmonics_array * data).mean(dim='time')
-
-    # Reconstruct annual cycle
-    annual_cycle = (harmonics_array * regression_coefficients).sum("harmonic")
-
-    # Remove cycle
-    data_deannualized = data - annual_cycle
-
-    return data_deannualized, annual_cycle
-
-def _decimal_year(times):
-    """
-    Convert datetime64-like values to decimal years (e.g. 2004-07-01 ->
-    2004.497...), normalizing by each timestamp's own calendar year length
-    (365 or 366 days) so leap years don't accumulate phase drift.
-    """
-    times = pd.DatetimeIndex(times)
-    year_start = pd.DatetimeIndex(times.year.astype(str) + '-01-01')
-    year_end = pd.DatetimeIndex((times.year + 1).astype(str) + '-01-01')
-
-    seconds_into_year = (times - year_start).total_seconds()
-    seconds_in_year = (year_end - year_start).total_seconds()
-
-    return times.year + seconds_into_year / seconds_in_year
-
-def _compute_t(time_values, t0, account_for_leap_years):
-    """
-    Build the harmonic-regression time coordinate `t` and the angular
-    frequency multiplier `w_base`, such that w = w_base * k gives the
-    k-th harmonic's frequency.
-
-    account_for_leap_years=True  -> decimal-year basis, period exactly 1.0
-    account_for_leap_years=False -> raw day-counter basis, period 365
-                                     (correct for noleap/360_day-style
-                                     calendars where every year truly is
-                                     365 days; will drift on real Gregorian
-                                     calendar data with leap years)
-    """
-    if account_for_leap_years:
-        dy = _decimal_year(time_values) - _decimal_year([t0])[0]
-        t = xr.DataArray(dy, dims='time', coords={'time': time_values})
-        w_base = 2 * np.pi  # period = 1.0 in decimal-year units
-    else:
-        days_since_t0 = (time_values - np.datetime64(t0)) / np.timedelta64(1, 'D')
-        t = xr.DataArray(days_since_t0 + 1, dims='time', coords={'time': time_values})
-        w_base = 2 * np.pi / 365  # fixed 365-day period
-
-    return t, w_base
-
-def _build_harmonics(t, w_base, nharmonics):
-    harmonics = [xr.ones_like(t)]
-    for k in range(1, nharmonics + 1):
-        w = w_base * k
-        harmonics.append(np.cos(w * t))
-        harmonics.append(np.sin(w * t))
-    harmonics_array = xr.concat(harmonics, dim="harmonic")
-    harmonics_array = harmonics_array.assign_coords(harmonic=np.arange(harmonics_array.sizes["harmonic"]))
-    return harmonics_array
-
-def fit_annual_cycle(data, nharmonics=3, account_for_leap_years=True):
-    """
-    Fit the mean + first `nharmonics` annual harmonics to an xarray DataArray
-    via least-squares (harmonic regression), for later reuse on new data.
-
-    Parameters
-    ----------
-    data : xr.DataArray
-        Input training data with a 'time' dimension.
-    nharmonics : int
-        Number of harmonics to fit (default: 3).
-    account_for_leap_years : bool
-        If True, use a decimal-year time basis so leap years don't
-        accumulate phase drift (correct for real Gregorian-calendar data,
-        e.g. ERA5, GraphCast/NeuralGCM output). If False, use a raw
-        365-day-period basis (correct for calendars where every year truly
-        has 365 days, e.g. CAM6 'noleap' output — and slightly cheaper).
-        Must match the value passed to apply_annual_cycle.
-
-    Returns
-    -------
-    regression_coefficients : xr.DataArray
-        Fitted coefficients (dim: 'harmonic', plus any other dims of `data`).
-    t0 : np.datetime64
-        Reference date (first timestamp of `data`) that the harmonic phase
-        is anchored to. Must be passed to apply_annual_cycle for both the
-        training data and any new data, so phase stays consistent.
-    """
-    t0 = data.time.values[0]
-    t, w_base = _compute_t(data.time.values, t0, account_for_leap_years)
-    harmonics_array = _build_harmonics(t, w_base, nharmonics)
-
-    # factor of 2 for all cos/sin terms (harmonic index >= 1); mean term (index 0) stays x1
-    scale = xr.where(harmonics_array.harmonic == 0, 1.0, 2.0)
-    regression_coefficients = scale * (harmonics_array * data).mean(dim='time')
-
-    return regression_coefficients, t0
-
-def apply_annual_cycle(data, regression_coefficients, t0, nharmonics=3, account_for_leap_years=True):
-    """
-    Evaluate a previously-fit annual cycle (from fit_annual_cycle) at the
-    timestamps in `data`, using the same phase reference `t0`, and subtract
-    it off. Works for both the original training data and new data.
-
-    Parameters
-    ----------
-    data : xr.DataArray
-        Data to deannualize (training or new), with a 'time' dimension.
-    regression_coefficients : xr.DataArray
-        Coefficients from fit_annual_cycle (already includes the factor-of-2
-        correction — do not rescale here).
-    t0 : np.datetime64
-        Reference date from fit_annual_cycle, anchoring the harmonic phase.
-    nharmonics : int
-        Must match the value used in fit_annual_cycle.
-    account_for_leap_years : bool
-        Must match the value used in fit_annual_cycle — mixing True/False
-        between fit and apply will silently misalign phase.
-
-    Returns
-    -------
-    data_deannualized : xr.DataArray
-        data minus the reconstructed annual cycle.
-    annual_cycle : xr.DataArray
-        The reconstructed annual cycle evaluated at data's timestamps.
-    """
-    t, w_base = _compute_t(data.time.values, t0, account_for_leap_years)
-    harmonics_array = _build_harmonics(t, w_base, nharmonics)
-
-    # basis stays unscaled here — the x2 correction is already baked into
-    # regression_coefficients from fit_annual_cycle, applied exactly once
-    annual_cycle = (harmonics_array * regression_coefficients).sum("harmonic")
-    data_deannualized = data - annual_cycle
-
-    return data_deannualized, annual_cycle
-
-def reconstruct_annual_cycle(times, regression_coefficients, t0, nharmonics=3, account_for_leap_years=True):
-    """
-    Evaluate a previously-fit annual cycle at an arbitrary set of timestamps
-    (does not require any actual data at those timestamps -- just dates).
-
-    Parameters
-    ----------
-    times : array-like of datetime64
-        Timestamps to evaluate the cycle at, e.g. from pd.date_range().
-    regression_coefficients, t0, nharmonics, account_for_leap_years
-        Same as apply_annual_cycle -- must match what was used in
-        fit_annual_cycle.
-
-    Returns
-    -------
-    annual_cycle : xr.DataArray
-        The reconstructed annual cycle at `times`, dim 'time' plus any
-        other dims of regression_coefficients.
-    """
-    times = xr.DataArray(np.asarray(times, dtype='datetime64[ns]'), dims='time',
-                          coords={'time': np.asarray(times, dtype='datetime64[ns]')})
-    t, w_base = _compute_t(times.values, t0, account_for_leap_years)
-    harmonics_array = _build_harmonics(t, w_base, nharmonics)
-    return (harmonics_array * regression_coefficients).sum("harmonic")
+def apply_annual_cycle(*args, **kwargs):
+    from auxiliary_functions.annual_cycle_functions import apply_annual_cycle as _apply_annual_cycle
+    warnings.warn(
+        "'apply_annual_cycle' has moved to 'auxiliary_functions.annual_cycle_functions'. "
+        "Please update your import.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    return _apply_annual_cycle(*args, **kwargs)
 
 def mean_var(x, x_ano, x_f):  # caution: assume time in the 0th direction
     # Calculate mean of original data, variance of anomaly/filtered data

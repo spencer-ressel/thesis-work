@@ -23,6 +23,27 @@ longitudes = xr.load_dataarray(f"{DATA_DIRECTORY}/grid/CAM6_longitudes.nc")
 pressure_levels = xr.load_dataarray(f"{DATA_DIRECTORY}/grid/CAM6_pressure_levels.nc")
 times = xr.load_dataarray(f"{DATA_DIRECTORY}/grid/CAM6_times.nc")
 
+lat_skip_list = [
+    -31.263158,
+    -27.473684,
+    -23.684211,
+    -19.894737,
+    -16.105263,
+    -12.315789,
+    -8.526316,
+    -4.736842,
+    -0.947368,
+    0.947368,
+    4.736842,
+    8.526316,
+    12.315789,
+    16.105263,
+    19.894737,
+    23.684211,
+    27.473684,
+    31.263158
+]
+
 # ============================
 # Time bounds and missing days
 # ============================
