@@ -46,7 +46,10 @@ VARIABLE_SHORTNAMES = {
     "mean_sea_level_pressure": "MSLP",
     "10m_u_component_of_wind": "U10",
     "10m_v_component_of_wind": "V10",
-    "total_precipitation_6hr": "TP6"
+    "total_precipitation_6hr": "TP6",
+
+    # Other variables
+    "Column Water Vapor": "CWV"
 }
 
 VARIABLE_LONGNAMES = {
@@ -64,7 +67,10 @@ VARIABLE_LONGNAMES = {
     "mean_sea_level_pressure": "Mean Sea Level Pressure",
     "10m_u_component_of_wind": "10m Zonal Wind",
     "10m_v_component_of_wind": "10m Meridional Wind",
-    "total_precipitation_6hr": "Total Six Hourly Precipitation"
+    "total_precipitation_6hr": "Total Six Hourly Precipitation",
+
+    # Other variables
+    "Column Water Vapor": "Column Water Vapor"
 }
 
 VARIABLE_UNITS = {
@@ -82,5 +88,8 @@ VARIABLE_UNITS = {
     "mean_sea_level_pressure": r"Pa",
     "10m_u_component_of_wind": r"m s$^{-1}$",
     "10m_v_component_of_wind": r"m s$^{-1}$",
-    "total_precipitation_6hr": r"m"
+    "total_precipitation_6hr": r"m",
+
+    # Other variables
+    "Column Water Vapor": r"kg m$^{-2}$"
 }

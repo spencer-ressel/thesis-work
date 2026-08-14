@@ -1,5 +1,6 @@
 import xarray as xr
 from windspharm.xarray import VectorWind
+import numpy as np
 
 def _velocity_potential_from_winds(zonal_wind, meridional_wind):
     """
@@ -130,3 +131,151 @@ def calculate_velocity_potential_graphcast(data, batch=0, **selectors):
     velocity_potential.attrs['units'] = r"m$^{2}$ s$^{-1}$"
 
     return velocity_potential
+
+"""NumPy port of the JAX VelocityPotential implementation.
+
+Same math, same grid/spectral conventions, same edge-case handling
+(finite differences at the poles, safe cos(lat) guard, etc.) as the
+JAX version -- just without jax/xarray_jax dependencies, so it can be
+run directly on plain numpy arrays.
+"""
+
+def _clenshaw_curtis_weights(nlat: int) -> np.ndarray:
+    """Quadrature weights for nlat equally-spaced colatitudes, poles included."""
+    n = nlat - 1
+    j = np.arange(nlat)
+    theta = j * np.pi / n
+    w = np.zeros(nlat)
+    for jj in range(nlat):
+        s = 0.0
+        for k in range(1, n // 2 + 1):
+            ck = 1.0 if k == n / 2 else 2.0
+            s += ck / (4 * k**2 - 1) * np.cos(2 * k * theta[jj])
+        w[jj] = (2.0 / n) * (1 - s)
+    return w
+
+def _normalized_legendre_all(lat: np.ndarray, nmax: int) -> np.ndarray:
+    """4pi-fully-normalized associated Legendre functions Pbar[n, m, :] for
+    0 <= m <= n <= nmax, via a numerically stable upward recurrence (no raw
+    factorials, so this does not overflow at high degree the way
+    scipy.special.lpmv does)."""
+    theta = np.deg2rad(90 - lat)
+    Pbar = np.zeros((nmax + 1, nmax + 1, np.cos(theta).shape[0]))
+    Pbar[0, 0, :] = 1.0 / np.sqrt(4 * np.pi)
+    for m in range(1, nmax + 1):
+        Pbar[m, m, :] = np.sqrt((2 * m + 1) / (2 * m)) * np.sin(theta) * Pbar[m - 1, m - 1, :]
+    for m in range(0, nmax + 1):
+        if m + 1 <= nmax:
+            Pbar[m + 1, m, :] = np.sqrt(2 * m + 3) * np.cos(theta) * Pbar[m, m, :]
+        for n in range(m + 2, nmax + 1):
+            a_c = np.sqrt(((2 * n - 1) * (2 * n + 1)) / ((n - m) * (n + m)))
+            b_c = np.sqrt(((2 * n + 1) * (n + m - 1) * (n - m - 1)) / ((n - m) * (n + m) * (2 * n - 3)))
+            Pbar[n, m, :] = a_c * np.cos(theta) * Pbar[n - 1, m, :] - b_c * Pbar[n - 2, m, :]
+    return Pbar
+
+class VelocityPotentialNumpy:
+    """Precomputes grid-dependent constants once; call instances like a
+    function inside your pipeline. Numpy analogue of the JAX
+    VelocityPotential class -- same interface, same numerics.
+
+    Inputs/outputs are plain numpy arrays (or anything np.asarray can
+    coerce, e.g. xarray.DataArray.values-backed objects). There is no
+    xarray_jax.unwrap step here since there's nothing to unwrap; if you
+    pass in an xarray.DataArray directly, wrap with `.values` beforehand
+    or rely on np.asarray's default coercion.
+    """
+
+    def __init__(self, nlat: int, nlon: int, radius: float = 6.371e6,
+                 truncation: int | None = None, dtype=np.float64):
+        self.nlat, self.nlon, self.EARTH_RADIUS = nlat, nlon, radius
+        nmax = mmax = truncation if truncation is not None else min(nlat - 1, 42)
+        self.mmax = mmax
+
+        lat = np.linspace(-90, 90, nlat)
+        coslat_safe = np.where(np.abs(np.cos(np.deg2rad(lat))) < 1e-6, 1e-6, np.cos(np.deg2rad(lat)))  # guard the poles
+
+        w_theta = _clenshaw_curtis_weights(nlat)
+        Pbar = _normalized_legendre_all(lat, nmax)
+
+        forward_scale = np.full(mmax + 1, 4 * np.pi / nlon)
+        forward_scale[0] = 2 * np.pi / nlon
+        inverse_scale = np.full(mmax + 1, nlon / 2.0)
+        inverse_scale[0] = nlon
+        inverse_laplacian = np.zeros(nmax + 1)
+        inverse_laplacian[1:] = -radius**2 / (np.arange(1, nmax + 1) * (np.arange(1, nmax + 1) + 1))
+
+        self.Pbar = Pbar.astype(dtype)
+        self.w_theta = w_theta.astype(dtype)
+        self.forward_scale = forward_scale.astype(dtype)
+        self.inverse_scale = inverse_scale.astype(dtype)
+        self.inverse_laplacian = inverse_laplacian.astype(dtype)
+        self.coslat_safe = coslat_safe.astype(dtype)
+        self.lat_rad = np.deg2rad(lat).astype(dtype)
+        self.dlambda = 2 * np.pi / nlon
+
+    def divergence(self, zonal_wind: np.ndarray, meridional_wind: np.ndarray) -> np.ndarray:
+        """Spherical divergence of (u, v). Leading batch dims are fine;
+        lat/lon must be the last two axes."""
+
+        zonal_wind = np.asarray(zonal_wind)
+        meridional_wind = np.asarray(meridional_wind)
+
+        zonal_wind_zonal_gradient = (
+            np.roll(zonal_wind, -1, axis=-1) - np.roll(zonal_wind, 1, axis=-1)
+        ) / (2 * self.dlambda)
+
+        latitude_weighted_meridional_wind = meridional_wind * self.coslat_safe[:, None]
+        dlat = self.lat_rad[1] - self.lat_rad[0]
+        meridional_wind_meridional_gradient = (
+            np.roll(latitude_weighted_meridional_wind, -1, axis=-2)
+            - np.roll(latitude_weighted_meridional_wind, 1, axis=-2)
+        ) / (2 * dlat)
+
+        meridional_wind_meridional_gradient[..., 0, :] = (
+            (latitude_weighted_meridional_wind[..., 1, :] - latitude_weighted_meridional_wind[..., 0, :]) / dlat
+        )
+        meridional_wind_meridional_gradient[..., -1, :] = (
+            (latitude_weighted_meridional_wind[..., -1, :] - latitude_weighted_meridional_wind[..., -2, :]) / dlat
+        )
+
+        divergence = (
+            (1.0 / (self.EARTH_RADIUS * self.coslat_safe[:, None]))
+            * (zonal_wind_zonal_gradient + meridional_wind_meridional_gradient)
+        )
+
+        # North pole
+        divergence[..., 0, :] = -(meridional_wind[..., 1, :] - meridional_wind[..., 0, :]) / (
+            self.EARTH_RADIUS * (self.lat_rad[1] - self.lat_rad[0])
+        )
+
+        # South pole
+        divergence[..., -1, :] = -(meridional_wind[..., -1, :] - meridional_wind[..., -2, :]) / (
+            self.EARTH_RADIUS * (self.lat_rad[-1] - self.lat_rad[-2])
+        )
+
+        return divergence
+
+    def __call__(self, zonal_wind: np.ndarray, meridional_wind: np.ndarray) -> np.ndarray:
+        """Velocity potential chi such that the divergent wind satisfies
+        u_chi = (1/(a cos(lat))) d(chi)/d(lon), v_chi = (1/a) d(chi)/d(lat).
+        u, v: (..., nlat, nlon). Returns chi with the same shape."""
+
+        zonal_wind = np.asarray(zonal_wind)
+        meridional_wind = np.asarray(meridional_wind)
+
+        divergence = self.divergence(zonal_wind, meridional_wind)
+        divergence_zonally_spectral = np.fft.rfft(divergence, axis=-1)[..., :self.mmax + 1]
+        divergence_spectral = np.einsum(
+            'nmt,t,...tm->...nm', self.Pbar, self.w_theta, divergence_zonally_spectral
+        ) * self.forward_scale
+        velocity_potential_spectral = self.inverse_laplacian[:, None] * divergence_spectral
+        velocity_potential_zonally_spectral = np.einsum('nmt,...nm->...tm', self.Pbar, velocity_potential_spectral)
+        padding_shape = velocity_potential_zonally_spectral.shape[:-1] + (self.nlon // 2 + 1 - (self.mmax + 1),)
+        padded_spectrum = np.concatenate(
+            [
+                velocity_potential_zonally_spectral * self.inverse_scale,
+                np.zeros(padding_shape, dtype=velocity_potential_zonally_spectral.dtype),
+            ],
+            axis=-1,
+        )
+        return np.fft.irfft(padded_spectrum, n=self.nlon, axis=-1)
