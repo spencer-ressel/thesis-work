@@ -1502,3 +1502,12 @@ NameError: name 'surface_data' is not defined. Did you mean: 'surface_base'?
 2026-07-23 13:57:38,602 [INFO] Load all data into a single dataset
 2026-07-23 13:57:38,995 [INFO]     Saving data...
 2026-07-23 13:57:40,863 [INFO] All Finished
+2026-08-19 17:47:12,880 [INFO] Start date: 1998-06-01T00:00:00.000000000
+2026-08-19 17:47:12,886 [INFO] End date: 1998-12-31T00:00:00.000000000
+2026-08-19 17:47:12,893 [INFO] Starting data download script
+2026-08-19 17:47:12,899 [INFO] Dates: 1998-06-01T00 : 1998-12-31T00
+2026-08-19 17:47:12,900 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/1998-06_1998-12
+2026-08-19 17:47:12,901 [INFO] Precipitation
+2026-08-19 17:47:13,416 [INFO]     Downloading data...
+2026-08-19 17:47:14,124 [INFO] Request ID is 873da1f6-d507-4710-850c-d121a7b343c6
+2026-08-19 17:47:15,757 [INFO] status has been updated to accepted

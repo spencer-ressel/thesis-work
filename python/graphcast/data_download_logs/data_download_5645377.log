@@ -1,0 +1,9 @@
+2026-08-19 13:11:37,726 [INFO] Start date: 1988-10-31T00:00:00.000000000
+2026-08-19 13:11:37,726 [INFO] End date: 1988-12-31T00:00:00.000000000
+2026-08-19 13:11:37,728 [INFO] Starting data download script
+2026-08-19 13:11:37,730 [INFO] Dates: 1988-10-31T00 : 1988-12-31T00
+2026-08-19 13:11:37,731 [INFO] Creating output directory...
+2026-08-19 13:11:37,738 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/1988-10_1988-12
+2026-08-19 13:11:37,738 [INFO] Surface level variables
+2026-08-19 13:11:37,747 [INFO]   2m_temperature
+2026-08-19 13:11:37,763 [INFO]     Loading files...

@@ -1,0 +1,42 @@
+2026-08-19 17:07:43,781 [INFO] Start date: 2016-06-01T00:00:00.000000000
+2026-08-19 17:07:43,781 [INFO] End date: 2016-11-30T00:00:00.000000000
+2026-08-19 17:07:43,787 [INFO] Starting data download script
+2026-08-19 17:07:43,790 [INFO] Dates: 2016-06-01T00 : 2016-11-30T00
+2026-08-19 17:07:43,829 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2016-06_2016-11
+2026-08-19 17:07:43,829 [INFO] Surface level variables
+2026-08-19 17:07:43,830 [INFO] 2m_temperature exists, skipping...
+2026-08-19 17:07:43,831 [INFO] mean_sea_level_pressure exists, skipping...
+2026-08-19 17:07:43,832 [INFO] 10m_u_component_of_wind exists, skipping...
+2026-08-19 17:07:43,833 [INFO] 10m_v_component_of_wind exists, skipping...
+2026-08-19 17:07:43,833 [INFO] Finished
+2026-08-19 17:07:43,833 [INFO] Pressure Level Data
+2026-08-19 17:07:43,834 [INFO] geopotential exists, skipping...
+2026-08-19 17:07:43,834 [INFO] temperature exists, skipping...
+2026-08-19 17:07:43,839 [INFO] u_component_of_wind exists, skipping...
+2026-08-19 17:07:43,843 [INFO] v_component_of_wind exists, skipping...
+2026-08-19 17:07:43,846 [INFO] specific_humidity exists, skipping...
+2026-08-19 17:07:43,848 [INFO] vertical_velocity exists, skipping...
+2026-08-19 17:07:43,848 [INFO] Finished
+2026-08-19 17:07:43,848 [INFO] Precipitation
+2026-08-19 17:07:44,539 [INFO]     Downloading data...
+2026-08-19 17:07:46,369 [INFO] Request ID is 93342267-b607-41b3-9b86-03d0ba008d44
+2026-08-19 17:07:46,539 [INFO] status has been updated to accepted
+2026-08-19 17:08:00,880 [INFO] status has been updated to rejected
+2026-08-19 17:08:00,881 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 339, in <module>
+    client.retrieve(dataset, request, target)
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/datapi/legacy_api_client.py", line 169, in retrieve
+    submitted = self.client.submit_and_wait_on_results(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/datapi/api_client.py", line 458, in submit_and_wait_on_results
+    return self._retrieve_api.submit(collection_id, **request).make_results()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/datapi/processing.py", line 489, in make_results
+    self._wait_on_results()
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/datapi/processing.py", line 467, in _wait_on_results
+    while not self.results_ready:
+              ^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/datapi/processing.py", line 485, in results_ready
+    raise ProcessingFailedError(f"Unknown API state {status!r}")
+datapi.processing.ProcessingFailedError: Unknown API state 'rejected'
