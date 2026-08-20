@@ -27,3 +27,11 @@
 2026-08-19 17:43:54,672 [INFO] status has been updated to running
 2026-08-19 18:06:01,364 [INFO] status has been updated to successful
 2026-08-19 18:06:01,939 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-1/2026-08-19/9b6de95c818fa254071035ae949413fa.nc
+2026-08-19 18:27:11,262 [INFO]     Regridding data...
+2026-08-19 18:29:48,138 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/2021-11_2022-04
+2026-08-19 18:29:48,139 [INFO]     Saving data...
+2026-08-19 18:29:50,262 [INFO] Finished
+2026-08-19 18:29:50,262 [INFO] TOA Solar Radiation
+2026-08-19 18:29:50,866 [INFO]     Downloading data...
+2026-08-19 18:29:51,481 [INFO] Request ID is 92d3f5d4-8214-43ad-96cd-97f92e635f8b
+2026-08-19 18:29:51,644 [INFO] status has been updated to accepted

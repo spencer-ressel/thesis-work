@@ -36,3 +36,13 @@
 2026-08-19 16:59:08,498 [INFO] Request ID is 3ed23894-8f20-4189-81a8-20f5d094fc77
 2026-08-19 16:59:08,664 [INFO] status has been updated to accepted
 2026-08-19 18:05:54,820 [INFO] status has been updated to running
+2026-08-19 18:07:56,601 [INFO] status has been updated to successful
+2026-08-19 18:07:57,092 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-2/2026-08-20/abe81d134df4bd4932d2164fb5854077.nc
+2026-08-19 18:09:18,541 [INFO]     Regridding data...
+2026-08-19 18:09:30,024 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/1975-07_1975-12
+2026-08-19 18:09:30,034 [INFO]     Saving data...
+2026-08-19 18:09:30,556 [INFO] Geopotential at Surface
+2026-08-19 18:09:31,504 [INFO] Land Sea Mask
+2026-08-19 18:09:31,572 [INFO] Load all data into a single dataset
+2026-08-19 18:09:32,522 [INFO]     Saving data...
+2026-08-19 18:10:02,218 [INFO] All Finished

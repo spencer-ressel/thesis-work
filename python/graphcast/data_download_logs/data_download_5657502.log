@@ -1,0 +1,52 @@
+2026-08-20 12:23:51,270 [INFO] Start date: 1993-07-01T00:00:00.000000000
+2026-08-20 12:23:51,276 [INFO] End date: 1994-01-31T00:00:00.000000000
+2026-08-20 12:23:51,285 [INFO] Starting data download script
+2026-08-20 12:23:51,292 [INFO] Dates: 1993-07-01T00 : 1994-01-31T00
+2026-08-20 12:23:51,298 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/1993-07_1994-01
+2026-08-20 12:23:51,302 [INFO] Surface level variables
+2026-08-20 12:23:51,307 [INFO] 2m_temperature exists, skipping...
+2026-08-20 12:23:51,311 [INFO] mean_sea_level_pressure exists, skipping...
+2026-08-20 12:23:51,315 [INFO] 10m_u_component_of_wind exists, skipping...
+2026-08-20 12:23:51,320 [INFO] 10m_v_component_of_wind exists, skipping...
+2026-08-20 12:23:51,323 [INFO] Finished
+2026-08-20 12:23:51,326 [INFO] Pressure Level Data
+2026-08-20 12:23:51,331 [INFO] geopotential exists, skipping...
+2026-08-20 12:23:51,336 [INFO] temperature exists, skipping...
+2026-08-20 12:23:51,340 [INFO] u_component_of_wind exists, skipping...
+2026-08-20 12:23:51,345 [INFO] v_component_of_wind exists, skipping...
+2026-08-20 12:23:51,348 [INFO]   specific_humidity
+2026-08-20 12:23:51,381 [INFO]     Loading files...
+2026-08-20 12:52:25,337 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/1993-07_1994-01
+2026-08-20 12:52:25,356 [INFO]     Saving data...
+2026-08-20 12:52:28,151 [INFO]   vertical_velocity
+2026-08-20 12:52:28,161 [INFO]     Loading files...
+2026-08-20 13:20:49,818 [INFO]     Output directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/1993-07_1994-01
+2026-08-20 13:20:49,822 [INFO]     Saving data...
+2026-08-20 13:20:52,405 [INFO] Finished
+2026-08-20 13:20:52,407 [INFO] Precipitation
+2026-08-20 13:20:53,384 [INFO]     Downloading data...
+2026-08-20 13:20:54,275 [INFO] Request ID is 9c34d27c-4d9f-4a56-a3ac-551ac5a614eb
+2026-08-20 13:20:55,149 [INFO] status has been updated to accepted
+2026-08-20 13:21:19,583 [INFO] status has been updated to running
+2026-08-20 13:57:27,142 [INFO] status has been updated to successful
+2026-08-20 13:57:27,481 [INFO] Downloading https://object-store.os-api.cci2.ecmwf.int:443/cci2-prod-cache-3/2026-08-20/eacfab46354bbb2e03e6e750dbf831b8.nc
+2026-08-20 14:09:38,128 [ERROR] Uncaught exception
+Traceback (most recent call last):
+  File "/glade/u/home/sressel/thesis-work/python/graphcast/get_data_for_graphcast.py", line 339, in <module>
+    client.retrieve(dataset, request, target)
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/datapi/legacy_api_client.py", line 179, in retrieve
+    return submitted if target is None else submitted.download(target)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/datapi/processing.py", line 659, in download
+    robust_download(url, target)
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/multiurl/http.py", line 479, in wrapped
+    r = call(main_url, *args, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/datapi/processing.py", line 625, in _download
+    multiurl.download(
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/multiurl/downloader.py", line 111, in download
+    return Downloader(url, **kwargs).download(target)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/glade/work/sressel/conda-envs/modified-npl/lib/python3.12/site-packages/multiurl/base.py", line 135, in download
+    os.path.getsize(download) == size
+AssertionError: File size mismatch 700448768 bytes instead of 9244218817
