@@ -1,0 +1,12 @@
+2026-08-21 16:46:20,731 [INFO] Start date: 1990-06-01T00:00:00.000000000
+2026-08-21 16:46:20,732 [INFO] End date: 1990-12-31T00:00:00.000000000
+2026-08-21 16:46:20,736 [INFO] Starting data download script
+2026-08-21 16:46:20,739 [INFO] Dates: 1990-06-01T00 : 1990-12-31T00
+2026-08-21 16:46:20,742 [INFO] Graphcast data directory: /glade/u/home/sressel/spencer-scratch/graphcast_input_data/6hr_climatology
+2026-08-21 16:46:20,743 [INFO] -- u_component_of_wind
+2026-08-21 16:46:20,743 [INFO] ---- 1990
+2026-08-21 16:46:20,744 [INFO] -- u_component_of_wind exists for 1990, skipping...
+2026-08-21 16:46:20,744 [INFO] -- v_component_of_wind
+2026-08-21 16:46:20,744 [INFO] ---- 1990
+2026-08-21 16:46:20,745 [INFO] -- v_component_of_wind exists for 1990, skipping...
+2026-08-21 16:46:20,745 [INFO] All Finished

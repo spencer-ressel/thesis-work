@@ -31,6 +31,23 @@ WATER_VAPOR_GAS_CONSTANT = 461           # J kg^-1 K^-1
 LIQUID_WATER_DENSITY = 1000              # kg m^-3
 STEFAN_BOLTZMANN_CONSTANT = 5.67*10**-8  # W m^-2 K^-4
 
+PREDICTED_VARIABLES = {
+    "expver",
+    "number",
+    "geopotential",
+    "temperature",
+    "u_component_of_wind",
+    "v_component_of_wind",
+    "specific_humidity",
+    "vertical_velocity",
+    "2m_temperature",
+    "mean_sea_level_pressure",
+    "10m_u_component_of_wind",
+    "10m_v_component_of_wind",
+    "total_precipitation_6hr",
+    "initial_conditions_filepath"
+}
+
 VARIABLE_SHORTNAMES = {
     # Pressure‑level variables
     "geopotential": "Z",

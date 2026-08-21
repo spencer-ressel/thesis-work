@@ -1,5 +1,12 @@
 import glob
 import xarray as xr
+# Logging
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 first_directory = "/glade/u/home/sressel/spencer-scratch/graphcast_input_data/2020-05_2020-08"
 second_directory = "/glade/u/home/sressel/spencer-scratch/graphcast_input_data/2020-09_2021-02"
