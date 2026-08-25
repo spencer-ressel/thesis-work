@@ -8,9 +8,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-first_directory = "/glade/u/home/sressel/spencer-scratch/graphcast_input_data/2020-05_2020-08"
-second_directory = "/glade/u/home/sressel/spencer-scratch/graphcast_input_data/2020-09_2021-02"
-output_directory = "/glade/u/home/sressel/spencer-scratch/graphcast_input_data/2020-05_2021-02"
+first_directory = "/glade/u/home/sressel/spencer-scratch/graphcast_input_data/1992-06_1992-07"
+second_directory = "/glade/u/home/sressel/spencer-scratch/graphcast_input_data/1992-08_1993-04"
+output_directory = "/glade/u/home/sressel/spencer-scratch/graphcast_input_data/1992-06_1993-04"
 
 variables_to_skip = ['land_sea_mask', 'geopotential_at_surface']
 files_list = sorted(glob.glob(f"{first_directory}/*.nc"))

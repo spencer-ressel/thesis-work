@@ -3,7 +3,7 @@
 #PBS -N get_graphcast_data
 #PBS -A uwas0172
 #PBS -l select=1:ncpus=1:mem=128GB
-#PBS -l walltime=04:30:00
+#PBS -l walltime=02:30:00
 #PBS -q casper
 #PBS -o data_download
 #PBS -j oe
@@ -13,16 +13,13 @@ CONDA_ENV="modified-npl"
 module load conda 2>/dev/null || true
 conda activate "${CONDA_ENV}"
 
-START_DATE="1994-06-01T00:00:00.000000000"
-END_DATE="1994-12-31T00:00:00.000000000"
+START_DATE="1992-06-01T00:00:00.000000000"
+END_DATE="1992-07-31T00:00:00.000000000"
 
 start_time=$(date +%s)
 
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-
 export PYTHONPATH=/glade/u/home/sressel/thesis-work/python/auxiliary_functions/src:$PYTHONPATH
-# python3 get_data_for_graphcast.py "$START_DATE" "$END_DATE"
-python3 "$SCRIPT_DIR/get_data_for_graphcast.py" "$START_DATE" "$END_DATE"
+python3 graphcast_utils/get_data_for_graphcast.py "$START_DATE" "$END_DATE"
 
 end_time=$(date +%s)
 time_diff=$((end_time - start_time))
