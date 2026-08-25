@@ -18,8 +18,11 @@ END_DATE="1994-12-31T00:00:00.000000000"
 
 start_time=$(date +%s)
 
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+
 export PYTHONPATH=/glade/u/home/sressel/thesis-work/python/auxiliary_functions/src:$PYTHONPATH
-python3 get_data_for_graphcast.py "$START_DATE" "$END_DATE"
+# python3 get_data_for_graphcast.py "$START_DATE" "$END_DATE"
+python3 "$SCRIPT_DIR/get_data_for_graphcast.py" "$START_DATE" "$END_DATE"
 
 end_time=$(date +%s)
 time_diff=$((end_time - start_time))
